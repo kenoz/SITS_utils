@@ -1,5 +1,6 @@
 /data
 /output
 .ipynb_checkpoints
+.swp
 __pycache__
 var.txt
