@@ -90,17 +90,32 @@ class StacAttack:
                                    )
         self.items = list(query.items())
 
+    def loadPatches(self, bbox, resolution, dimx, dimy,
+                    bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 
+                           'B8A', 'B11', 'B12', 'SCL'],
+                    crs_out=3035, chunks_size=612, dtype="uint16", nodata=0):
+
+        shape = (dimx, dimy)
+
+        self.__def_geobox(bbox, crs_out, resolution, shape)
+
+        self.array = stac_load(self.items,
+                               bands=bands,
+                               groupby="solar_day",
+                               chunks={"x": chunks_size, "y": chunks_size},
+                               patch_url=self.stac['patch_url'],
+                               dtype=dtype,
+                               nodata=nodata,
+                               geobox=self.geobox
+                     )
+
     def loadImgs(self, bbox, resolution=10,
                  bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 
                         'B8A', 'B11', 'B12', 'SCL'],
                  crs_out=3035, chunks_size=612, dtype="uint16", nodata=0
                  ):
 
-        crs = CRS.from_epsg(crs_out)
-
-        self.geobox = GeoBox.from_bbox(odc.geo.geom.BoundingBox(*bbox),
-                                       crs=crs,
-                                       resolution=resolution)
+        self.__def_geobox(bbox, crs_out, resolution)
 
         self.array = stac_load(self.items,
                                bands=bands,
@@ -123,3 +138,26 @@ class StacAttack:
 
     def to_nc(self, gid, outdir):
          self.array.to_netcdf(f"{outdir}/S2_fid-{gid}_{self.startdate}-{self.enddate}.nc")
+
+    def __def_geobox(self, bbox, crs_out, resolution, shape=None):
+
+        crs = CRS.from_epsg(crs_out)
+        if shape:
+            size_x = int((bbox[2] - bbox[0]) / resolution)
+            size_y = int((bbox[3] - bbox[1]) / resolution)
+
+            shift_x = (shape[0] - size_x) / 2
+            shift_y = (shape[1] - size_y) / 2
+
+            min_x = resolution * (int(bbox[0]/resolution) - shift_x)
+            min_y = resolution * (int(bbox[1]/resolution) - shift_y)
+            max_x = min_x + shape[0] * resolution
+            max_y = min_y + shape[1] * resolution
+
+            self.newbbox = [min_x, min_y, max_x, max_y]
+        else:
+            self.newbbox = bbox
+
+        self.geobox = GeoBox.from_bbox(odc.geo.geom.BoundingBox(*self.newbbox),
+                                       crs=crs,
+                                       resolution=resolution)
