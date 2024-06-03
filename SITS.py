@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 import geopandas as gpd
+import xarray as xr
 from shapely.geometry import box
 from rasterio.crs import CRS
 # STAC API
@@ -63,7 +64,6 @@ class Csv2gdf:
         xmin, ymin, xmax, ymax = row.geometry.bounds
         return box(xmin, ymin, xmax, ymax)
 
-
 class StacAttack:
 
     def __init__(self, provider='mpc', collection='sentinel-2-l2a'):
@@ -97,9 +97,9 @@ class StacAttack:
 
         shape = (dimx, dimy)
 
-        self.__def_geobox(bbox, crs_out, resolution, shape)
+        self.def_geobox(bbox, crs_out, resolution, shape)
 
-        self.array = stac_load(self.items,
+        self.p_array = stac_load(self.items,
                                bands=bands,
                                groupby="solar_day",
                                chunks={"x": chunks_size, "y": chunks_size},
@@ -115,9 +115,9 @@ class StacAttack:
                  crs_out=3035, chunks_size=612, dtype="uint16", nodata=0
                  ):
 
-        self.__def_geobox(bbox, crs_out, resolution)
+        self.def_geobox(bbox, crs_out, resolution)
 
-        self.array = stac_load(self.items,
+        self.i_array = stac_load(self.items,
                                bands=bands,
                                groupby="solar_day",
                                chunks={"x": chunks_size, "y": chunks_size},
@@ -127,30 +127,40 @@ class StacAttack:
                                geobox=self.geobox
                      )
 
-    def to_csv(self, gid, outdir):
-        array_trans = self.array.transpose('time', 'y', 'x')
+    def __choose_array(self, array_type):
+        if array_type == 'image':
+            e_array = self.i_array
+        elif array_type == 'patch':
+            e_array = self.p_array
+        return e_array
+    
+    def to_csv(self, array_type, gid, outdir):
+        e_array = self.__choose_array(array_type)
+        array_trans = e_array.transpose('time', 'y', 'x')
         self.df = array_trans.to_dataframe()
         self.df = self.df.reset_index()
         self.df['ID'] = self.df.index
         self.df.insert(0, "station", gid)
         self.df['date'] = pd.to_datetime(self.df['time']).dt.date
-        self.df.to_csv(os.path.join(outdir, f'station_{gid}.csv'))
+        self.df.to_csv(os.path.join(outdir, f'station_{gid}_{array_type}.csv'))
 
-    def to_nc(self, gid, outdir):
-         self.array.to_netcdf(f"{outdir}/S2_fid-{gid}_{self.startdate}-{self.enddate}.nc")
+    def to_nc(self, array_type, gid, outdir):
+        e_array = self.__choose_array(array_type)
+        e_array.to_netcdf(f"{outdir}/S2_fid-{gid}_{array_type}_{self.startdate}-{self.enddate}.nc")
 
-    def __def_geobox(self, bbox, crs_out, resolution, shape=None):
+    def def_geobox(self, bbox, crs_out, resolution, shape=None):
 
         crs = CRS.from_epsg(crs_out)
-        if shape:
-            size_x = int((bbox[2] - bbox[0]) / resolution)
-            size_y = int((bbox[3] - bbox[1]) / resolution)
+        if shape is not None:
+            size_x = round((bbox[2] - bbox[0]) / resolution)
+            size_y = round((bbox[3] - bbox[1]) / resolution)
+            print(size_x, size_y)
 
-            shift_x = (shape[0] - size_x) / 2
-            shift_y = (shape[1] - size_y) / 2
+            shift_x = round((shape[0] - size_x) / 2)
+            shift_y = round((shape[1] - size_y) / 2)
 
-            min_x = resolution * (int(bbox[0]/resolution) - shift_x)
-            min_y = resolution * (int(bbox[1]/resolution) - shift_y)
+            min_x = resolution * (round(bbox[0]/resolution) - shift_x)
+            min_y = resolution * (round(bbox[1]/resolution) - shift_y)
             max_x = min_x + shape[0] * resolution
             max_y = min_y + shape[1] * resolution
 
