@@ -14,7 +14,7 @@ from odc.stac import configure_rio, stac_load
 
 class Csv2gdf:
 
-    def __init__(self, csv_file, id_name, x_name, y_name, crs_in):
+    def __init__(self, csv_file, x_name, y_name, crs_in, id_name='no_id'):
         """Init class object
 
         csv_file: path to csv file
@@ -133,11 +133,23 @@ class StacAttack:
         elif array_type == 'patch':
             e_array = self.p_array
         return e_array
-    
-    def to_csv(self, array_type, gid, outdir):
+
+    def to_df(self, array_type):
         e_array = self.__choose_array(array_type)
         array_trans = e_array.transpose('time', 'y', 'x')
-        self.df = array_trans.to_dataframe()
+        df = array_trans.to_dataframe()
+        return df
+
+    def to_csv(self, df, outdir, gid=None):
+        df = df.reset_index()
+        df['ID'] = df.index
+        if gid is not None:
+            df.to_csv(os.path.join(outdir, f'id_{gid}_{array_type}.csv'))
+        else:
+            df.to_csv(os.path.join(outdir, f'id_none_{array_type}.csv'))
+
+    def old_to_csv(self, array_type, gid, outdir):
+        """deprecated"""
         self.df = self.df.reset_index()
         self.df['ID'] = self.df.index
         self.df.insert(0, "station", gid)
@@ -152,13 +164,14 @@ class StacAttack:
 
         crs = CRS.from_epsg(crs_out)
         if shape is not None:
+            # size in pixels of input bbox
             size_x = round((bbox[2] - bbox[0]) / resolution)
             size_y = round((bbox[3] - bbox[1]) / resolution)
             print(size_x, size_y)
-
+            # shift size to reach the shape
             shift_x = round((shape[0] - size_x) / 2)
             shift_y = round((shape[1] - size_y) / 2)
-
+            # coordinates of the shaped bbox
             min_x = resolution * (round(bbox[0]/resolution) - shift_x)
             min_y = resolution * (round(bbox[1]/resolution) - shift_y)
             max_x = min_x + shape[0] * resolution
