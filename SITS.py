@@ -140,7 +140,7 @@ class StacAttack:
         df = array_trans.to_dataframe()
         return df
 
-    def to_csv(self, array_type, outdir, gid=None):
+    def to_csv(self, outdir, gid=None, array_type='image'):
         df = self.__to_df(array_type)
         df = df.reset_index()
         df['ID'] = df.index
