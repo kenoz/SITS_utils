@@ -21,7 +21,7 @@ class Csv2gdf:
     This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
 
     Attributes:
-        crs_in (int): CRS of coordinates decsribed in the CSV table.
+        crs_in (int): CRS of coordinates decsribed in the csv table.
         table (DataFrame): DataFrame.
 
     Methods:
@@ -42,7 +42,7 @@ class Csv2gdf:
         Initialize the attributes of Csv2gdf.
 
         Args:
-            csv_file (str): CSV filepath.
+            csv_file (str): csv filepath.
             x_name (str): name of the field describing X coordinates.
             y_name (str): name of the field describing Y coordinates.
             crs_in (int): CRS of coordinates described in the CSV table.
@@ -74,29 +74,57 @@ class Csv2gdf:
 
     def set_buffer(self, df_attr, radius, outfile=None):
         """
-        Calculate buffer geometries.
+        Calculate buffer geometries of a Csv2gdf GeoDataFrame object.
 
         Args:
-            df_attr (GeoDataFrame): GeoDataFrame attribute of class `Csv2gdf`
+            df_attr (str): GeoDataFrame attribute of class `Csv2gdf`.
+                Can be one of the following: 'gdf', 'buffer', 'bbox'.
             radius (float): buffer distance in CRS unit.
-            outfile (str, optional): Defaults to `None`.
+            outfile (str, optional): ouput filepath. Defaults to `None`.
+
+        Returns:
+            Csv2gdf.buffer (GeoDataFrame): GeoDataFrame object.
         """
         df = getattr(self, df_attr)
         self.buffer = df.copy()
         self.buffer['geometry'] = self.buffer.geometry.buffer(radius)
 
     def set_bbox(self, df_attr, outfile=None):
+        """
+        Calculate the bounding box of a Csv2gdf GeoDataFrame object.
+
+        Args:
+            df_attr (str): GeoDataFrame attribute of class `Csv2gdf`.
+                Can be one of the following: 'gdf', 'buffer', 'bbox'.
+            outfile (str, optional): ouput filepath. Defaults to `None`.
+
+        Returns:
+            Csv2gdf.bbox (GeoDataFrame): GeoDataFrame object.
+        """
         df = getattr(self, df_attr)
         self.bbox = df.copy()
         self.bbox['geometry'] = self.bbox.apply(self.__create_bounding_box, axis=1)
 
     def to_vector(self, df_attr, outfile=None, driver="GeoJSON"):
+        """
+        Write a Csv2gdf GeoDataFrame object as a vector file.
+
+        Args:
+            df_attr (str): GeoDataFrame attribute of class `Csv2gdf`.
+                Can be one of the following: 'gdf', 'buffer', 'bbox'.
+            outfile (str, optional): . Defaults to `None`.
+            driver (str, optional): . Defaults to "GeoJSON".
+        """
         df = getattr(self, df_attr)
         df.to_file(outfile, driver=driver, encoding='utf-8')
 
     def del_rows(self, col_name, rows_values):
         """
-        rows_values: list
+        Drop rows from Csv2gdf.table according to a column's values.
+
+        Args:
+            col_name (str): column name.
+            rows_values (list): list of values.
         """
         size_before = len(self.table)
         del_rows = {col_name:rows_values}
@@ -108,11 +136,45 @@ class Csv2gdf:
         print(f'rows length before:{size_before}\nrows length after:{size_after}')
 
     def __create_bounding_box(self, row):
+        """
+        Create the bounding box of a feature's geometry.
+
+        Args:
+            row (GeoSeries): GeoDataFrame's row.
+
+        Returns:
+            shapely.geometry.box
+        """
         xmin, ymin, xmax, ymax = row.geometry.bounds
         return box(xmin, ymin, xmax, ymax)
 
 
 class StacAttack:
+    """
+    This class aims to request time-series on STAC catalog and store it as image or csv files.
+
+    Attributes:
+        prov_stac (dict): STAC providers.
+        stac (dict): STAC providers' parameters.
+        catalog (pystac.Catalog): Access to STAC catalog
+        bands (list): list of satellite collection's bands to request.
+        stac_conf (dict): parameters for building datacube (xArray) from STAC items.
+
+    Methods:
+        __items_to_array(self):
+        __choose_array(self, array_type):
+        __to_df(self, array_type):
+        searchItems(self, bbox_latlon, date_start='2023-01', date_end='2023-12', **kwargs):
+        loadPatches(self, bbox, dimx=5, dimy=5, resolution=10, crs_out=3035):
+        loadImgs(self, bbox, resolution=10, crs_out=3035):
+        to_csv(self, outdir, gid=None, array_type='image'):
+        to_nc(self, array_type, gid, outdir):
+        def_geobox(self, bbox, crs_out, resolution, shape=None):
+
+    Example:
+        >>> XXXX geotable = Csv2gdf(csv_file, 'longitude', 'latitude', 3035)
+        >>> XXXX geotable.set_gdf(3035, 'output/table.geojson')
+    """
 
     def __init__(self, provider='mpc',
                        collection='sentinel-2-l2a',
