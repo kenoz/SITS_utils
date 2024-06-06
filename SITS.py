@@ -17,11 +17,36 @@ from rasterio.features import rasterize
 
 
 class Csv2gdf:
+    """
+    This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
+
+    Attributes:
+        crs_in (int): CRS of coordinates decsribed in the CSV table.
+        table (DataFrame): DataFrame.
+
+    Methods:
+        set_gdf(self, crs_out, outfile=None): import csv file as `geopandas.GeoDataFrame`.
+        set_buffer(self, df_attr, radius, outfile=None): return buffer geometries for each point.
+        set_bbox(self, df_attr, outfile=None): return bounding boxes for each geometry.
+        to_vector(self, df_attr, outfile=None, driver="GeoJSON"): write GeoDataFrame as vector file.
+        del_rows(self, col_name, rows_values): remove GeoDataFrame rows.
+        __create_bounding_box(self, row): return bounding box coordinates.
+
+    Example:
+        >>> geotable = Csv2gdf(csv_file, 'longitude', 'latitude', 3035)
+        >>> geotable.set_gdf(3035, 'output/table.geojson')
+    """
 
     def __init__(self, csv_file, x_name, y_name, crs_in, id_name='no_id'):
-        """Init class object
+        """
+        Initialize the attributes of Csv2gdf.
 
-        csv_file: path to csv file
+        Args:
+            csv_file (str): CSV filepath.
+            x_name (str): name of the field describing X coordinates.
+            y_name (str): name of the field describing Y coordinates.
+            crs_in (int): CRS of coordinates described in the CSV table.
+            id_name (str, optional): name of the ID field. Defaults to "no_id".
         """
         self.crs_in = crs_in
         self.table = pd.read_csv(csv_file, encoding= 'unicode_escape')
@@ -30,6 +55,16 @@ class Csv2gdf:
                                                 id_name: 'gid'})
 
     def set_gdf(self, crs_out, outfile=None):
+        """
+        Convert the `Csv2gdf` attribute `table` (DataFrame) into GeoDataFrame object.
+
+        Args:
+            crs_out (int): output CRS of GeoDataFrame.
+            outfile (str, optional): Defaults to `None`.
+
+        Returns:
+            Csv2gdf.gdf (GeoDataFrame): GeoDataFrame object.
+        """
         self.gdf = gpd.GeoDataFrame(self.table,
                                     geometry=gpd.points_from_xy(self.table.coord_X,
                                                                 self.table.coord_Y)
@@ -38,6 +73,14 @@ class Csv2gdf:
         self.gdf = self.gdf.to_crs(crs_out)
 
     def set_buffer(self, df_attr, radius, outfile=None):
+        """
+        Calculate buffer geometries.
+
+        Args:
+            df_attr (GeoDataFrame): GeoDataFrame attribute of class `Csv2gdf`
+            radius (float): buffer distance in CRS unit.
+            outfile (str, optional): Defaults to `None`.
+        """
         df = getattr(self, df_attr)
         self.buffer = df.copy()
         self.buffer['geometry'] = self.buffer.geometry.buffer(radius)
