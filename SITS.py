@@ -1,13 +1,12 @@
 import os
 import pandas as pd
-#import xarray as xr
 # STAC API
 from pystac_client import Client
 import planetary_computer as pc
 # ODC tools
 import odc
 from odc.geo.geobox import GeoBox
-from odc.stac import stac_load #configure_rio, 
+from odc.stac import stac_load
 # Geospatial librairies
 import geopandas as gpd
 import rasterio
