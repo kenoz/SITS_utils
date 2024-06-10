@@ -1,19 +1,58 @@
 import os
 import pandas as pd
-import geopandas as gpd
-import xarray as xr
-from shapely.geometry import box
-from rasterio.crs import CRS
+#import xarray as xr
 # STAC API
 from pystac_client import Client
 import planetary_computer as pc
 # ODC tools
 import odc
 from odc.geo.geobox import GeoBox
-from odc.stac import configure_rio, stac_load
+from odc.stac import stac_load #configure_rio, 
 # Geospatial librairies
+import geopandas as gpd
 import rasterio
+from rasterio.crs import CRS
 from rasterio.features import rasterize
+from shapely.geometry import box
+
+
+def def_geobox(bbox, crs_out, resolution, shape=None):
+    """
+    This function creates an odc geobox.
+
+    Args:
+        bbox (list): coordinates of a bounding box.
+        crs_out (str): CRS of output coordinates.
+        resolution (float): output spatial resolution.
+        shape (tuple, optional): output image size in pixels (x, y). Defaults to `None`.
+
+    Returns:
+        geobox (odc.geo.geobox.GeoBox): geobox object
+    """
+
+    crs = CRS.from_epsg(crs_out)
+    if shape is not None:
+        # size in pixels of input bbox
+        size_x = round((bbox[2] - bbox[0]) / resolution)
+        size_y = round((bbox[3] - bbox[1]) / resolution)
+        print(size_x, size_y)
+        # shift size to reach the shape
+        shift_x = round((shape[0] - size_x) / 2)
+        shift_y = round((shape[1] - size_y) / 2)
+        # coordinates of the shaped bbox
+        min_x = resolution * (round(bbox[0]/resolution) - shift_x)
+        min_y = resolution * (round(bbox[1]/resolution) - shift_y)
+        max_x = min_x + shape[0] * resolution
+        max_y = min_y + shape[1] * resolution
+
+        newbbox = [min_x, min_y, max_x, max_y]
+    else:
+        newbbox = bbox
+
+    geobox = GeoBox.from_bbox(odc.geo.geom.BoundingBox(*newbbox),
+                              crs=crs,
+                              resolution=resolution)
+    return geobox
 
 
 class Csv2gdf:
@@ -21,7 +60,7 @@ class Csv2gdf:
     This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
 
     Attributes:
-        crs_in (int): CRS of coordinates decsribed in the csv table.
+        crs_in (int): CRS of coordinates described in the csv table.
         table (DataFrame): DataFrame.
 
     Methods:
@@ -39,7 +78,7 @@ class Csv2gdf:
 
     def __init__(self, csv_file, x_name, y_name, crs_in, id_name='no_id'):
         """
-        Initialize the attributes of Csv2gdf.
+        Initialize the attributes of `Csv2gdf`.
 
         Args:
             csv_file (str): csv filepath.
@@ -65,6 +104,7 @@ class Csv2gdf:
         Returns:
             Csv2gdf.gdf (GeoDataFrame): GeoDataFrame object.
         """
+
         self.gdf = gpd.GeoDataFrame(self.table,
                                     geometry=gpd.points_from_xy(self.table.coord_X,
                                                                 self.table.coord_Y)
@@ -85,6 +125,7 @@ class Csv2gdf:
         Returns:
             Csv2gdf.buffer (GeoDataFrame): GeoDataFrame object.
         """
+
         df = getattr(self, df_attr)
         self.buffer = df.copy()
         self.buffer['geometry'] = self.buffer.geometry.buffer(radius)
@@ -101,6 +142,7 @@ class Csv2gdf:
         Returns:
             Csv2gdf.bbox (GeoDataFrame): GeoDataFrame object.
         """
+
         df = getattr(self, df_attr)
         self.bbox = df.copy()
         self.bbox['geometry'] = self.bbox.apply(self.__create_bounding_box, axis=1)
@@ -115,6 +157,7 @@ class Csv2gdf:
             outfile (str, optional): . Defaults to `None`.
             driver (str, optional): . Defaults to "GeoJSON".
         """
+
         df = getattr(self, df_attr)
         df.to_file(outfile, driver=driver, encoding='utf-8')
 
@@ -126,6 +169,7 @@ class Csv2gdf:
             col_name (str): column name.
             rows_values (list): list of values.
         """
+
         size_before = len(self.table)
         del_rows = {col_name:rows_values}
         for col in del_rows:
@@ -143,8 +187,9 @@ class Csv2gdf:
             row (GeoSeries): GeoDataFrame's row.
 
         Returns:
-            shapely.geometry.box
+            box (shapely.geometry.box): bbox.
         """
+
         xmin, ymin, xmax, ymax = row.geometry.bounds
         return box(xmin, ymin, xmax, ymax)
 
@@ -161,25 +206,34 @@ class StacAttack:
         stac_conf (dict): parameters for building datacube (xArray) from STAC items.
 
     Methods:
-        __items_to_array(self):
-        __choose_array(self, array_type):
-        __to_df(self, array_type):
-        searchItems(self, bbox_latlon, date_start='2023-01', date_end='2023-12', **kwargs):
-        loadPatches(self, bbox, dimx=5, dimy=5, resolution=10, crs_out=3035):
-        loadImgs(self, bbox, resolution=10, crs_out=3035):
-        to_csv(self, outdir, gid=None, array_type='image'):
-        to_nc(self, array_type, gid, outdir):
-        def_geobox(self, bbox, crs_out, resolution, shape=None):
+        __items_to_array(self): convert stac items into xarray dataset.
+        __to_df(self, array_type): convert xarray dataset into pandas dataframe.
+        searchItems(self, bbox_latlon, date_start='2023-01', date_end='2023-12', **kwargs): search items into a stac collection.
+        loadPatches(self, bbox, dimx=5, dimy=5, resolution=10, crs_out=3035): extract xarray dataset according to predefined height and width dimensions.
+        loadImgs(self, bbox, resolution=10, crs_out=3035): extract xarray dataset according to the feature's bounding box.
+        to_csv(self, outdir, gid=None, array_type='image'): export xarray dataset into csv file.
+        to_nc(self, array_type, gid, outdir): export xarray dataset into netcdf file.
 
     Example:
-        >>> XXXX geotable = Csv2gdf(csv_file, 'longitude', 'latitude', 3035)
-        >>> XXXX geotable.set_gdf(3035, 'output/table.geojson')
+        >>> stacObj = StacAttack()
+        >>> stacObj.searchItems(aoi_bounds_4326)
+        >>> stacObj.loadPatches(aoi_bounds, 10, 10)
     """
 
     def __init__(self, provider='mpc',
                        collection='sentinel-2-l2a',
                        bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
                 ):
+        """
+        Initialize the attributes of `StacAttack`.
+
+        Args:
+            provider (str, optional): stac provider. Defaults to 'mpc'.
+                Can be one of the following: 'mpc', 'aws'.
+            collection (str, optional): stac collection. Defaults to 'sentinel-2-l2a'.
+            bands (list, optional): name of the field describing Y coordinates. 
+                Defaults to ['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
+        """
         self.prov_stac = {'mpc':{'stac': 'https://planetarycomputer.microsoft.com/api/stac/v1',
                                  'coll': collection,
                                  'modifier': pc.sign_inplace,
@@ -194,7 +248,16 @@ class StacAttack:
         self.bands = bands
         self.stac_conf = {'chunks_size':612, 'dtype':"uint16", 'nodata':0}
 
-    def __items_to_array(self):
+    def __items_to_array(self, geobox):
+        """
+        Convert stac items to xarray dataset.
+
+        Args:
+            geobox (odc.geo.geobox.GeoBox): odc geobox that specifies bbox, crs, spatial res. and dimensions.
+
+        Returns:
+            arr (xarray.Dataset): xarray dataset of satellite time-series.
+        """
         arr = stac_load(self.items,
                         bands=self.bands,
                         groupby="solar_day",
@@ -203,18 +266,23 @@ class StacAttack:
                         patch_url=self.stac['patch_url'],
                         dtype=self.stac_conf['dtype'],
                         nodata=self.stac_conf['nodata'],
-                        geobox=self.geobox
+                        geobox=geobox
                         )
         return arr
 
-    def __choose_array(self, array_type):
-        if array_type == 'image':
-            e_array = self.i_array
-        elif array_type == 'patch':
-            e_array = self.p_array
-        return e_array
-
     def searchItems(self, bbox_latlon, date_start='2023-01', date_end='2023-12', **kwargs):
+        """
+        Get list of stac collection's items.
+
+        Args:
+            bbox_latlon (list): coordinates of bounding box.
+            date_start (str, optional): start date. Defaults to '2023-01'.
+            date_end (str, optional): end date. Defaults to '2023-12'.
+            **kwargs: others stac compliant arguments.
+
+        Returns:
+            StacAttack.items (pystac.ItemCollection): list of stac collection items.
+        """
         self.startdate = date_start
         self.enddate = date_end
         time_range = "{}/{}".format(self.startdate, self.enddate)
@@ -226,26 +294,66 @@ class StacAttack:
         self.items = list(query.items())
 
     def loadPatches(self, bbox, dimx=5, dimy=5, resolution=10, crs_out=3035):
+        """
+        Load patches with predefined pixels dimensions (x, y)
 
+        Args:
+            bbox (list): coordinates of bounding box.
+            dimx (int, optional): number of pixels in columns. Defaults to 5.
+            dimy (int, optional): number of pixels in rows. Defaults to 5.
+            resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
+            crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
+
+        Returns:
+            StacAttack.geobox (odc.geo.geobox.GeoBox): geobox object.
+            StacAttack.patch (xarray.Dataset): time-series patch.
+        """
         shape = (dimx, dimy)
-        self.def_geobox(bbox, crs_out, resolution, shape)
-
-        self.patch = self.__items_to_array()
+        self.geobox = def_geobox(bbox, crs_out, resolution, shape)
+        self.patch = self.__items_to_array(self.geobox)
 
     def loadImgs(self, bbox, resolution=10, crs_out=3035):
+        """
+        Load time-series images with dimensions that fit with bounding box.
 
-        self.def_geobox(bbox, crs_out, resolution)
+        Args:
+            bbox (list): coordinates of bounding box.
+            resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
+            crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
 
-        self.image = self.__items_to_array()
+        Returns:
+            StacAttack.geobox (odc.geo.geobox.GeoBox): geobox object.
+            StacAttack.image (xarray.Dataset): time-series image.
+        """
+        self.geobox = def_geobox(bbox, crs_out, resolution)
+        self.image = self.__items_to_array(self.geobox)
 
     def __to_df(self, array_type):
-        #e_array = self.__choose_array(array_type)
+        """
+        Convert xarray dataset into pandas dataframe
+
+        Args:
+            array_type (str): xarray dataset name.
+                Can be one of the following: 'patch', 'image'.
+
+        Returns:
+            df (dataframe): pandas dataframe object.
+        """
         e_array = getattr(self, array_type)
         array_trans = e_array.transpose('time', 'y', 'x')
         df = array_trans.to_dataframe()
         return df
 
     def to_csv(self, outdir, gid=None, array_type='image'):
+        """
+        Convert xarray dataset into csv file.
+
+        Args:
+            outdir (str): output directory.
+            gid (str, optional): column name of ID. Defaults to `None`.
+            array_type (str, optional): xarray dataset name. Defaults to 'image'.
+                Can be one of the following: 'patch', 'image'.
+        """
         df = self.__to_df(array_type)
         df = df.reset_index()
         df['ID'] = df.index
@@ -254,56 +362,65 @@ class StacAttack:
         else:
             df.to_csv(os.path.join(outdir, f'id_none_{array_type}.csv'))
 
-    def to_nc(self, array_type, gid, outdir):
-        #e_array = self.__choose_array(array_type)
+    def to_nc(self, outdir, gid=None, array_type='image'):
+        """
+        Convert xarray dataset into netcdf file.
+
+        Args:
+            outdir (str): output directory.
+            gid (str, optional): column name of ID. Defaults to `None`.
+            array_type (str, optional): xarray dataset name. Defaults to 'image'.
+                Can be one of the following: 'patch', 'image'.
+        """
         e_array = getattr(self, array_type)
         e_array.to_netcdf(f"{outdir}/S2_fid-{gid}_{array_type}_{self.startdate}-{self.enddate}.nc")
 
-    def def_geobox(self, bbox, crs_out, resolution, shape=None):
-        crs = CRS.from_epsg(crs_out)
-        if shape is not None:
-            # size in pixels of input bbox
-            size_x = round((bbox[2] - bbox[0]) / resolution)
-            size_y = round((bbox[3] - bbox[1]) / resolution)
-            print(size_x, size_y)
-            # shift size to reach the shape
-            shift_x = round((shape[0] - size_x) / 2)
-            shift_y = round((shape[1] - size_y) / 2)
-            # coordinates of the shaped bbox
-            min_x = resolution * (round(bbox[0]/resolution) - shift_x)
-            min_y = resolution * (round(bbox[1]/resolution) - shift_y)
-            max_x = min_x + shape[0] * resolution
-            max_y = min_y + shape[1] * resolution
-
-            self.newbbox = [min_x, min_y, max_x, max_y]
-        else:
-            self.newbbox = bbox
-
-        self.geobox = GeoBox.from_bbox(odc.geo.geom.BoundingBox(*self.newbbox),
-                                       crs=crs,
-                                       resolution=resolution)
-
-    def old_to_csv(self, array_type, gid, outdir):
-        """deprecated"""
-        self.df = self.df.reset_index()
-        self.df['ID'] = self.df.index
-        self.df.insert(0, "station", gid)
-        self.df['date'] = pd.to_datetime(self.df['time']).dt.date
-        self.df.to_csv(os.path.join(outdir, f'station_{gid}_{array_type}.csv'))
-
 
 class Labels:
+    """
+    This class aims to produce a image of labels from a vector file.
+
+    Attributes:
+        gdf (geodataframe) : vector layer
+
+    Methods:
+        to_raster(self, id_field, geobox, filename, outdir, crs='EPSG:3035', driver="GTiff"): 
+            Convert a geodataframe into raster while keeping a column attribute as pixel values.
+
+    Example:
+        >>> vlayer = Labels(geodataframe)
+        >>> vlayer.to_raster('id', geobox, 'output.tif', 'my_dir')
+    """
+
     def __init__(self, geolayer):
+        """
+        Initialize the attributes of `Labels`.
+
+        Args:
+            geolayer (str or geodataframe): vector layer to rasterize.
+
+        Returns:
+            Labels.gdf (geodataframe): geodataframe.
+        """
         if isinstance(geolayer, pd.core.frame.DataFrame):
             self.gdf = geolayer.copy()
         else:
             self.gdf = gpd.read_file(geolayer)
-        #self.geom = self.gdf.geometry
 
     def to_raster(self, id_field, geobox, filename, outdir, crs='EPSG:3035', driver="GTiff"):
+        """
+        Convert geodataframe into raster file.
+
+        Args:
+            id_field (str): column name to keep as pixels values.
+            geobox (odc.geo.geobox.GeoBox): geobox object.
+            filename (str): output raster filename.
+            outdir (str): output directory.
+            crs (str, optional): output crs. Defaults to "EPSG:3035".
+            driver (str, optional): output raster format (gdal standard). Defaults to "GTiff".
+        """
         shapes = ((geom, value) for geom, value in zip(self.gdf.geometry, self.gdf[id_field]))
-        rasterized = rasterize(#[(self.geom.iloc[0], 255)],
-                               shapes, 
+        rasterized = rasterize(shapes, 
                                out_shape=(geobox.height, geobox.width),
                                transform=geobox.transform,
                                fill=0,
