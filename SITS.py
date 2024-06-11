@@ -221,6 +221,7 @@ class StacAttack:
 
     def __init__(self, provider='mpc',
                        collection='sentinel-2-l2a',
+                       key_sat='s2',
                        bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
                 ):
         """
@@ -235,10 +236,12 @@ class StacAttack:
         """
         self.prov_stac = {'mpc':{'stac': 'https://planetarycomputer.microsoft.com/api/stac/v1',
                                  'coll': collection,
+                                 'key_sat':key_sat,
                                  'modifier': pc.sign_inplace,
                                  'patch_url': pc.sign},
                           'aws':{'stac': 'https://earth-search.aws.element84.com/v1/',
                                  'coll': collection,
+                                 'key_sat':key_sat,
                                  'modifier': None,
                                  'patch_url': None}
                          }
@@ -297,7 +300,7 @@ class StacAttack:
         Load patches with predefined pixels dimensions (x, y)
 
         Args:
-            bbox (list): coordinates of bounding box.
+            bbox (list): coordinates of bounding box in the output crs.
             dimx (int, optional): number of pixels in columns. Defaults to 5.
             dimy (int, optional): number of pixels in rows. Defaults to 5.
             resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
@@ -316,7 +319,7 @@ class StacAttack:
         Load time-series images with dimensions that fit with bounding box.
 
         Args:
-            bbox (list): coordinates of bounding box.
+            bbox (list): coordinates of bounding box in the output crs.
             resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
             crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
 
