@@ -1,12 +1,13 @@
 import os
 import pandas as pd
+from datetime import datetime
 # STAC API
 from pystac_client import Client
 import planetary_computer as pc
 # ODC tools
 import odc
 from odc.geo.geobox import GeoBox
-from odc.stac import stac_load
+from odc.stac import load #, stac_load
 # Geospatial librairies
 import geopandas as gpd
 import rasterio
@@ -260,17 +261,26 @@ class StacAttack:
         Returns:
             arr (xarray.Dataset): xarray dataset of satellite time-series.
         """
-        arr = stac_load(self.items,
-                        bands=self.bands,
-                        groupby="solar_day",
-                        chunks={"x": self.stac_conf['chunks_size'], 
-                                "y": self.stac_conf['chunks_size']},
-                        patch_url=self.stac['patch_url'],
-                        dtype=self.stac_conf['dtype'],
-                        nodata=self.stac_conf['nodata'],
-                        geobox=geobox
-                        )
+        arr = load(self.items,
+                   bands=self.bands,
+                   groupby="solar_day",
+                   chunks={"x": self.stac_conf['chunks_size'], 
+                           "y": self.stac_conf['chunks_size']},
+                   patch_url=self.stac['patch_url'],
+                   dtype=self.stac_conf['dtype'],
+                   nodata=self.stac_conf['nodata'],
+                   geobox=geobox
+                  )
+
         return arr
+
+    def __getItemsProperties(self):
+        self.items_prop = pd.DataFrame(self.items[0].properties)
+        for it in self.items[1:]:
+            new_df = pd.DataFrame(it.properties)
+            self.items_prop = pd.concat([self.items_prop, new_df], ignore_index=True)
+        self.items_prop['date'] = (self.items_prop['datetime']).apply(
+            lambda x: int(datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()*1e9))
 
     def searchItems(self, bbox_latlon, date_start='2023-01', date_end='2023-12', **kwargs):
         """
@@ -294,6 +304,7 @@ class StacAttack:
                                     **kwargs
                                    )
         self.items = list(query.items())
+        self.__getItemsProperties()
 
     def loadPatches(self, bbox, dimx=5, dimy=5, resolution=10, crs_out=3035):
         """
