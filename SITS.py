@@ -275,6 +275,12 @@ class StacAttack:
         return arr
 
     def __getItemsProperties(self):
+        """
+        Get item properties
+
+        Returns:
+            StacAttack.items_prop (dataframe): dataframe of image properties
+        """
         self.items_prop = pd.DataFrame(self.items[0].properties)
         for it in self.items[1:]:
             new_df = pd.DataFrame(it.properties)
@@ -282,7 +288,7 @@ class StacAttack:
         self.items_prop['date'] = (self.items_prop['datetime']).apply(
             lambda x: int(datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()*1e9))
 
-    def searchItems(self, bbox_latlon, date_start='2023-01', date_end='2023-12', **kwargs):
+    def searchItems(self, bbox_latlon, date_start=datetime(2023, 1, 1), date_end=datetime(2023, 12, 31), **kwargs):
         """
         Get list of stac collection's items.
 
@@ -297,7 +303,7 @@ class StacAttack:
         """
         self.startdate = date_start
         self.enddate = date_end
-        time_range = "{}/{}".format(self.startdate, self.enddate)
+        time_range = [self.startdate, self.enddate]
         query = self.catalog.search(collections=[self.stac['coll']],
                                     datetime=time_range,
                                     bbox=bbox_latlon,
