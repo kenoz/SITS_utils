@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 from datetime import datetime
 # STAC API
 from pystac_client import Client
@@ -311,6 +312,29 @@ class StacAttack:
                                    )
         self.items = list(query.items())
         self.__getItemsProperties()
+
+    def checkS2shift(self, shift_value=1):
+        """
+        to fill
+        """
+        self.items_prop['shift'] = np.where(
+            (self.items_prop[f'{self.stac["key_sat"]}:processing_baseline'].astype(float) >= 4.),
+            shift_value,
+            0)
+
+        self.fixdate = self.items_prop[self.items_prop['shift']==shift_value]['date'].tolist()
+        self.fixdate = [datetime.fromtimestamp(date_unix/1e9) for date_unix in self.fixdate]
+
+    def fixS2shift(self, shiftval=-1000):
+        """
+        to fill
+        """
+        def operation(val):
+            return val + shiftval
+
+        for var_name in self.image.data_vars:
+            self.image[var_name].loc[{'time': self.fixdate}] = operation(self.image[var_name].loc[{'time': self.fixdate}])
+
 
     def loadPatches(self, bbox, dimx=5, dimy=5, resolution=10, crs_out=3035):
         """
