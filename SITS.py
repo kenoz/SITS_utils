@@ -8,7 +8,7 @@ import planetary_computer as pc
 # ODC tools
 import odc
 from odc.geo.geobox import GeoBox
-from odc.stac import load #, stac_load
+from odc.stac import load
 # Geospatial librairies
 import geopandas as gpd
 import rasterio
@@ -313,7 +313,7 @@ class StacAttack:
         self.items = list(query.items())
         self.__getItemsProperties()
 
-    def checkS2shift(self, shift_value=1):
+    def __checkS2shift(self, shift_value=1):
         """
         to fill
         """
@@ -325,13 +325,22 @@ class StacAttack:
         self.fixdate = self.items_prop[self.items_prop['shift']==shift_value]['date'].tolist()
         self.fixdate = [datetime.fromtimestamp(date_unix/1e9) for date_unix in self.fixdate]
 
-    def fixS2shift(self, shiftval=-1000):
+    def fixS2shift(self, shiftval=-1000, minval=1, **kwargs):
         """
-        to fill
+        Fix Sentinel-2 radiometric offset applied since the ESA Processing Baseline 04.00. 
+        For more information: https://sentinels.copernicus.eu/web/sentinel/-/copernicus-sentinel-2-major-products-upgrade-upcoming
+
+        Args:
+            shiftval (int): radiometric offset value. Defaults to -1000.
+            minval (int): minimum radiometric value. Deafeults to 1.
+            **kwargs: other arguments
+
+        Returns: StacAttack.image with corrected radiometric values.
         """
         def operation(val):
-            return val + shiftval
+            return np.maximum(minval, val + shiftval)
 
+        self.__checkS2shift()
         for var_name in self.image.data_vars:
             self.image[var_name].loc[{'time': self.fixdate}] = operation(self.image[var_name].loc[{'time': self.fixdate}])
 
