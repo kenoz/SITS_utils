@@ -396,7 +396,7 @@ class StacAttack:
         df = array_trans.to_dataframe()
         return df
 
-    def to_csv(self, outdir, gid=None, array_type='image'):
+    def to_csv(self, outdir, gid=None, array_type='image', id_point='station_id'):
         """
         Convert xarray dataset into csv file.
 
@@ -409,6 +409,7 @@ class StacAttack:
         df = self.__to_df(array_type)
         df = df.reset_index()
         df['ID'] = df.index
+        df[id_point] = gid
         if gid is not None:
             df.to_csv(os.path.join(outdir, f'id_{gid}_{array_type}.csv'))
         else:
