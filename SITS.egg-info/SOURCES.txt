@@ -1,0 +1,6 @@
+LICENSE
+setup.py
+SITS.egg-info/PKG-INFO
+SITS.egg-info/SOURCES.txt
+SITS.egg-info/dependency_links.txt
+SITS.egg-info/top_level.txt
