@@ -13,7 +13,10 @@ author = 'Kenji Ose'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = ['sphinx.ext.autodoc',        # Core library for html generation from docstrings
+              'sphinx.ext.autosummary',
+             ]
+autosummary_generate = True
 
 templates_path = ['_templates']
 exclude_patterns = []
