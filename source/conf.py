@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'SITS_doc'
+project = 'SITS package'
 copyright = '2024, Kenji Ose'
 author = 'Kenji Ose'
 
