@@ -9,7 +9,9 @@ Welcome to SITS package's documentation!
 .. autosummary::
    :toctree: _autosummary
    :template: custom-module-template.rst
-   :recursive: sits
+   :recursive: 
+   
+   sits
 
 
 Indices and tables
