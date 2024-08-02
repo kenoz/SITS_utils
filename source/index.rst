@@ -11,7 +11,7 @@ Welcome to SITS package's documentation!
    :template: custom-module-template.rst
    :recursive: 
    
-   sits
+   sits.def_geobox
 
 
 Indices and tables
