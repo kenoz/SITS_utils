@@ -8,7 +8,7 @@ Welcome to SITS package's documentation!
 
 .. autosummary::
    :toctree: _autosummary
-   :template: custom-module-template.rst
+   :template: _templates/custom-module-template.rst
    :recursive: 
    
    sits
