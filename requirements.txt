@@ -3,7 +3,8 @@ numpy
 datetime
 pystac_client
 planetary_computer
-odc
+odc-stac
+odc-geo
 geopandas
 rasterio
 shapely
