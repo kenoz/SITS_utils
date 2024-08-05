@@ -1,0 +1,9 @@
+pandas
+numpy
+datetime
+pystac_client
+planetary_computer
+odc
+geopandas
+rasterio
+shapely

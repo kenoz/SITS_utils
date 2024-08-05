@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sits package &mdash; sits 0.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="examples.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            sits
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">sits package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-csv2gdf-class">The Csv2gdf class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#SITS.Csv2gdf"><code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Csv2gdf.crs_in"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.crs_in</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Csv2gdf.table"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.table</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Csv2gdf.set_gdf"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.set_gdf()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Csv2gdf.set_buffer"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.set_buffer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Csv2gdf.set_bbox"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.set_bbox()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Csv2gdf.to_vector"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.to_vector()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Csv2gdf.del_rows"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.del_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Csv2gdf.__create_bounding_box"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.__create_bounding_box()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.del_rows()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.set_bbox()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.set_buffer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.set_gdf()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.to_vector()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-stacattack-class">The StacAttack class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#SITS.StacAttack"><code class="docutils literal notranslate"><span class="pre">StacAttack</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.prov_stac"><code class="docutils literal notranslate"><span class="pre">StacAttack.prov_stac</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.stac"><code class="docutils literal notranslate"><span class="pre">StacAttack.stac</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.catalog"><code class="docutils literal notranslate"><span class="pre">StacAttack.catalog</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.bands"><code class="docutils literal notranslate"><span class="pre">StacAttack.bands</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.stac_conf"><code class="docutils literal notranslate"><span class="pre">StacAttack.stac_conf</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.__items_to_array"><code class="docutils literal notranslate"><span class="pre">StacAttack.__items_to_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.__to_df"><code class="docutils literal notranslate"><span class="pre">StacAttack.__to_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.searchItems"><code class="docutils literal notranslate"><span class="pre">StacAttack.searchItems()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.loadPatches"><code class="docutils literal notranslate"><span class="pre">StacAttack.loadPatches()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.loadImgs"><code class="docutils literal notranslate"><span class="pre">StacAttack.loadImgs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.to_csv"><code class="docutils literal notranslate"><span class="pre">StacAttack.to_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.to_nc"><code class="docutils literal notranslate"><span class="pre">StacAttack.to_nc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.fixS2shift"><code class="docutils literal notranslate"><span class="pre">StacAttack.fixS2shift()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">StacAttack.loadImgs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">StacAttack.loadPatches()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id7"><code class="docutils literal notranslate"><span class="pre">StacAttack.searchItems()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8"><code class="docutils literal notranslate"><span class="pre">StacAttack.to_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id9"><code class="docutils literal notranslate"><span class="pre">StacAttack.to_nc()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-labels-class">The Labels class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#SITS.Labels"><code class="docutils literal notranslate"><span class="pre">Labels</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Labels.gdf"><code class="docutils literal notranslate"><span class="pre">Labels.gdf</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Labels.to_raster"><code class="docutils literal notranslate"><span class="pre">Labels.to_raster()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">sits</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">sits package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/sits.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="sits-package">
+<h1>sits package<a class="headerlink" href="#sits-package" title="Link to this heading"></a></h1>
+<section id="the-csv2gdf-class">
+<h2>The Csv2gdf class<a class="headerlink" href="#the-csv2gdf-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="SITS.Csv2gdf">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SITS.</span></span><span class="sig-name descname"><span class="pre">Csv2gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'no_id'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Csv2gdf" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class aims to load csv tables with geographic coordinates into GeoDataFrame object.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.Csv2gdf.crs_in">
+<span class="sig-name descname"><span class="pre">crs_in</span></span><a class="headerlink" href="#SITS.Csv2gdf.crs_in" title="Link to this definition"></a></dt>
+<dd><p>CRS of coordinates described in the csv table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.Csv2gdf.table">
+<span class="sig-name descname"><span class="pre">table</span></span><a class="headerlink" href="#SITS.Csv2gdf.table" title="Link to this definition"></a></dt>
+<dd><p>DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Csv2gdf.set_gdf">
+<span class="sig-name descname"><span class="pre">set_gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Csv2gdf.set_gdf" title="Link to this definition"></a></dt>
+<dd><p>import csv file as <cite>geopandas.GeoDataFrame</cite>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Csv2gdf.set_buffer">
+<span class="sig-name descname"><span class="pre">set_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Csv2gdf.set_buffer" title="Link to this definition"></a></dt>
+<dd><p>return buffer geometries for each point.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Csv2gdf.set_bbox">
+<span class="sig-name descname"><span class="pre">set_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Csv2gdf.set_bbox" title="Link to this definition"></a></dt>
+<dd><p>return bounding boxes for each geometry.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Csv2gdf.to_vector">
+<span class="sig-name descname"><span class="pre">to_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GeoJSON'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Csv2gdf.to_vector" title="Link to this definition"></a></dt>
+<dd><p>write GeoDataFrame as vector file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Csv2gdf.del_rows">
+<span class="sig-name descname"><span class="pre">del_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Csv2gdf.del_rows" title="Link to this definition"></a></dt>
+<dd><p>remove GeoDataFrame rows.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Csv2gdf.__create_bounding_box">
+<span class="sig-name descname"><span class="pre">__create_bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Csv2gdf.__create_bounding_box" title="Link to this definition"></a></dt>
+<dd><p>return bounding box coordinates.</p>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span> <span class="o">=</span> <span class="n">Csv2gdf</span><span class="p">(</span><span class="n">csv_file</span><span class="p">,</span> <span class="s1">&#39;longitude&#39;</span><span class="p">,</span> <span class="s1">&#39;latitude&#39;</span><span class="p">,</span> <span class="mi">3035</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">set_gdf</span><span class="p">(</span><span class="mi">3035</span><span class="p">,</span> <span class="s1">&#39;output/table.geojson&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">del_rows</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Drop rows from Csv2gdf.table according to a column’s values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>col_name</strong> (<em>str</em>) – column name.</p></li>
+<li><p><strong>rows_values</strong> (<em>list</em>) – list of values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">set_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><p>Calculate the bounding box of a Csv2gdf GeoDataFrame object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_attr</strong> (<em>str</em>) – GeoDataFrame attribute of class <cite>Csv2gdf</cite>.
+Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – ouput filepath. Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeoDataFrame object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Csv2gdf.bbox (GeoDataFrame)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">set_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Calculate buffer geometries of a Csv2gdf GeoDataFrame object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_attr</strong> (<em>str</em>) – GeoDataFrame attribute of class <cite>Csv2gdf</cite>.
+Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
+<li><p><strong>radius</strong> (<em>float</em>) – buffer distance in CRS unit.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – ouput filepath. Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeoDataFrame object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Csv2gdf.buffer (GeoDataFrame)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">set_gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crs_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd><p>Convert the <cite>Csv2gdf</cite> attribute <cite>table</cite> (DataFrame) into GeoDataFrame object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>crs_out</strong> (<em>int</em>) – output CRS of GeoDataFrame.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeoDataFrame object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Csv2gdf.gdf (GeoDataFrame)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">to_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GeoJSON'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd><p>Write a Csv2gdf GeoDataFrame object as a vector file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_attr</strong> (<em>str</em>) – GeoDataFrame attribute of class <cite>Csv2gdf</cite>.
+Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – . Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>driver</strong> (<em>str</em><em>, </em><em>optional</em>) – . Defaults to “GeoJSON”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-stacattack-class">
+<h2>The StacAttack class<a class="headerlink" href="#the-stacattack-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="SITS.StacAttack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SITS.</span></span><span class="sig-name descname"><span class="pre">StacAttack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">provider</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sentinel-2-l2a'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_sat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bands</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['B02',</span> <span class="pre">'B03',</span> <span class="pre">'B04',</span> <span class="pre">'B05',</span> <span class="pre">'B06',</span> <span class="pre">'B07',</span> <span class="pre">'B08',</span> <span class="pre">'B8A',</span> <span class="pre">'B11',</span> <span class="pre">'B12',</span> <span class="pre">'SCL']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class aims to request time-series on STAC catalog and store it as image or csv files.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.StacAttack.prov_stac">
+<span class="sig-name descname"><span class="pre">prov_stac</span></span><a class="headerlink" href="#SITS.StacAttack.prov_stac" title="Link to this definition"></a></dt>
+<dd><p>STAC providers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.StacAttack.stac">
+<span class="sig-name descname"><span class="pre">stac</span></span><a class="headerlink" href="#SITS.StacAttack.stac" title="Link to this definition"></a></dt>
+<dd><p>STAC providers’ parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.StacAttack.catalog">
+<span class="sig-name descname"><span class="pre">catalog</span></span><a class="headerlink" href="#SITS.StacAttack.catalog" title="Link to this definition"></a></dt>
+<dd><p>Access to STAC catalog</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pystac.Catalog</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.StacAttack.bands">
+<span class="sig-name descname"><span class="pre">bands</span></span><a class="headerlink" href="#SITS.StacAttack.bands" title="Link to this definition"></a></dt>
+<dd><p>list of satellite collection’s bands to request.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.StacAttack.stac_conf">
+<span class="sig-name descname"><span class="pre">stac_conf</span></span><a class="headerlink" href="#SITS.StacAttack.stac_conf" title="Link to this definition"></a></dt>
+<dd><p>parameters for building datacube (xArray) from STAC items.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.StacAttack.__items_to_array">
+<span class="sig-name descname"><span class="pre">__items_to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack.__items_to_array" title="Link to this definition"></a></dt>
+<dd><p>convert stac items into xarray dataset.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.StacAttack.__to_df">
+<span class="sig-name descname"><span class="pre">__to_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack.__to_df" title="Link to this definition"></a></dt>
+<dd><p>convert xarray dataset into pandas dataframe.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.StacAttack.searchItems">
+<span class="sig-name descname"><span class="pre">searchItems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox_latlon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2023-01'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2023-12'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack.searchItems" title="Link to this definition"></a></dt>
+<dd><p>search items into a stac collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.StacAttack.loadPatches">
+<span class="sig-name descname"><span class="pre">loadPatches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3035</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack.loadPatches" title="Link to this definition"></a></dt>
+<dd><p>extract xarray dataset according to predefined height and width dimensions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.StacAttack.loadImgs">
+<span class="sig-name descname"><span class="pre">loadImgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3035</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack.loadImgs" title="Link to this definition"></a></dt>
+<dd><p>extract xarray dataset according to the feature’s bounding box.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.StacAttack.to_csv">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'image'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack.to_csv" title="Link to this definition"></a></dt>
+<dd><p>export xarray dataset into csv file.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.StacAttack.to_nc">
+<span class="sig-name descname"><span class="pre">to_nc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack.to_nc" title="Link to this definition"></a></dt>
+<dd><p>export xarray dataset into netcdf file.</p>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stacObj</span> <span class="o">=</span> <span class="n">StacAttack</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stacObj</span><span class="o">.</span><span class="n">searchItems</span><span class="p">(</span><span class="n">aoi_bounds_4326</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stacObj</span><span class="o">.</span><span class="n">loadPatches</span><span class="p">(</span><span class="n">aoi_bounds</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.StacAttack.fixS2shift">
+<span class="sig-name descname"><span class="pre">fixS2shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shiftval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack.fixS2shift" title="Link to this definition"></a></dt>
+<dd><p>Fix Sentinel-2 radiometric offset applied since the ESA Processing Baseline 04.00.
+For more information: <a class="reference external" href="https://sentinels.copernicus.eu/web/sentinel/-/copernicus-sentinel-2-major-products-upgrade-upcoming">https://sentinels.copernicus.eu/web/sentinel/-/copernicus-sentinel-2-major-products-upgrade-upcoming</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shiftval</strong> (<em>int</em>) – radiometric offset value. Defaults to -1000.</p></li>
+<li><p><strong>minval</strong> (<em>int</em>) – minimum radiometric value. Deafeults to 1.</p></li>
+<li><p><strong>**kwargs</strong> – other arguments</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: StacAttack.image with corrected radiometric values.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">loadImgs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3035</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd><p>Load time-series images with dimensions that fit with bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bbox</strong> (<em>list</em>) – coordinates of bounding box in the output crs.</p></li>
+<li><p><strong>resolution</strong> (<em>float</em><em>, </em><em>optional</em>) – spatial resolution (in crs unit). Defaults to 10.</p></li>
+<li><p><strong>crs_out</strong> (<em>int</em><em>, </em><em>optional</em>) – CRS of output coordinates. Defaults to 3035.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>geobox object.
+StacAttack.image (xarray.Dataset): time-series image.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StacAttack.geobox (odc.geo.geobox.GeoBox)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">loadPatches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3035</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd><p>Load patches with predefined pixels dimensions (x, y)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bbox</strong> (<em>list</em>) – coordinates of bounding box in the output crs.</p></li>
+<li><p><strong>dimx</strong> (<em>int</em><em>, </em><em>optional</em>) – number of pixels in columns. Defaults to 5.</p></li>
+<li><p><strong>dimy</strong> (<em>int</em><em>, </em><em>optional</em>) – number of pixels in rows. Defaults to 5.</p></li>
+<li><p><strong>resolution</strong> (<em>float</em><em>, </em><em>optional</em>) – spatial resolution (in crs unit). Defaults to 10.</p></li>
+<li><p><strong>crs_out</strong> (<em>int</em><em>, </em><em>optional</em>) – CRS of output coordinates. Defaults to 3035.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>geobox object.
+StacAttack.patch (xarray.Dataset): time-series patch.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StacAttack.geobox (odc.geo.geobox.GeoBox)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">searchItems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbox_latlon</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2023,</span> <span class="pre">1,</span> <span class="pre">1,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2023,</span> <span class="pre">12,</span> <span class="pre">31,</span> <span class="pre">0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id7" title="Link to this definition"></a></dt>
+<dd><p>Get list of stac collection’s items.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bbox_latlon</strong> (<em>list</em>) – coordinates of bounding box.</p></li>
+<li><p><strong>date_start</strong> (<em>str</em><em>, </em><em>optional</em>) – start date. Defaults to ‘2023-01’.</p></li>
+<li><p><strong>date_end</strong> (<em>str</em><em>, </em><em>optional</em>) – end date. Defaults to ‘2023-12’.</p></li>
+<li><p><strong>**kwargs</strong> – others stac compliant arguments.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of stac collection items.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>StacAttack.items (pystac.ItemCollection)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">to_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'image'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'station_id'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id8" title="Link to this definition"></a></dt>
+<dd><p>Convert xarray dataset into csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outdir</strong> (<em>str</em>) – output directory.</p></li>
+<li><p><strong>gid</strong> (<em>str</em><em>, </em><em>optional</em>) – column name of ID. Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>array_type</strong> (<em>str</em><em>, </em><em>optional</em>) – xarray dataset name. Defaults to ‘image’.
+Can be one of the following: ‘patch’, ‘image’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">to_nc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'image'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#id9" title="Link to this definition"></a></dt>
+<dd><p>Convert xarray dataset into netcdf file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>outdir</strong> (<em>str</em>) – output directory.</p></li>
+<li><p><strong>gid</strong> (<em>str</em><em>, </em><em>optional</em>) – column name of ID. Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>array_type</strong> (<em>str</em><em>, </em><em>optional</em>) – xarray dataset name. Defaults to ‘image’.
+Can be one of the following: ‘patch’, ‘image’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-labels-class">
+<h2>The Labels class<a class="headerlink" href="#the-labels-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="SITS.Labels">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SITS.</span></span><span class="sig-name descname"><span class="pre">Labels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geolayer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Labels" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class aims to produce a image of labels from a vector file.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.Labels.gdf">
+<span class="sig-name descname"><span class="pre">gdf</span></span><a class="headerlink" href="#SITS.Labels.gdf" title="Link to this definition"></a></dt>
+<dd><p>vector layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>geodataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">to_raster(self,</span> <span class="pre">id_field,</span> <span class="pre">geobox,</span> <span class="pre">filename,</span> <span class="pre">outdir,</span> <span class="pre">crs='EPSG</span></span></dt>
+<dd><p>3035’, driver=”GTiff”):
+Convert a geodataframe into raster while keeping a column attribute as pixel values.</p>
+</dd></dl>
+
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">vlayer</span> <span class="o">=</span> <span class="n">Labels</span><span class="p">(</span><span class="n">geodataframe</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vlayer</span><span class="o">.</span><span class="n">to_raster</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">geobox</span><span class="p">,</span> <span class="s1">&#39;output.tif&#39;</span><span class="p">,</span> <span class="s1">&#39;my_dir&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Labels.to_raster">
+<span class="sig-name descname"><span class="pre">to_raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">id_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geobox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outdir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'EPSG:3035'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GTiff'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Labels.to_raster" title="Link to this definition"></a></dt>
+<dd><p>Convert geodataframe into raster file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id_field</strong> (<em>str</em>) – column name to keep as pixels values.</p></li>
+<li><p><strong>geobox</strong> (<em>odc.geo.geobox.GeoBox</em>) – geobox object.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – output raster filename.</p></li>
+<li><p><strong>outdir</strong> (<em>str</em>) – output directory.</p></li>
+<li><p><strong>crs</strong> (<em>str</em><em>, </em><em>optional</em>) – output crs. Defaults to “EPSG:3035”.</p></li>
+<li><p><strong>driver</strong> (<em>str</em><em>, </em><em>optional</em>) – output raster format (gdal standard). Defaults to “GTiff”.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="&lt;no title&gt;" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Kenji Ose.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
