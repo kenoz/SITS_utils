@@ -8,3 +8,4 @@ odc-geo
 geopandas
 rasterio
 shapely
+sphinx-rtd-theme
