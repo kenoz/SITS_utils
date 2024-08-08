@@ -95,7 +95,7 @@ class Csv2gdf:
             outfile (str, optional): Defaults to `None`.
 
         Returns:
-            GeoDataFrame: GeoDataFrame object (`Csv2gdf.gdf`).
+            GeoDataFrame: GeoDataFrame object ``Csv2gdf.gdf``.
         """
 
         self.gdf = gpd.GeoDataFrame(self.table,
@@ -116,7 +116,7 @@ class Csv2gdf:
             outfile (str, optional): ouput filepath. Defaults to `None`.
 
         Returns:
-            GeoDataFrame: GeoDataFrame object (``Csv2gdf.buffer``).
+            GeoDataFrame: GeoDataFrame object ``Csv2gdf.buffer``.
         """
 
         df = getattr(self, df_attr)
@@ -128,12 +128,12 @@ class Csv2gdf:
         Calculate the bounding box of a Csv2gdf GeoDataFrame object.
 
         Args:
-            df_attr (str): GeoDataFrame attribute of class `Csv2gdf`.
+            df_attr (str): GeoDataFrame attribute of class ``Csv2gdf``.
                 Can be one of the following: 'gdf', 'buffer', 'bbox'.
             outfile (str, optional): ouput filepath. Defaults to `None`.
 
         Returns:
-            GeoDataFrame: GeoDataFrame object (Csv2gdf.bbox).
+            GeoDataFrame: GeoDataFrame object ``Csv2gdf.bbox``.
         """
 
         df = getattr(self, df_attr)
@@ -145,7 +145,7 @@ class Csv2gdf:
         Write a Csv2gdf GeoDataFrame object as a vector file.
 
         Args:
-            df_attr (str): GeoDataFrame attribute of class `Csv2gdf`.
+            df_attr (str): GeoDataFrame attribute of class ``Csv2gdf``.
                 Can be one of the following: 'gdf', 'buffer', 'bbox'.
             outfile (str, optional): . Defaults to `None`.
             driver (str, optional): . Defaults to "GeoJSON".
@@ -263,7 +263,7 @@ class StacAttack:
         Get item properties
 
         Returns:
-            DataFrame: dataframe of image properties (StacAttack.items_prop).
+            DataFrame: dataframe of image properties ``StacAttack.items_prop``.
         """
         self.items_prop = pd.DataFrame(self.items[0].properties)
         for it in self.items[1:]:
@@ -283,7 +283,7 @@ class StacAttack:
             **kwargs: others stac compliant arguments.
 
         Returns:
-            pystac.ItemCollection: list of stac collection items (StacAttack.items).
+            pystac.ItemCollection: list of stac collection items ``StacAttack.items``.
         """
         self.startdate = date_start
         self.enddate = date_end
@@ -315,10 +315,10 @@ class StacAttack:
 
         Args:
             shiftval (int): radiometric offset value. Defaults to -1000.
-            minval (int): minimum radiometric value. Deafeults to 1.
+            minval (int): minimum radiometric value. Defaults to 1.
             **kwargs: other arguments
 
-        Returns: StacAttack.image with corrected radiometric values.
+        Returns: ``StacAttack.image`` with corrected radiometric values.
         """
         def operation(val):
             return np.maximum(minval, val + shiftval)
@@ -340,8 +340,8 @@ class StacAttack:
             crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
 
         Returns:
-            odc.geo.geobox.GeoBox: geobox object (StacAttack.geobox).
-            xarray.Dataset: time-series patch (StacAttack.patch).
+            odc.geo.geobox.GeoBox: geobox object ``StacAttack.geobox``.
+            xarray.Dataset: time-series patch ``StacAttack.patch``.
         """
         shape = (dimx, dimy)
         self.geobox = def_geobox(bbox, crs_out, resolution, shape)
@@ -357,8 +357,8 @@ class StacAttack:
             crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
 
         Returns:
-            odc.geo.geobox.GeoBox): geobox object (StacAttack.geobox).
-            xarray.Dataset: time-series image (StacAttack.image).
+            odc.geo.geobox.GeoBox: geobox object ``StacAttack.geobox``.
+            xarray.Dataset: time-series image ``StacAttack.image``.
         """
         self.geobox = def_geobox(bbox, crs_out, resolution)
         self.image = self.__items_to_array(self.geobox)
@@ -432,7 +432,7 @@ class Labels:
             geolayer (str or geodataframe): vector layer to rasterize.
 
         Returns:
-            GeoDataFrame: geodataframe (Labels.gdf).
+            GeoDataFrame: geodataframe ``Labels.gdf``.
         """
         if isinstance(geolayer, pd.core.frame.DataFrame):
             self.gdf = geolayer.copy()
