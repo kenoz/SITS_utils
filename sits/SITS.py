@@ -95,7 +95,7 @@ class Csv2gdf:
             outfile (str, optional): Defaults to `None`.
 
         Returns:
-            Csv2gdf.gdf (GeoDataFrame): GeoDataFrame object.
+            GeoDataFrame: GeoDataFrame object (Csv2gdf.gdf).
         """
 
         self.gdf = gpd.GeoDataFrame(self.table,
@@ -116,7 +116,7 @@ class Csv2gdf:
             outfile (str, optional): ouput filepath. Defaults to `None`.
 
         Returns:
-            Csv2gdf.buffer (GeoDataFrame): GeoDataFrame object.
+            GeoDataFrame: GeoDataFrame object (Csv2gdf.buffer).
         """
 
         df = getattr(self, df_attr)
@@ -133,7 +133,7 @@ class Csv2gdf:
             outfile (str, optional): ouput filepath. Defaults to `None`.
 
         Returns:
-            Csv2gdf.bbox (GeoDataFrame): GeoDataFrame object.
+            GeoDataFrame: GeoDataFrame object (Csv2gdf.bbox).
         """
 
         df = getattr(self, df_attr)
@@ -180,7 +180,7 @@ class Csv2gdf:
             row (GeoSeries): GeoDataFrame's row.
 
         Returns:
-            box (shapely.geometry.box): bbox.
+            shapely.geometry.box: bbox.
         """
 
         xmin, ymin, xmax, ymax = row.geometry.bounds
@@ -243,7 +243,7 @@ class StacAttack:
             geobox (odc.geo.geobox.GeoBox): odc geobox that specifies bbox, crs, spatial res. and dimensions.
 
         Returns:
-            arr (xarray.Dataset): xarray dataset of satellite time-series.
+            xarray.Dataset: xarray dataset of satellite time-series.
         """
         arr = load(self.items,
                    bands=self.bands,
@@ -263,7 +263,7 @@ class StacAttack:
         Get item properties
 
         Returns:
-            StacAttack.items_prop (dataframe): dataframe of image properties
+            DataFrame: dataframe of image properties (StacAttack.items_prop).
         """
         self.items_prop = pd.DataFrame(self.items[0].properties)
         for it in self.items[1:]:
@@ -283,7 +283,7 @@ class StacAttack:
             **kwargs: others stac compliant arguments.
 
         Returns:
-            StacAttack.items (pystac.ItemCollection): list of stac collection items.
+            pystac.ItemCollection: list of stac collection items (StacAttack.items).
         """
         self.startdate = date_start
         self.enddate = date_end
@@ -340,8 +340,8 @@ class StacAttack:
             crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
 
         Returns:
-            StacAttack.geobox (odc.geo.geobox.GeoBox): geobox object.
-            StacAttack.patch (xarray.Dataset): time-series patch.
+            odc.geo.geobox.GeoBox: geobox object (StacAttack.geobox).
+            xarray.Dataset: time-series patch (StacAttack.patch).
         """
         shape = (dimx, dimy)
         self.geobox = def_geobox(bbox, crs_out, resolution, shape)
@@ -357,8 +357,8 @@ class StacAttack:
             crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
 
         Returns:
-            StacAttack.geobox (odc.geo.geobox.GeoBox): geobox object.
-            StacAttack.image (xarray.Dataset): time-series image.
+            odc.geo.geobox.GeoBox): geobox object (StacAttack.geobox).
+            xarray.Dataset: time-series image (StacAttack.image).
         """
         self.geobox = def_geobox(bbox, crs_out, resolution)
         self.image = self.__items_to_array(self.geobox)
@@ -372,7 +372,7 @@ class StacAttack:
                 Can be one of the following: 'patch', 'image'.
 
         Returns:
-            df (dataframe): pandas dataframe object.
+            DataFrame: pandas dataframe object (df).
         """
         e_array = getattr(self, array_type)
         array_trans = e_array.transpose('time', 'y', 'x')
@@ -419,10 +419,6 @@ class Labels:
     Attributes:
         gdf (geodataframe) : vector layer
 
-    Methods:
-        to_raster(self, id_field, geobox, filename, outdir, crs='EPSG:3035', driver="GTiff"): 
-            Convert a geodataframe into raster while keeping a column attribute as pixel values.
-
     Example:
         >>> vlayer = Labels(geodataframe)
         >>> vlayer.to_raster('id', geobox, 'output.tif', 'my_dir')
@@ -436,7 +432,7 @@ class Labels:
             geolayer (str or geodataframe): vector layer to rasterize.
 
         Returns:
-            Labels.gdf (geodataframe): geodataframe.
+            GeoDataFrame: geodataframe (Labels.gdf).
         """
         if isinstance(geolayer, pd.core.frame.DataFrame):
             self.gdf = geolayer.copy()
@@ -445,7 +441,7 @@ class Labels:
 
     def to_raster(self, id_field, geobox, filename, outdir, crs='EPSG:3035', driver="GTiff"):
         """
-        Convert geodataframe into raster file.
+        Convert geodataframe into raster file while keeping a column attribute as pixel values.
 
         Args:
             id_field (str): column name to keep as pixels values.
