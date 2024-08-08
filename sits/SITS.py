@@ -28,7 +28,7 @@ def def_geobox(bbox, crs_out, resolution, shape=None):
         shape (tuple, optional): output image size in pixels (x, y). Defaults to `None`.
 
     Returns:
-        geobox (odc.geo.geobox.GeoBox): geobox object
+        odc.geo.geobox.GeoBox: geobox object
     """
 
     crs = CRS.from_epsg(crs_out)
@@ -62,7 +62,8 @@ class Csv2gdf:
 
     Attributes:
         crs_in (int): CRS of coordinates described in the csv table.
-        table (DataFrame): DataFrame.
+        table (DataFrame): DataFrame object.
+        gdf (GeoDataFrame): GeoDataFrame object.
 
     Example:
         >>> geotable = Csv2gdf(csv_file, 'longitude', 'latitude', 3035)
@@ -77,7 +78,7 @@ class Csv2gdf:
             csv_file (str): csv filepath.
             x_name (str): name of the field describing X coordinates.
             y_name (str): name of the field describing Y coordinates.
-            crs_in (int): CRS of coordinates described in the CSV table.
+            crs_in (int): CRS of coordinates described in the csv table.
             id_name (str, optional): name of the ID field. Defaults to "no_id".
         """
         self.crs_in = crs_in
