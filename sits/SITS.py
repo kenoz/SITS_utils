@@ -64,13 +64,6 @@ class Csv2gdf:
         crs_in (int): CRS of coordinates described in the csv table.
         table (DataFrame): DataFrame.
 
-    Methods:
-        set_buffer(self, df_attr, radius, outfile=None): return buffer geometries for each point.
-        set_bbox(self, df_attr, outfile=None): return bounding boxes for each geometry.
-        to_vector(self, df_attr, outfile=None, driver="GeoJSON"): write GeoDataFrame as vector file.
-        del_rows(self, col_name, rows_values): remove GeoDataFrame rows.
-        __create_bounding_box(self, row): return bounding box coordinates.
-
     Example:
         >>> geotable = Csv2gdf(csv_file, 'longitude', 'latitude', 3035)
         >>> geotable.set_gdf(3035, 'output/table.geojson')
@@ -204,15 +197,6 @@ class StacAttack:
         catalog (pystac.Catalog): Access to STAC catalog
         bands (list): list of satellite collection's bands to request.
         stac_conf (dict): parameters for building datacube (xArray) from STAC items.
-
-    Methods:
-        __items_to_array(self): convert stac items into xarray dataset.
-        __to_df(self, array_type): convert xarray dataset into pandas dataframe.
-        searchItems(self, bbox_latlon, date_start='2023-01', date_end='2023-12', **kwargs): search items into a stac collection.
-        loadPatches(self, bbox, dimx=5, dimy=5, resolution=10, crs_out=3035): extract xarray dataset according to predefined height and width dimensions.
-        loadImgs(self, bbox, resolution=10, crs_out=3035): extract xarray dataset according to the feature's bounding box.
-        to_csv(self, outdir, gid=None, array_type='image'): export xarray dataset into csv file.
-        to_nc(self, array_type, gid, outdir): export xarray dataset into netcdf file.
 
     Example:
         >>> stacObj = StacAttack()
