@@ -65,7 +65,6 @@ class Csv2gdf:
         table (DataFrame): DataFrame.
 
     Methods:
-        set_gdf(self, crs_out, outfile=None): import csv file as `geopandas.GeoDataFrame`.
         set_buffer(self, df_attr, radius, outfile=None): return buffer geometries for each point.
         set_bbox(self, df_attr, outfile=None): return bounding boxes for each geometry.
         to_vector(self, df_attr, outfile=None, driver="GeoJSON"): write GeoDataFrame as vector file.
