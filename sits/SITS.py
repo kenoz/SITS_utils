@@ -95,7 +95,7 @@ class Csv2gdf:
             outfile (str, optional): Defaults to `None`.
 
         Returns:
-            GeoDataFrame: GeoDataFrame object (Csv2gdf.gdf).
+            GeoDataFrame: GeoDataFrame object (`Csv2gdf.gdf`).
         """
 
         self.gdf = gpd.GeoDataFrame(self.table,
@@ -116,7 +116,7 @@ class Csv2gdf:
             outfile (str, optional): ouput filepath. Defaults to `None`.
 
         Returns:
-            GeoDataFrame: GeoDataFrame object (Csv2gdf.buffer).
+            GeoDataFrame: GeoDataFrame object (``Csv2gdf.buffer``).
         """
 
         df = getattr(self, df_attr)
