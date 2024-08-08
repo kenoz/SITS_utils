@@ -66,8 +66,9 @@ class Csv2gdf:
         gdf (GeoDataFrame): GeoDataFrame object.
 
     Example:
-        >>> geotable = Csv2gdf(csv_file, 'longitude', 'latitude', 3035)
-        >>> geotable.set_gdf(3035, 'output/table.geojson')
+        >>> csv_file = 'example.csv'
+        >>> crs_in = 4326
+        >>> geotable = Csv2gdf(csv_file, 'longitude', 'latitude', crs_in)
     """
 
     def __init__(self, csv_file, x_name, y_name, crs_in, id_name='no_id'):
@@ -87,7 +88,7 @@ class Csv2gdf:
                                                 y_name: 'coord_Y',
                                                 id_name: 'gid'})
 
-    def set_gdf(self, crs_out, outfile=None):
+    def set_gdf(self, crs_out):
         """
         Convert the `Csv2gdf` attribute `table` (DataFrame) into GeoDataFrame object.
 
@@ -97,6 +98,9 @@ class Csv2gdf:
 
         Returns:
             GeoDataFrame: GeoDataFrame object ``Csv2gdf.gdf``.
+
+        Example:
+            >>> geotable.set_gdf(3035)
         """
 
         self.gdf = gpd.GeoDataFrame(self.table,
@@ -106,7 +110,7 @@ class Csv2gdf:
         self.gdf = self.gdf.set_crs(self.crs_in, allow_override=True)
         self.gdf = self.gdf.to_crs(crs_out)
 
-    def set_buffer(self, df_attr, radius, outfile=None):
+    def set_buffer(self, df_attr, radius):
         """
         Calculate buffer geometries of a Csv2gdf GeoDataFrame object.
 
@@ -118,13 +122,16 @@ class Csv2gdf:
 
         Returns:
             GeoDataFrame: GeoDataFrame object ``Csv2gdf.buffer``.
+
+        Example:
+            >>> geotable.set_buffer('gdf', 100)
         """
 
         df = getattr(self, df_attr)
         self.buffer = df.copy()
         self.buffer['geometry'] = self.buffer.geometry.buffer(radius)
 
-    def set_bbox(self, df_attr, outfile=None):
+    def set_bbox(self, df_attr):
         """
         Calculate the bounding box of a Csv2gdf GeoDataFrame object.
 
@@ -135,6 +142,9 @@ class Csv2gdf:
 
         Returns:
             GeoDataFrame: GeoDataFrame object ``Csv2gdf.bbox``.
+
+        Example:
+            >>> geotable.set_bbox('buffer')
         """
 
         df = getattr(self, df_attr)
@@ -148,8 +158,14 @@ class Csv2gdf:
         Args:
             df_attr (str): GeoDataFrame attribute of class ``Csv2gdf``.
                 Can be one of the following: 'gdf', 'buffer', 'bbox'.
-            outfile (str, optional): . Defaults to `None`.
-            driver (str, optional): . Defaults to "GeoJSON".
+            outfile (str, optional): Output path. Defaults to `None`.
+            driver (str, optional): Output vector file format (see *GDAL/OGR Vector drivers*: https://gdal.org/drivers/vector/index.html). Defaults to "GeoJSON".
+
+        Example:
+            >>> filename = 'mygeom'
+            >>> geotable.to_vector('gdf', f'output/{filename}_gdf.geojson')
+            >>> geotable.to_vector('buffer', f'output/{filename}_buffer.geojson')
+            >>> geotable.to_vector('bbox', f'output/{filename}_bbox.geojson')
         """
 
         df = getattr(self, df_attr)
@@ -201,8 +217,6 @@ class StacAttack:
 
     Example:
         >>> stacObj = StacAttack()
-        >>> stacObj.searchItems(aoi_bounds_4326)
-        >>> stacObj.loadPatches(aoi_bounds, 10, 10)
     """
 
     def __init__(self, provider='mpc',
@@ -285,6 +299,9 @@ class StacAttack:
 
         Returns:
             pystac.ItemCollection: list of stac collection items ``StacAttack.items``.
+
+        Example:
+            >>> stacObj.searchItems(aoi_bounds_4326)
         """
         self.startdate = date_start
         self.enddate = date_end
@@ -343,6 +360,9 @@ class StacAttack:
         Returns:
             odc.geo.geobox.GeoBox: geobox object ``StacAttack.geobox``.
             xarray.Dataset: time-series patch ``StacAttack.patch``.
+
+        Example:
+            >>> stacObj.loadPatches(aoi_bounds, 10, 10)
         """
         shape = (dimx, dimy)
         self.geobox = def_geobox(bbox, crs_out, resolution, shape)
