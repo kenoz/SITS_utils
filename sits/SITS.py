@@ -211,6 +211,13 @@ class StacAttack:
     Attributes:
         stac_conf (dict): parameters for building datacube (xArray) from STAC items.
 
+    Args:
+        provider (str, optional): stac provider. Defaults to 'mpc'.
+            Can be one of the following: 'mpc', 'aws'.
+        collection (str, optional): stac collection. Defaults to 'sentinel-2-l2a'.
+        bands (list, optional): name of the field describing Y coordinates.
+            Defaults to ['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
+
     Example:
         >>> stacObj = StacAttack()
     """
@@ -222,13 +229,6 @@ class StacAttack:
                 ):
         """
         Initialize the attributes of `StacAttack`.
-
-        Args:
-            provider (str, optional): stac provider. Defaults to 'mpc'.
-                Can be one of the following: 'mpc', 'aws'.
-            collection (str, optional): stac collection. Defaults to 'sentinel-2-l2a'.
-            bands (list, optional): name of the field describing Y coordinates. 
-                Defaults to ['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
         """
         self.prov_stac = {'mpc':{'stac': 'https://planetarycomputer.microsoft.com/api/stac/v1',
                                  'coll': collection,
@@ -312,7 +312,13 @@ class StacAttack:
 
     def __checkS2shift(self, shift_value=1):
         """
-        to fill
+        Check whether the Sentinel-2 images values need to be shifted according to the processing baseline version.
+
+        Args:
+            shift_value (int): number used to flag images that need to be shifted
+
+        Returns:
+            list: list of Sentinel-2 acquisition dates
         """
         self.items_prop['shift'] = np.where(
             (self.items_prop[f'{self.stac["key_sat"]}:processing_baseline'].astype(float) >= 4.),
@@ -347,7 +353,7 @@ class StacAttack:
         Load patches with predefined pixels dimensions (x, y)
 
         Args:
-            bbox (list): coordinates of bounding box in the output crs.
+            bbox (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs unit.
             dimx (int, optional): number of pixels in columns. Defaults to 5.
             dimy (int, optional): number of pixels in rows. Defaults to 5.
             resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
@@ -358,6 +364,7 @@ class StacAttack:
             xarray.Dataset: time-series patch ``StacAttack.patch``.
 
         Example:
+            >>> aoi_bounds = [0, 0, 1, 1]
             >>> stacObj.loadPatches(aoi_bounds, 10, 10)
         """
         shape = (dimx, dimy)
@@ -369,7 +376,7 @@ class StacAttack:
         Load time-series images with dimensions that fit with bounding box.
 
         Args:
-            bbox (list): coordinates of bounding box in the output crs.
+            bbox (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs unit.
             resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
             crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
 
@@ -405,6 +412,10 @@ class StacAttack:
             gid (str, optional): column name of ID. Defaults to `None`.
             array_type (str, optional): xarray dataset name. Defaults to 'image'.
                 Can be one of the following: 'patch', 'image'.
+
+        Example:
+            >>> outdir = 'output'
+            >>> stacObj.to_csv(outdir)
         """
         df = self.__to_df(array_type)
         df = df.reset_index()
@@ -424,6 +435,10 @@ class StacAttack:
             gid (str, optional): column name of ID. Defaults to `None`.
             array_type (str, optional): xarray dataset name. Defaults to 'image'.
                 Can be one of the following: 'patch', 'image'.
+
+        Example:
+            >>> outdir = 'output'
+            >>> stacObj.to_nc(outdir)
         """
         e_array = getattr(self, array_type)
         e_array.to_netcdf(f"{outdir}/S2_fid-{gid}_{array_type}_{self.startdate}-{self.enddate}.nc")
@@ -433,23 +448,23 @@ class Labels:
     """
     This class aims to produce a image of labels from a vector file.
 
-    Attributes:
-        gdf (geodataframe) : vector layer
+    Args:
+        geolayer (str or geodataframe): vector layer to rasterize.
+
+    Returns:
+        GeoDataFrame: geodataframe ``Labels.gdf``.
 
     Example:
+        >>> geodataframe = <gdf object>
         >>> vlayer = Labels(geodataframe)
-        >>> vlayer.to_raster('id', geobox, 'output.tif', 'my_dir')
+
+        >>> vector_file = 'myVector.shp'
+        >>> vlayer = Labels(vector_file)
     """
 
     def __init__(self, geolayer):
         """
         Initialize the attributes of `Labels`.
-
-        Args:
-            geolayer (str or geodataframe): vector layer to rasterize.
-
-        Returns:
-            GeoDataFrame: geodataframe ``Labels.gdf``.
         """
         if isinstance(geolayer, pd.core.frame.DataFrame):
             self.gdf = geolayer.copy()
@@ -467,6 +482,13 @@ class Labels:
             outdir (str): output directory.
             crs (str, optional): output crs. Defaults to "EPSG:3035".
             driver (str, optional): output raster format (gdal standard). Defaults to "GTiff".
+
+        Example:
+            >>> bbox = [0, 0, 1, 1]
+            >>> crs_out = 3035
+            >>> resolution = 10
+            >>> geobox = def_geobox(bbox, crs_out, resolution)
+            >>> vlayer.to_raster('id', geobox, 'output.tif', 'output')
         """
         shapes = ((geom, value) for geom, value in zip(self.gdf.geometry, self.gdf[id_field]))
         rasterized = rasterize(shapes, 

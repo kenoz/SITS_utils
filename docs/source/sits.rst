@@ -3,7 +3,7 @@ sits package
 
 The def_geobox function
 ***********************
-.. automodule:: SITS.def_geobox
+.. autofunction:: SITS.def_geobox
    :members:
    :undoc-members:
    :show-inheritance:
