@@ -63,7 +63,13 @@ class Csv2gdf:
     Attributes:
         crs_in (int): CRS of coordinates described in the csv table.
         table (DataFrame): DataFrame object.
-        gdf (GeoDataFrame): GeoDataFrame object.
+
+    Args:
+        csv_file (str): csv filepath.
+        x_name (str): name of the field describing X coordinates.
+        y_name (str): name of the field describing Y coordinates.
+        crs_in (int): CRS of coordinates described in the csv table.
+        id_name (str, optional): name of the ID field. Defaults to "no_id".
 
     Example:
         >>> csv_file = 'example.csv'
@@ -74,13 +80,6 @@ class Csv2gdf:
     def __init__(self, csv_file, x_name, y_name, crs_in, id_name='no_id'):
         """
         Initialize the attributes of `Csv2gdf`.
-
-        Args:
-            csv_file (str): csv filepath.
-            x_name (str): name of the field describing X coordinates.
-            y_name (str): name of the field describing Y coordinates.
-            crs_in (int): CRS of coordinates described in the csv table.
-            id_name (str, optional): name of the ID field. Defaults to "no_id".
         """
         self.crs_in = crs_in
         self.table = pd.read_csv(csv_file, encoding= 'unicode_escape')
@@ -90,7 +89,8 @@ class Csv2gdf:
 
     def set_gdf(self, crs_out):
         """
-        Convert the `Csv2gdf` attribute `table` (DataFrame) into GeoDataFrame object.
+        Convert the class attribute ``Csv2gdf.table`` (DataFrame) into GeoDataFrame object, 
+        in the specified output CRS projection.
 
         Args:
             crs_out (int): output CRS of GeoDataFrame.
@@ -112,10 +112,10 @@ class Csv2gdf:
 
     def set_buffer(self, df_attr, radius):
         """
-        Calculate buffer geometries of a Csv2gdf GeoDataFrame object.
+        Calculate buffer geometries of a Csv2gdf's GeoDataFrame object.
 
         Args:
-            df_attr (str): GeoDataFrame attribute of class `Csv2gdf`.
+            df_attr (str): GeoDataFrame attribute of class ``Csv2gdf``.
                 Can be one of the following: 'gdf', 'buffer', 'bbox'.
             radius (float): buffer distance in CRS unit.
             outfile (str, optional): ouput filepath. Defaults to `None`.
@@ -133,7 +133,7 @@ class Csv2gdf:
 
     def set_bbox(self, df_attr):
         """
-        Calculate the bounding box of a Csv2gdf GeoDataFrame object.
+        Calculate the bounding box of a Csv2gdf's GeoDataFrame object.
 
         Args:
             df_attr (str): GeoDataFrame attribute of class ``Csv2gdf``.
@@ -153,7 +153,7 @@ class Csv2gdf:
 
     def to_vector(self, df_attr, outfile=None, driver="GeoJSON"):
         """
-        Write a Csv2gdf GeoDataFrame object as a vector file.
+        Write a Csv2gdf's GeoDataFrame object as a vector file.
 
         Args:
             df_attr (str): GeoDataFrame attribute of class ``Csv2gdf``.
@@ -173,7 +173,7 @@ class Csv2gdf:
 
     def del_rows(self, col_name, rows_values):
         """
-        Drop rows from Csv2gdf.table according to a column's values.
+        Drop rows from ``Csv2gdf.table`` according to a column's values.
 
         Args:
             col_name (str): column name.
@@ -206,13 +206,9 @@ class Csv2gdf:
 
 class StacAttack:
     """
-    This class aims to request time-series on STAC catalog and store it as image or csv files.
+    This class aims to request time-series datasets on STAC catalog and store it as image or csv files.
 
     Attributes:
-        prov_stac (dict): STAC providers.
-        stac (dict): STAC providers' parameters.
-        catalog (pystac.Catalog): Access to STAC catalog
-        bands (list): list of satellite collection's bands to request.
         stac_conf (dict): parameters for building datacube (xArray) from STAC items.
 
     Example:
