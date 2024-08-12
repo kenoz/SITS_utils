@@ -223,7 +223,7 @@ class StacAttack:
 
     Args:
         provider (str, optional): stac provider. Defaults to 'mpc'.
-            Can be one of the following: 'mpc', 'aws'.
+            Can be one of the following: 'mpc' (Microsoft Planetary Computer), 'aws' (Amazon Web Services).
         collection (str, optional): stac collection. Defaults to 'sentinel-2-l2a'.
         bands (list, optional): name of the field describing Y coordinates.
             Defaults to ['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
