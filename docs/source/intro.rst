@@ -7,6 +7,7 @@ Motivation
 **********
 
 This Python package has been developed for those who want to extract satellite information without spending too much time to understand how to handle PyStac api and some other geospatial librairies.
+
 * The :class:`SITS.Csv2gdf` allows you to convert a csv table with coordinates into a geodataframe object.
 * The :class:`SITS.StacAttack` requests STAC catalog to extract the satellite information needed.
 
