@@ -12,7 +12,7 @@ pip install SITS
 
 ## Usage
 
-Here is a basic Python script example. For more details, read the documentation [here](sits.readthedocs.io/en/latest/index.html).
+Here is a basic Python script example. For more details, read the documentation [here](https://sits.readthedocs.io/en/latest/index.html).
 
 ```python
 import SITS
