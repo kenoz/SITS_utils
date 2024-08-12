@@ -17,18 +17,28 @@ from rasterio.features import rasterize
 from shapely.geometry import box
 
 
-def def_geobox(bbox, crs_out, resolution, shape=None):
+def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
     """
     This function creates an odc geobox.
 
     Args:
-        bbox (list): coordinates of a bounding box.
-        crs_out (str): CRS of output coordinates.
-        resolution (float): output spatial resolution.
+        bbox (list): coordinates of a bounding box in CRS units.
+        crs_out (str, optional): CRS (EPSG code) of output coordinates. Defaults to 3035.
+        resolution (float, optional): output spatial resolution in CRS units. Defaults to 10 (meters).
         shape (tuple, optional): output image size in pixels (x, y). Defaults to `None`.
 
     Returns:
         odc.geo.geobox.GeoBox: geobox object
+
+    Example:
+        >>> bbox = [100, 100, 200, 220]
+        >>> crs_out = 3035
+        >>> # output geobox closest to the input bbox
+        >>> geobox = def_geobox(bbox, crs_out)
+
+        >>> # output geobox with the same dimensions (number of rows and columns) 
+        >>> # as the input shape.
+        >>> geobox = def_geobox(bbox, crs_out, shape=(10, 10))
     """
 
     crs = CRS.from_epsg(crs_out)
