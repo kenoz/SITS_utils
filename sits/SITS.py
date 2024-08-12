@@ -122,7 +122,7 @@ class Csv2gdf:
 
     def set_buffer(self, df_attr, radius):
         """
-        Calculate buffer geometries of a Csv2gdf's GeoDataFrame object.
+        Calculate buffer geometries for each ``Csv2gdf``'s GeoDataFrame feature.
 
         Args:
             df_attr (str): GeoDataFrame attribute of class ``Csv2gdf``.
@@ -143,7 +143,7 @@ class Csv2gdf:
 
     def set_bbox(self, df_attr):
         """
-        Calculate the bounding box of a Csv2gdf's GeoDataFrame object.
+        Calculate the bounding box for each ``Csv2gdf``'s GeoDataFrame feature.
 
         Args:
             df_attr (str): GeoDataFrame attribute of class ``Csv2gdf``.
@@ -163,7 +163,7 @@ class Csv2gdf:
 
     def to_vector(self, df_attr, outfile=None, driver="GeoJSON"):
         """
-        Write a Csv2gdf's GeoDataFrame object as a vector file.
+        Write a ``Csv2gdf``'s GeoDataFrame layer as a vector file.
 
         Args:
             df_attr (str): GeoDataFrame attribute of class ``Csv2gdf``.
