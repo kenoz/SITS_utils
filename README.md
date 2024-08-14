@@ -15,13 +15,13 @@ pip install SITS
 Here is a basic Python script example. For more details, read the documentation [here](https://sits.readthedocs.io/en/latest/index.html).
 
 ```python
-import SITS
+import sits
 
 # loads csv table with geographic coordinates into GeoDataFrame object
 csv_file = 'my_file.csv'
 
 # instantiates a SITS.Csv2gdf object
-sits_df = SITS.Csv2gdf(csv_file, 'lon', 'lat', 4326)
+sits_df = sits.Csv2gdf(csv_file, 'lon', 'lat', 4326)
 
 # converts coordinates of sits_df into EPSG:3035 
 sits_df.set_gdf(3035)
@@ -48,7 +48,7 @@ for index, row in sits_df.bbox.iterrows():
     aoi_bounds_4326 = list(row_geom_4326.bounds)
 
     # opens access to a STAC provider (by default Microsoft Planetary)
-    imgs = StacAttack()
+    imgs = sits.StacAttack()
     # searches items based on bbox coordinates and time interval criteria
     imgs.searchItems(aoi_bounds_4326, 
                      date_start=datetime(2016, 1, 1), 
