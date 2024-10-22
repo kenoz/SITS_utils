@@ -15,7 +15,6 @@ import rasterio
 from rasterio.crs import CRS
 from rasterio.features import rasterize
 from shapely.geometry import box
-#test
 
 def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
     """
