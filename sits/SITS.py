@@ -65,60 +65,10 @@ def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
     return geobox
 
 
-class Csv2gdf:
+class Gdfgeom:
     """
-    This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
-
-    Attributes:
-        crs_in (int): CRS of coordinates described in the csv table.
-        table (DataFrame): DataFrame object.
-
-    Args:
-        csv_file (str): csv filepath.
-        x_name (str): name of the field describing X coordinates.
-        y_name (str): name of the field describing Y coordinates.
-        crs_in (int): CRS of coordinates described in the csv table.
-        id_name (str, optional): name of the ID field. Defaults to "no_id".
-
-    Example:
-        >>> csv_file = 'example.csv'
-        >>> crs_in = 4326
-        >>> geotable = Csv2gdf(csv_file, 'longitude', 'latitude', crs_in)
+    to fill
     """
-
-    def __init__(self, csv_file, x_name, y_name, crs_in, id_name='no_id'):
-        """
-        Initialize the attributes of `Csv2gdf`.
-        """
-        self.crs_in = crs_in
-        self.table = pd.read_csv(csv_file, encoding= 'unicode_escape')
-        self.table = self.table.rename(columns={x_name: 'coord_X',
-                                                y_name: 'coord_Y',
-                                                id_name: 'gid'})
-
-    def set_gdf(self, crs_out):
-        """
-        Convert the class attribute ``Csv2gdf.table`` (DataFrame) into GeoDataFrame object, 
-        in the specified output CRS projection.
-
-        Args:
-            crs_out (int): output CRS of GeoDataFrame.
-            outfile (str, optional): Defaults to `None`.
-
-        Returns:
-            GeoDataFrame: GeoDataFrame object ``Csv2gdf.gdf``.
-
-        Example:
-            >>> geotable.set_gdf(3035)
-        """
-
-        self.gdf = gpd.GeoDataFrame(self.table,
-                                    geometry=gpd.points_from_xy(self.table.coord_X,
-                                                                self.table.coord_Y)
-                                   )
-        self.gdf = self.gdf.set_crs(self.crs_in, allow_override=True)
-        self.gdf = self.gdf.to_crs(crs_out)
-
     def set_buffer(self, df_attr, radius):
         """
         Calculate buffer geometries for each ``Csv2gdf``'s GeoDataFrame feature.
@@ -180,6 +130,85 @@ class Csv2gdf:
         df = getattr(self, df_attr)
         df.to_file(outfile, driver=driver, encoding='utf-8')
 
+    def __create_bounding_box(self, row):
+        """
+        Create the bounding box of a feature's geometry.
+
+        Args:
+            row (GeoSeries): GeoDataFrame's row.
+
+        Returns:
+            shapely.geometry.box: bbox.
+        """
+
+        xmin, ymin, xmax, ymax = row.geometry.bounds
+        return box(xmin, ymin, xmax, ymax)
+
+
+class Vec2gdf(Gdfgeom):
+    """
+    to fill
+    """
+    
+    def __init__(self, vec_file):
+        self.gdf = gpd.read_file(vec_file)
+        
+        
+class Csv2gdf(Gdfgeom):
+    """
+    This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
+
+    Attributes:
+        crs_in (int): CRS of coordinates described in the csv table.
+        table (DataFrame): DataFrame object.
+
+    Args:
+        csv_file (str): csv filepath.
+        x_name (str): name of the field describing X coordinates.
+        y_name (str): name of the field describing Y coordinates.
+        crs_in (int): CRS of coordinates described in the csv table.
+        id_name (str, optional): name of the ID field. Defaults to "no_id".
+
+    Example:
+        >>> csv_file = 'example.csv'
+        >>> crs_in = 4326
+        >>> geotable = Csv2gdf(csv_file, 'longitude', 'latitude', crs_in)
+    """
+
+    def __init__(self, csv_file, x_name, y_name, crs_in, id_name='no_id'):
+        """
+        Initialize the attributes of `Csv2gdf`.
+        """
+        self.crs_in = crs_in
+        self.table = pd.read_csv(csv_file, encoding= 'unicode_escape')
+        self.table = self.table.rename(columns={x_name: 'coord_X',
+                                                y_name: 'coord_Y',
+                                                id_name: 'gid'})
+
+    def set_gdf(self, crs_out):
+        """
+        Convert the class attribute ``Csv2gdf.table`` (DataFrame) into GeoDataFrame object, 
+        in the specified output CRS projection.
+
+        Args:
+            crs_out (int): output CRS of GeoDataFrame.
+            outfile (str, optional): Defaults to `None`.
+
+        Returns:
+            GeoDataFrame: GeoDataFrame object ``Csv2gdf.gdf``.
+
+        Example:
+            >>> geotable.set_gdf(3035)
+        """
+
+        self.gdf = gpd.GeoDataFrame(self.table,
+                                    geometry=gpd.points_from_xy(self.table.coord_X,
+                                                                self.table.coord_Y)
+                                   )
+        self.gdf = self.gdf.set_crs(self.crs_in, allow_override=True)
+        self.gdf = self.gdf.to_crs(crs_out)
+
+
     def del_rows(self, col_name, rows_values):
         """
         Drop rows from ``Csv2gdf.table`` according to a column's values.
@@ -197,20 +226,6 @@ class Csv2gdf:
                                 inplace = True)
         size_after = len(self.table)
         print(f'rows length before:{size_before}\nrows length after:{size_after}')
-
-    def __create_bounding_box(self, row):
-        """
-        Create the bounding box of a feature's geometry.
-
-        Args:
-            row (GeoSeries): GeoDataFrame's row.
-
-        Returns:
-            shapely.geometry.box: bbox.
-        """
-
-        xmin, ymin, xmax, ymax = row.geometry.bounds
-        return box(xmin, ymin, xmax, ymax)
 
 
 class StacAttack:
