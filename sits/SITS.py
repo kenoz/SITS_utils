@@ -149,11 +149,11 @@ class Vec2gdf(Gdfgeom):
     """
     to fill
     """
-    
+
     def __init__(self, vec_file):
         self.gdf = gpd.read_file(vec_file)
-        
-        
+
+
 class Csv2gdf(Gdfgeom):
     """
     This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
