@@ -15,6 +15,9 @@ import rasterio
 from rasterio.crs import CRS
 from rasterio.features import rasterize
 from shapely.geometry import box
+# Dask
+#from dask import delayed, compute
+import dask
 
 def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
     """
@@ -527,3 +530,89 @@ class Labels:
                            transform=geobox.transform, dtype=rasterio.uint8, count=1, 
                            width=geobox.width, height=geobox.height) as dst:
             dst.write(rasterized, 1)
+
+
+class Multiproc:
+    """
+    to fill
+    """
+
+    def __init__(self, array_type, fext, outdir):
+        """ to fill """
+        self.arrtype = array_type
+        self.outdir = outdir
+        self.fext = fext
+        self.fetch_dask = []
+
+    def fdask(self, aoi_latlong, aoi_proj, gid, **kwargs):
+        """ to fill """
+        # loads time-series images in EPSG:3035
+        imgcoll = StacAttack()
+        imgcoll.searchItems(aoi_latlong, **kwargs)
+        if self.arrtype == 'image':
+            imgcoll.loadImgs(aoi_proj, **kwargs)
+        elif self.arrtype == 'patch':
+            imgcoll.loadPatches(aoi_proj, **kwargs)
+        # exports time-series into csv file and netCDF file
+        if self.fext == 'nc':
+            imgcoll.to_nc(self.outdir, gid, self.arrtype)
+        elif self.fext == 'csv':
+            imgcoll.to_csv(self.outdir, gid, self.arrtype, id_point='station_id')
+
+#    def __func(self, aoi_latlong, aoi_proj, gid, **kwargs):
+#        single = dask.delayed(self.fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
+#        return single
+
+#    def fetch_func(self, aoi_latlong, aoi_proj, gid, **kwargs):
+#        self.fetch_dask.append(self.__func(aoi_latlong, aoi_proj, gid, **kwargs))
+
+    def fetch_func(self, aoi_latlong, aoi_proj, gid, **kwargs):
+        single = dask.delayed(self.fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
+        self.fetch_dask.append(single)
+
+    def dask_compute(self, scheduler_type='processes'):
+        results_dask = dask.compute(*self.fetch_dask, scheduler=scheduler_type)
+        return results_dask
+
+    
+class Multiproc2:
+    """
+    to fill (good one, check **kwargs in fdask and paste in Multiproc)
+    """
+
+    def __init__(self, array_type, fext, outdir):
+        """ to fill """
+        self.arrtype = array_type
+        self.outdir = outdir
+        self.fext = fext
+        self.fetch_dask = []
+
+    def fdask(self, aoi_latlong, aoi_proj, gid, **kwargs):
+        """ to fill """
+        si_kwargs = {k: v for k, v in kwargs.items() if k in ['date_start', 'date_end']}
+        li_kwargs = {k: v for k, v in kwargs.items() if k in ['resolution', 'crs_out']}
+        lp_kwargs = {k: v for k, v in kwargs.items() if k in ['dimx', 'dimy', 'resolution', 'crs_out']}
+        # loads time-series images in EPSG:3035
+        imgcoll = StacAttack()
+        imgcoll.searchItems(aoi_latlong, **si_kwargs)
+        if self.arrtype == 'image':
+            imgcoll.loadImgs(aoi_proj, **li_kwargs)
+        elif self.arrtype == 'patch':
+            imgcoll.loadPatches(aoi_proj, **lp_kwargs)
+        # exports time-series into csv file and netCDF file
+        if self.fext == 'nc':
+            imgcoll.to_nc(self.outdir, gid, self.arrtype)
+        elif self.fext == 'csv':
+            imgcoll.to_csv(self.outdir, gid, self.arrtype, id_point='station_id')
+
+#    def __func(self, aoi_latlong, aoi_proj, gid, **kwargs):
+#        single = dask.delayed(self.fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
+#        return single
+
+    def fetch_func(self, aoi_latlong, aoi_proj, gid, **kwargs):
+        single = dask.delayed(self.fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
+        self.fetch_dask.append(single)
+
+    def dask_compute(self, scheduler_type='processes'):
+        results_dask = dask.compute(*self.fetch_dask, scheduler=scheduler_type)
+        return results_dask
