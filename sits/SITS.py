@@ -534,85 +534,109 @@ class Labels:
 
 class Multiproc:
     """
-    to fill
+    This class aims to parallelize the production of images or patches.
+
+    Args:
+        array_type (str): xarray dataset name.
+                Can be one of the following: 'patch', 'image'.
+        fext (str): output file format:
+                Can be one of the following: 'nc', 'csv'
+        outdir (str): output directory.
+
+    Example:
+        >>> mproc = Multiproc('patch', 'nc', 'output')
     """
 
     def __init__(self, array_type, fext, outdir):
-        """ to fill """
+        """ Initialize the attributes of ``Multiproc``. """
         self.arrtype = array_type
         self.outdir = outdir
         self.fext = fext
         self.fetch_dask = []
 
-    def fdask(self, aoi_latlong, aoi_proj, gid, **kwargs):
-        """ to fill """
-        # loads time-series images in EPSG:3035
-        imgcoll = StacAttack()
-        imgcoll.searchItems(aoi_latlong, **kwargs)
-        if self.arrtype == 'image':
-            imgcoll.loadImgs(aoi_proj, **kwargs)
-        elif self.arrtype == 'patch':
-            imgcoll.loadPatches(aoi_proj, **kwargs)
-        # exports time-series into csv file and netCDF file
-        if self.fext == 'nc':
-            imgcoll.to_nc(self.outdir, gid, self.arrtype)
-        elif self.fext == 'csv':
-            imgcoll.to_csv(self.outdir, gid, self.arrtype, id_point='station_id')
+    def __fdask(self, aoi_latlong, aoi_proj, gid, **kwargs):
+        """ Request items in STAC catalog and convert it as an image or patch.
 
-#    def __func(self, aoi_latlong, aoi_proj, gid, **kwargs):
-#        single = dask.delayed(self.fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
-#        return single
-
-#    def fetch_func(self, aoi_latlong, aoi_proj, gid, **kwargs):
-#        self.fetch_dask.append(self.__func(aoi_latlong, aoi_proj, gid, **kwargs))
-
-    def fetch_func(self, aoi_latlong, aoi_proj, gid, **kwargs):
-        single = dask.delayed(self.fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
-        self.fetch_dask.append(single)
-
-    def dask_compute(self, scheduler_type='processes'):
-        results_dask = dask.compute(*self.fetch_dask, scheduler=scheduler_type)
-        return results_dask
-
-    
-class Multiproc2:
-    """
-    to fill (good one, check **kwargs in fdask and paste in Multiproc)
-    """
-
-    def __init__(self, array_type, fext, outdir):
-        """ to fill """
-        self.arrtype = array_type
-        self.outdir = outdir
-        self.fext = fext
-        self.fetch_dask = []
-
-    def fdask(self, aoi_latlong, aoi_proj, gid, **kwargs):
-        """ to fill """
-        si_kwargs = {k: v for k, v in kwargs.items() if k in ['date_start', 'date_end']}
-        li_kwargs = {k: v for k, v in kwargs.items() if k in ['resolution', 'crs_out']}
-        lp_kwargs = {k: v for k, v in kwargs.items() if k in ['dimx', 'dimy', 'resolution', 'crs_out']}
-        # loads time-series images in EPSG:3035
+        Args:
+            aoi_latlong (list): coordinates of bounding box.
+            aoi_proj (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs.
+            gid (int): image/patch index.
+            **kwargs (dict): additional arguments (i.e. ``StacAttack.searchItems()``,
+                                                        ``StacAttack.loadImgs()``,
+                                                        ``StacAttack.loadPatches()``).
+        """
+        si_kwargs = {k: v for k, v in kwargs.items() if k in ['date_start',
+                                                              'date_end']}
+        li_kwargs = {k: v for k, v in kwargs.items() if k in ['resolution',
+                                                              'crs_out']}
+        lp_kwargs = {k: v for k, v in kwargs.items() if k in ['dimx', 'dimy',
+                                                              'resolution',
+                                                              'crs_out']}
         imgcoll = StacAttack()
         imgcoll.searchItems(aoi_latlong, **si_kwargs)
+
         if self.arrtype == 'image':
             imgcoll.loadImgs(aoi_proj, **li_kwargs)
         elif self.arrtype == 'patch':
             imgcoll.loadPatches(aoi_proj, **lp_kwargs)
-        # exports time-series into csv file and netCDF file
+
         if self.fext == 'nc':
             imgcoll.to_nc(self.outdir, gid, self.arrtype)
         elif self.fext == 'csv':
             imgcoll.to_csv(self.outdir, gid, self.arrtype, id_point='station_id')
 
-#    def __func(self, aoi_latlong, aoi_proj, gid, **kwargs):
-#        single = dask.delayed(self.fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
-#        return single
-
     def fetch_func(self, aoi_latlong, aoi_proj, gid, **kwargs):
-        single = dask.delayed(self.fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
+        """
+        Call of ``dask.delayed`` to convert the ``Multiproc.__fdask()`` function 
+        into a delayed object, allowing for lazy evaluation and parallel execution, 
+        thus optimizing computational workflows.
+
+        Args:
+            aoi_latlong (list): coordinates of bounding box.
+            aoi_proj (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs.
+            gid (int): image/patch index.
+            **kwargs (dict): additional arguments (i.e. ``StacAttack.searchItems()``,
+                                                        ``StacAttack.loadImgs()``,
+                                                        ``StacAttack.loadPatches()``).
+        Returns:
+            Multiproc.fetch_dask: list of ``dask.delayed`` function's instances.
+
+        Example:
+            >>> for bboxes, gid in enumerate(my_df['bboxes']):
+                    mproc.fetch_func(bboxes[0], bboxes[1], gid)
+        """
+        single = dask.delayed(self.__fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
         self.fetch_dask.append(single)
 
+    def del_func(self):
+        """
+        Clear ``Multiproc.fetch_dask``, the list of ``dask.delayed`` function's 
+        instances.
+        """
+        self.fetch_dask.clear()
+
     def dask_compute(self, scheduler_type='processes'):
+        """
+        Call of ``dask.compute`` to trigger the actual execution of
+        delayed tasks (i.e. ``Multiproc.fetch_dask``), gathering their results 
+        into a final output.
+
+        Args:
+            scheduler_type (str): type of scheduler. Defaults to 'processes'.
+                    Can be one of the following: - Single-threaded Scheduler 'single-threaded' or 'sync': 
+                                                        - Runs computations in a single thread without parallelism.
+                                                        - Suitable for debugging or when parallelism isn't required.
+                                                 - Threaded Scheduler 'threads':
+                                                         - Utilizes a pool of threads to execute tasks concurrently.
+                                                         - Good for I/O-bound tasks and when tasks release the Global Interpreter Lock (GIL). 
+                                                 - Multiprocessing Scheduler 'processes':
+                                                         - Uses a pool of separate processes to execute tasks in parallel.
+                                                         - Suitable for CPU-bound tasks and when tasks are limited by the GIL.
+                                                 - Distributed Scheduler 'distributed':
+                                                         - Uses a distributed cluster to execute tasks.
+                                                         - Best for large-scale computations across multiple machines.
+        Example:
+            >>> mproc.dask_compute()
+        """
         results_dask = dask.compute(*self.fetch_dask, scheduler=scheduler_type)
         return results_dask
