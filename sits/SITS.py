@@ -48,7 +48,7 @@ def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
         # size in pixels of input bbox
         size_x = round((bbox[2] - bbox[0]) / resolution)
         size_y = round((bbox[3] - bbox[1]) / resolution)
-        print(size_x, size_y)
+        #print(size_x, size_y)
         # shift size to reach the shape
         shift_x = round((shape[0] - size_x) / 2)
         shift_y = round((shape[1] - size_y) / 2)
