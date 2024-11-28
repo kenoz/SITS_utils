@@ -68,6 +68,11 @@ def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
     return geobox
 
 
+def compare_crs(crs_a, crs_b):
+    if crs_a != crs_b:
+        raise ValueError(f"CRS mismatch: {crs_a} != {crs_b}")
+
+
 class Gdfgeom:
     """
     to fill
@@ -374,7 +379,6 @@ class StacAttack:
         for var_name in self.image.data_vars:
             self.image[var_name].loc[{'time': self.fixdate}] = operation(self.image[var_name].loc[{'time': self.fixdate}])
 
-
     def loadPatches(self, bbox, dimx=5, dimy=5, resolution=10, crs_out=3035):
         """
         Load patches with predefined pixels dimensions (x, y)
@@ -498,7 +502,9 @@ class Labels:
         else:
             self.gdf = gpd.read_file(geolayer)
 
-    def to_raster(self, id_field, geobox, filename, outdir, crs='EPSG:3035', driver="GTiff"):
+        self.crs_gdf = self.gdf.crs.to_epsg()
+
+    def to_raster(self, id_field, geobox, filename, outdir, ext='tif', driver="GTiff"):
         """
         Convert geodataframe into raster file while keeping a column attribute as pixel values.
 
@@ -507,7 +513,7 @@ class Labels:
             geobox (odc.geo.geobox.GeoBox): geobox object.
             filename (str): output raster filename.
             outdir (str): output directory.
-            crs (str, optional): output crs. Defaults to "EPSG:3035".
+            ext (str): raster file extension. Defaults to "tif".
             driver (str, optional): output raster format (gdal standard). Defaults to "GTiff".
 
         Example:
@@ -515,20 +521,30 @@ class Labels:
             >>> crs_out = 3035
             >>> resolution = 10
             >>> geobox = def_geobox(bbox, crs_out, resolution)
-            >>> vlayer.to_raster('id', geobox, 'output.tif', 'output')
+            >>> vlayer.to_raster('id', geobox, 'output_img', 'output_dir')
         """
+        self.crs_geobox = geobox.crs.to_epsg()
+        # NEED TO STOP HERE IN CASE OF CRS DIFF
+        try:
+            compare_crs(self.crs_gdf, self.crs_geobox)
+            crs_out = self.crs_geobox
+        except ValueError as e:
+            print(e)
+
         shapes = ((geom, value) for geom, value in zip(self.gdf.geometry, self.gdf[id_field]))
-        rasterized = rasterize(shapes, 
+        rasterized = rasterize(shapes,
                                out_shape=(geobox.height, geobox.width),
                                transform=geobox.transform,
                                fill=0,
                                all_touched=False,
-                               dtype='uint8')
+                               dtype='uint16')
 
         # Write the rasterized feature to a new raster file
-        with rasterio.open(os.path.join(outdir, filename), 'w', driver=driver, crs=crs,
-                           transform=geobox.transform, dtype=rasterio.uint8, count=1, 
-                           width=geobox.width, height=geobox.height) as dst:
+        with rasterio.open(os.path.join(outdir, f"{filename}.{ext}"), 'w',
+                           driver=driver, crs=f"EPSG:{crs_out}",
+                           transform=geobox.transform, dtype=rasterio.uint16,
+                           count=1, width=geobox.width,
+                           height=geobox.height) as dst:
             dst.write(rasterized, 1)
 
 
@@ -553,6 +569,15 @@ class Multiproc:
         self.outdir = outdir
         self.fext = fext
         self.fetch_dask = []
+        self.label = 0
+
+    def add_label(self, geolayer, id_field):
+        """
+        to fill
+        """
+        self.geolayer = geolayer
+        self.id_field = id_field
+        self.label = 1
 
     def __fdask(self, aoi_latlong, aoi_proj, gid, **kwargs):
         """ Request items in STAC catalog and convert it as an image or patch.
@@ -563,7 +588,8 @@ class Multiproc:
             gid (int): image/patch index.
             **kwargs (dict): additional arguments (i.e. ``StacAttack.searchItems()``,
                                                         ``StacAttack.loadImgs()``,
-                                                        ``StacAttack.loadPatches()``).
+                                                        ``StacAttack.loadPatches()``,
+                                                        ``Labels.to_raster()``).
         """
         si_kwargs = {k: v for k, v in kwargs.items() if k in ['date_start',
                                                               'date_end']}
@@ -572,6 +598,9 @@ class Multiproc:
         lp_kwargs = {k: v for k, v in kwargs.items() if k in ['dimx', 'dimy',
                                                               'resolution',
                                                               'crs_out']}
+        tr_kwargs = {k: v for k, v in kwargs.items() if k in ['ext',
+                                                              'driver']}
+
         imgcoll = StacAttack()
         imgcoll.searchItems(aoi_latlong, **si_kwargs)
 
@@ -584,6 +613,12 @@ class Multiproc:
             imgcoll.to_nc(self.outdir, gid, self.arrtype)
         elif self.fext == 'csv':
             imgcoll.to_csv(self.outdir, gid, self.arrtype, id_point='station_id')
+
+        if self.label == 1:
+            labr = Labels(self.geolayer)
+            filename = f"label_{self.id_field}_{gid}"
+            labr.to_raster(self.id_field, imgcoll.geobox, filename, 
+                           self.outdir, **tr_kwargs)
 
     def fetch_func(self, aoi_latlong, aoi_proj, gid, **kwargs):
         """
