@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -16,7 +17,6 @@ from rasterio.crs import CRS
 from rasterio.features import rasterize
 from shapely.geometry import box
 # Dask
-#from dask import delayed, compute
 import dask
 
 def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
@@ -524,12 +524,18 @@ class Labels:
             >>> vlayer.to_raster('id', geobox, 'output_img', 'output_dir')
         """
         self.crs_geobox = geobox.crs.to_epsg()
+
+        #if self.crs_gdf != self.crs_geobox:
+        #    self.gdf = self.gdf.to_crs(self.crs_geobox)
+        #    self.crs_gdf = self.gdf.crs.to_epsg()
+
         # NEED TO STOP HERE IN CASE OF CRS DIFF
         try:
             compare_crs(self.crs_gdf, self.crs_geobox)
             crs_out = self.crs_geobox
         except ValueError as e:
             print(e)
+            sys.exit(1)
 
         shapes = ((geom, value) for geom, value in zip(self.gdf.geometry, self.gdf[id_field]))
         rasterized = rasterize(shapes,
