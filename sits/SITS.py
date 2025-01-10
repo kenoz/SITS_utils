@@ -711,7 +711,7 @@ class Multiproc:
                                                       'driver']}
         )
 
-        imgcoll = StacAttack()
+        imgcoll = StacAttack() # ADD BANDS ARG
         imgcoll.searchItems(aoi_latlong, **self.si_kwargs)
 
         if self.arrtype == 'image':
