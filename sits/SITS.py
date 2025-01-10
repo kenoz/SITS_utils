@@ -75,8 +75,13 @@ def compare_crs(crs_a, crs_b):
 
 class Gdfgeom:
     """
-    to fill
+    This class aims to calculate vector's buffers and bounding box.
+
+    Attributes:
+        buffer (GeoDataFrame): vector layer with buffer.
+        bbox (GeoDataFrame): vector layer's bounding box.
     """
+
     def set_buffer(self, df_attr, radius):
         """
         Calculate buffer geometries for each ``Csv2gdf``'s GeoDataFrame feature.
@@ -155,7 +160,12 @@ class Gdfgeom:
 
 class Vec2gdf(Gdfgeom):
     """
-    to fill
+    This class aims to load a vector file as a GeoDataFrame object. 
+    It inherits methods and attributes from ``Gdfgeom`` class. 
+
+    Example:
+        >>> v_path = '<vector file path>'
+        >>> geotable = Vec2gdf(v_path)
     """
 
     def __init__(self, vec_file):
@@ -164,7 +174,8 @@ class Vec2gdf(Gdfgeom):
 
 class Csv2gdf(Gdfgeom):
     """
-    This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
+    This class aims to load csv tables with geographic coordinates into GeoDataFrame object. 
+    It inherits methods and attributes from ``Gdfgeom`` class
 
     Attributes:
         crs_in (int): CRS of coordinates described in the csv table.
@@ -321,8 +332,8 @@ class StacAttack:
 
         Args:
             bbox_latlon (list): coordinates of bounding box.
-            date_start (str, optional): start date. Defaults to '2023-01'.
-            date_end (str, optional): end date. Defaults to '2023-12'.
+            date_start (datetime.datetime, optional): start date. Defaults to '2023-01'.
+            date_end (datetime.datetime, optional): end date. Defaults to '2023-12'.
             **kwargs: others stac compliant arguments.
 
         Returns:
@@ -513,7 +524,7 @@ class Labels:
             geobox (odc.geo.geobox.GeoBox): geobox object.
             filename (str): output raster filename.
             outdir (str): output directory.
-            ext (str): raster file extension. Defaults to "tif".
+            ext (str, optional): raster file extension. Defaults to "tif".
             driver (str, optional): output raster format (gdal standard). Defaults to "GTiff".
 
         Example:
@@ -576,17 +587,97 @@ class Multiproc:
         self.fext = fext
         self.fetch_dask = []
         self.label = 0
+        self.si_kwargs = {}
+        self.li_kwargs = {}
+        self.lp_kwargs = {}
+        self.tr_kwargs = {}
 
     def add_label(self, geolayer, id_field):
         """
-        to fill
+        Export an image of labels with the same dimensions than the datacube,
+        by calling the method ``Labels.to_raster()``.
+
+        Args:
+            geolayer (GeoDataFrame): vector file.
+            id_field (str): attribute field name.
+
+        Example:
+            >>> mproc = Multiproc('patch', 'nc', 'output')
+            >>> mproc.add_label(vlayer, 'myfield')
         """
         self.geolayer = geolayer
         self.id_field = id_field
         self.label = 1
 
+    def addParams_searchItems(self, date_start=datetime(2023, 1, 1), date_end=datetime(2023, 12, 31), **kwargs):
+        """
+        Add optional parameters for ``StacAttack.searchItems()``
+        called through ``Multiproc.fetch_func()``.
+
+        Args:
+            date_start (datetime.datetime, optional): start date. Defaults to '2023-01'.
+            date_end (datetime.datetime, optional): end date. Defaults to '2023-12'.
+            **kwargs (optional): others stac compliant arguments, 
+                e.g. ``query`` parameters to filter according to cloud %.
+
+        Example:
+            >>> mproc = Multiproc('patch', 'nc', 'output')
+            >>> mproc.addParams_searchItems(date_start=datetime(2016, 1, 1), query={"eo:cloud_cover": {"lt": 20}})
+        """
+        self.si_kwargs.update({'date_start': date_start, 'date_end': date_end})
+        self.si_kwargs.update({k: v for k, v in kwargs.items()})
+
+    def addParams_loadImgs(self, resolution=10, crs_out=3035):
+        """
+        Add optional parameters for ``StacAttack.loadImgs()``
+        called through ``Multiproc.fetch_func()``.
+
+        Args:
+            resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
+            crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
+
+        Example:
+            >>> mproc = Multiproc('patch', 'nc', 'output')
+            >>> mproc.addParams_loadImgs(resolution=20)
+        """
+        self.li_kwargs.update({'resolution': resolution, 'crs_out': crs_out})
+
+    def addParams_loadPatches(self, dimx=5, dimy=5, resolution=10, crs_out=3035):
+        """
+        Add optional parameters for ``StacAttack.loadPatches()``
+        called through ``Multiproc.fetch_func()``.
+
+        Args:
+            dimx (int, optional): number of pixels in columns. Defaults to 5.
+            dimy (int, optional): number of pixels in rows. Defaults to 5.
+            resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
+            crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
+
+        Example:
+            >>> mproc = Multiproc('patch', 'nc', 'output')
+            >>> mproc.addParams_loadPatches(dimx=20, dimy=20):
+        """
+        self.si_kwargs.update({'dimx': dimx, 'dimy': dimy,
+                               'resolution': resolution, 'crs_out': crs_out})
+
+    def addParams_to_raster(self, ext='tif', driver="GTiff"):
+        """
+        Add optional parameters for ``Labels.to_raster()``
+        called through ``Multiproc.fetch_func()``.
+
+        Args:
+            ext (str, optional): raster file extension. Defaults to "tif".
+            driver (str, optional): output raster format (gdal standard). Defaults to "GTiff".
+
+        Example:
+            >>> mproc = Multiproc('patch', 'nc', 'output')
+            >>> mproc.addParams_to_raster(driver="COG")
+        """
+        self.si_kwargs.update({'ext': ext, 'driver': driver})
+
     def __fdask(self, aoi_latlong, aoi_proj, gid, **kwargs):
-        """ Request items in STAC catalog and convert it as an image or patch.
+        """
+        Request items in STAC catalog and convert it as an image or patch.
 
         Args:
             aoi_latlong (list): coordinates of bounding box.
@@ -597,23 +688,36 @@ class Multiproc:
                                                         ``StacAttack.loadPatches()``,
                                                         ``Labels.to_raster()``).
         """
-        si_kwargs = {k: v for k, v in kwargs.items() if k in ['date_start',
-                                                              'date_end']}
-        li_kwargs = {k: v for k, v in kwargs.items() if k in ['resolution',
-                                                              'crs_out']}
-        lp_kwargs = {k: v for k, v in kwargs.items() if k in ['dimx', 'dimy',
-                                                              'resolution',
-                                                              'crs_out']}
-        tr_kwargs = {k: v for k, v in kwargs.items() if k in ['ext',
-                                                              'driver']}
+        # searchItems
+        self.si_kwargs.update(
+            {k: v for k, v in kwargs.items() if k in ['date_start',
+                                                      'date_end',
+                                                      'query']}
+        )
+        # loadImgs
+        self.li_kwargs.update(
+            {k: v for k, v in kwargs.items() if k in ['resolution',
+                                                      'crs_out']}
+        )
+        # loadPatches
+        self.lp_kwargs.update(
+            {k: v for k, v in kwargs.items() if k in ['dimx', 'dimy',
+                                                      'resolution',
+                                                      'crs_out']}
+        )
+        # to_ratser
+        self.tr_kwargs.update(
+            {k: v for k, v in kwargs.items() if k in ['ext',
+                                                      'driver']}
+        )
 
         imgcoll = StacAttack()
-        imgcoll.searchItems(aoi_latlong, **si_kwargs)
+        imgcoll.searchItems(aoi_latlong, **self.si_kwargs)
 
         if self.arrtype == 'image':
-            imgcoll.loadImgs(aoi_proj, **li_kwargs)
+            imgcoll.loadImgs(aoi_proj, **self.li_kwargs)
         elif self.arrtype == 'patch':
-            imgcoll.loadPatches(aoi_proj, **lp_kwargs)
+            imgcoll.loadPatches(aoi_proj, **self.lp_kwargs)
 
         if self.fext == 'nc':
             imgcoll.to_nc(self.outdir, gid, self.arrtype)
@@ -624,7 +728,7 @@ class Multiproc:
             labr = Labels(self.geolayer)
             filename = f"label_{self.id_field}_{gid}"
             labr.to_raster(self.id_field, imgcoll.geobox, filename, 
-                           self.outdir, **tr_kwargs)
+                           self.outdir, **self.tr_kwargs)
 
     def fetch_func(self, aoi_latlong, aoi_proj, gid, **kwargs):
         """
