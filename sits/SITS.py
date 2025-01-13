@@ -591,6 +591,7 @@ class Multiproc:
         self.li_kwargs = {}
         self.lp_kwargs = {}
         self.tr_kwargs = {}
+        self.sa_kwargs = {}
 
     def add_label(self, geolayer, id_field):
         """
@@ -608,6 +609,25 @@ class Multiproc:
         self.geolayer = geolayer
         self.id_field = id_field
         self.label = 1
+
+    def addParams_stacAttack(self, provider='mpc', collection='sentinel-2-l2a', key_sat='s2',
+                             bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']):
+        """
+        Add optional parameters for ``StacAttack class instance``
+        called through ``Multiproc.fetch_func()``.
+
+        Args:
+            provider (str, optional): stac provider. Defaults to 'mpc'.
+                Can be one of the following: 'mpc' (Microsoft Planetary Computer), 'aws' (Amazon Web Services).
+            collection (str, optional): stac collection. Defaults to 'sentinel-2-l2a'.
+            bands (list, optional): name of the field describing Y coordinates.
+                Defaults to ['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
+
+        Example:
+            >>> mproc = Multiproc('patch', 'nc', 'output')
+            >>> mproc.addParams_stacAttack(bands=['B02', 'B03', 'B04'])
+        """
+        self.sa_kwargs.update({'provider': provider, 'collection': collection, 'key_sat': key_sat, 'bands': bands})
 
     def addParams_searchItems(self, date_start=datetime(2023, 1, 1), date_end=datetime(2023, 12, 31), **kwargs):
         """
@@ -711,7 +731,15 @@ class Multiproc:
                                                       'driver']}
         )
 
-        imgcoll = StacAttack() # ADD BANDS ARG
+        # StacAttack init
+        self.sa_kwargs.update(
+            {k: v for k, v in kwargs.items() if k in ['provider',
+                                                      'collection',
+                                                      'key_sat',
+                                                      'bands']}
+        )
+
+        imgcoll = StacAttack(**self.sa_kwargs)
         imgcoll.searchItems(aoi_latlong, **self.si_kwargs)
 
         if self.arrtype == 'image':
