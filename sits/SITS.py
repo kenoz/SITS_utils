@@ -19,6 +19,7 @@ from shapely.geometry import box
 # Dask
 import dask
 
+
 def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
     """
     This function creates an odc geobox.
@@ -42,13 +43,11 @@ def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
         >>> # as the input shape.
         >>> geobox = def_geobox(bbox, crs_out, shape=(10, 10))
     """
-
     crs = CRS.from_epsg(crs_out)
     if shape is not None:
         # size in pixels of input bbox
         size_x = round((bbox[2] - bbox[0]) / resolution)
         size_y = round((bbox[3] - bbox[1]) / resolution)
-        #print(size_x, size_y)
         # shift size to reach the shape
         shift_x = round((shape[0] - size_x) / 2)
         shift_y = round((shape[1] - size_y) / 2)
@@ -268,7 +267,8 @@ class StacAttack:
     def __init__(self, provider='mpc',
                        collection='sentinel-2-l2a',
                        key_sat='s2',
-                       bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
+                       bands=['B02', 'B03', 'B04', 'B05', 'B06', 
+                              'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
                 ):
         """
         Initialize the attributes of `StacAttack`.
@@ -326,7 +326,8 @@ class StacAttack:
         self.items_prop['date'] = (self.items_prop['datetime']).apply(
             lambda x: int(datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()*1e9))
 
-    def searchItems(self, bbox_latlon, date_start=datetime(2023, 1, 1), date_end=datetime(2023, 12, 31), **kwargs):
+    def searchItems(self, bbox_latlon, date_start=datetime(2023, 1, 1), 
+                    date_end=datetime(2023, 12, 31), **kwargs):
         """
         Get list of stac collection's items.
 
@@ -390,12 +391,14 @@ class StacAttack:
         for var_name in self.image.data_vars:
             self.image[var_name].loc[{'time': self.fixdate}] = operation(self.image[var_name].loc[{'time': self.fixdate}])
 
-    def loadPatches(self, bbox, dimx=5, dimy=5, resolution=10, crs_out=3035):
+    def loadCube(self, bbox, arrtype='image', dimx=5, dimy=5, resolution=10, crs_out=3035):
         """
-        Load patches with predefined pixels dimensions (x, y)
+        Load images according to a bounding box, with in option predefined pixels dimensions (x, y)
 
         Args:
             bbox (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs unit.
+            arrtype (string, optional: xarray dataset name. Defaults to 'image'.
+                Can be one of the following: 'patch', 'image', 'masked'.
             dimx (int, optional): number of pixels in columns. Defaults to 5.
             dimy (int, optional): number of pixels in rows. Defaults to 5.
             resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
@@ -403,72 +406,75 @@ class StacAttack:
 
         Returns:
             odc.geo.geobox.GeoBox: geobox object ``StacAttack.geobox``.
-            xarray.Dataset: time-series patch ``StacAttack.patch``.
+            xarray.Dataset: time-series image ``StacAttack.cube``.
 
         Example:
             >>> aoi_bounds = [0, 0, 1, 1]
-            >>> stacObj.loadPatches(aoi_bounds, 10, 10)
+            >>> stacObj.loadCube(aoi_bounds, arrtype='patch', dimx=10, dimy=10)
         """
-        shape = (dimx, dimy)
-        self.geobox = def_geobox(bbox, crs_out, resolution, shape)
-        self.patch = self.__items_to_array(self.geobox)
+        self.arrtype = arrtype
 
-    def loadImgs(self, bbox, resolution=10, crs_out=3035):
-        """
-        Load time-series images with dimensions that fit with bounding box.
+        if arrtype == 'image':
+            self.geobox = def_geobox(bbox, crs_out, resolution)
+        if arrtype == 'patch':
+            shape = (dimx, dimy)
+            self.geobox = def_geobox(bbox, crs_out, resolution, shape)
 
-        Args:
-            bbox (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs unit.
-            resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
-            crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
+        self.cube = self.__items_to_array(self.geobox)
 
-        Returns:
-            odc.geo.geobox.GeoBox: geobox object ``StacAttack.geobox``.
-            xarray.Dataset: time-series image ``StacAttack.image``.
-        """
-        self.geobox = def_geobox(bbox, crs_out, resolution)
-        self.image = self.__items_to_array(self.geobox)
+    def mask(self, array_type, mask_array=None, mask_band='SCL', mask_values=[3, 8, 9, 10]):
+        e_array = getattr(self, array_type)
 
-    def __to_df(self, array_type):
+        if mask_array:
+            self.mask = mask_array
+        else:
+            band_mask = e_array.sel(band=mask_band)
+            self.mask = band_mask.isin(mask_values)
+
+    def mask_apply(self, array_type):
+        e_array = getattr(self, array_type)
+        e_array = e_array.where(~self.mask)
+
+    def __to_df(self):#, array_type):
         """
         Convert xarray dataset into pandas dataframe
 
         Args:
             array_type (str): xarray dataset name.
-                Can be one of the following: 'patch', 'image'.
+                Can be one of the following: 'patch', 'image', 'masked'.
 
         Returns:
             DataFrame: pandas dataframe object (df).
         """
-        e_array = getattr(self, array_type)
-        array_trans = e_array.transpose('time', 'y', 'x')
+        #e_array = getattr(self, array_type)
+        #array_trans = e_array.transpose('time', 'y', 'x')
+        array_trans = self.cube.transpose('time', 'y', 'x')
         df = array_trans.to_dataframe()
         return df
 
-    def to_csv(self, outdir, gid=None, array_type='image', id_point='station_id'):
+    def to_csv(self, outdir, gid=None, id_point='station_id'):
         """
         Convert xarray dataset into csv file.
 
         Args:
             outdir (str): output directory.
             gid (str, optional): column name of ID. Defaults to `None`.
-            array_type (str, optional): xarray dataset name. Defaults to 'image'.
-                Can be one of the following: 'patch', 'image'.
 
         Example:
             >>> outdir = 'output'
             >>> stacObj.to_csv(outdir)
         """
-        df = self.__to_df(array_type)
+        df = self.__to_df()
         df = df.reset_index()
         df['ID'] = df.index
         df[id_point] = gid
-        if gid is not None:
-            df.to_csv(os.path.join(outdir, f'id_{gid}_{array_type}.csv'))
-        else:
-            df.to_csv(os.path.join(outdir, f'id_none_{array_type}.csv'))
 
-    def to_nc(self, outdir, gid=None, array_type='image'):
+        if gid is not None:
+            df.to_csv(os.path.join(outdir, f'id_{gid}_{self.arrtype}.csv'))
+        else:
+            df.to_csv(os.path.join(outdir, f'id_none_{self.arrtype}.csv'))
+
+    def to_nc(self, outdir, gid=None):
         """
         Convert xarray dataset into netcdf file.
 
@@ -476,14 +482,13 @@ class StacAttack:
             outdir (str): output directory.
             gid (str, optional): column name of ID. Defaults to `None`.
             array_type (str, optional): xarray dataset name. Defaults to 'image'.
-                Can be one of the following: 'patch', 'image'.
+                Can be one of the following: 'patch', 'image', 'masked'.
 
         Example:
             >>> outdir = 'output'
             >>> stacObj.to_nc(outdir)
         """
-        e_array = getattr(self, array_type)
-        e_array.to_netcdf(f"{outdir}/S2_fid-{gid}_{array_type}_{self.startdate}-{self.enddate}.nc")
+        self.cube.to_netcdf(f"{outdir}/S2_fid-{gid}_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
 
 
 class Labels:
@@ -588,10 +593,10 @@ class Multiproc:
         self.fetch_dask = []
         self.label = 0
         self.si_kwargs = {}
-        self.li_kwargs = {}
-        self.lp_kwargs = {}
+        self.lc_kwargs = {}
         self.tr_kwargs = {}
         self.sa_kwargs = {}
+        self.ma_kwargs = {}
 
     def add_label(self, geolayer, id_field):
         """
@@ -647,24 +652,9 @@ class Multiproc:
         self.si_kwargs.update({'date_start': date_start, 'date_end': date_end})
         self.si_kwargs.update({k: v for k, v in kwargs.items()})
 
-    def addParams_loadImgs(self, resolution=10, crs_out=3035):
+    def addParams_loadCube(self, dimx=5, dimy=5, resolution=10, crs_out=3035):
         """
-        Add optional parameters for ``StacAttack.loadImgs()``
-        called through ``Multiproc.fetch_func()``.
-
-        Args:
-            resolution (float, optional): spatial resolution (in crs unit). Defaults to 10.
-            crs_out (int, optional): CRS of output coordinates. Defaults to 3035.
-
-        Example:
-            >>> mproc = Multiproc('patch', 'nc', 'output')
-            >>> mproc.addParams_loadImgs(resolution=20)
-        """
-        self.li_kwargs.update({'resolution': resolution, 'crs_out': crs_out})
-
-    def addParams_loadPatches(self, dimx=5, dimy=5, resolution=10, crs_out=3035):
-        """
-        Add optional parameters for ``StacAttack.loadPatches()``
+        Add optional parameters for ``StacAttack.loadCube()``
         called through ``Multiproc.fetch_func()``.
 
         Args:
@@ -675,10 +665,19 @@ class Multiproc:
 
         Example:
             >>> mproc = Multiproc('patch', 'nc', 'output')
-            >>> mproc.addParams_loadPatches(dimx=20, dimy=20):
+            >>> mproc.addParams_loadCube(dimx=20, dimy=20):
         """
-        self.si_kwargs.update({'dimx': dimx, 'dimy': dimy,
+        self.lc_kwargs.update({'dimx': dimx, 'dimy': dimy,
                                'resolution': resolution, 'crs_out': crs_out})
+
+    def addParams_mask(self, mask_array=None, mask_band='SCL', mask_values=[3, 8, 9, 10]):
+        """
+        to fill
+        """
+        self.ma_kwargs.update({'array_type': self.arrtype,
+                               'mask_array': mask_array,
+                               'mask_band': mask_band,
+                               'mask_values': mask_values})
 
     def addParams_to_raster(self, ext='tif', driver="GTiff"):
         """
@@ -695,7 +694,7 @@ class Multiproc:
         """
         self.si_kwargs.update({'ext': ext, 'driver': driver})
 
-    def __fdask(self, aoi_latlong, aoi_proj, gid, **kwargs):
+    def __fdask(self, aoi_latlong, aoi_proj, gid, mask, **kwargs):
         """
         Request items in STAC catalog and convert it as an image or patch.
 
@@ -704,8 +703,7 @@ class Multiproc:
             aoi_proj (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs.
             gid (int): image/patch index.
             **kwargs (dict): additional arguments (i.e. ``StacAttack.searchItems()``,
-                                                        ``StacAttack.loadImgs()``,
-                                                        ``StacAttack.loadPatches()``,
+                                                        ``StacAttack.loadCube()``,
                                                         ``Labels.to_raster()``).
         """
         # searchItems
@@ -714,18 +712,16 @@ class Multiproc:
                                                       'date_end',
                                                       'query']}
         )
-        # loadImgs
-        self.li_kwargs.update(
-            {k: v for k, v in kwargs.items() if k in ['resolution',
-                                                      'crs_out']}
-        )
-        # loadPatches
-        self.lp_kwargs.update(
-            {k: v for k, v in kwargs.items() if k in ['dimx', 'dimy',
+
+        # loadCube
+        self.lc_kwargs.update(
+            {k: v for k, v in kwargs.items() if k in ['dimx',
+                                                      'dimy',
                                                       'resolution',
                                                       'crs_out']}
         )
-        # to_ratser
+
+        # to_raster
         self.tr_kwargs.update(
             {k: v for k, v in kwargs.items() if k in ['ext',
                                                       'driver']}
@@ -741,16 +737,16 @@ class Multiproc:
 
         imgcoll = StacAttack(**self.sa_kwargs)
         imgcoll.searchItems(aoi_latlong, **self.si_kwargs)
+        imgcoll.loadCube(aoi_proj, arrtype=self.arrtype, **self.lc_kwargs)
 
-        if self.arrtype == 'image':
-            imgcoll.loadImgs(aoi_proj, **self.li_kwargs)
-        elif self.arrtype == 'patch':
-            imgcoll.loadPatches(aoi_proj, **self.lp_kwargs)
+        if mask:
+            imgcoll.mask(**self.ma_kwargs)
+            imgcoll.mask_apply()
 
         if self.fext == 'nc':
-            imgcoll.to_nc(self.outdir, gid, self.arrtype)
+            imgcoll.to_nc(self.outdir, gid)
         elif self.fext == 'csv':
-            imgcoll.to_csv(self.outdir, gid, self.arrtype, id_point='station_id')
+            imgcoll.to_csv(self.outdir, gid, id_point='station_id')
 
         if self.label == 1:
             labr = Labels(self.geolayer)
@@ -758,7 +754,7 @@ class Multiproc:
             labr.to_raster(self.id_field, imgcoll.geobox, filename, 
                            self.outdir, **self.tr_kwargs)
 
-    def fetch_func(self, aoi_latlong, aoi_proj, gid, **kwargs):
+    def fetch_func(self, aoi_latlong, aoi_proj, gid, mask=False, **kwargs):
         """
         Call of ``dask.delayed`` to convert the ``Multiproc.__fdask()`` function 
         into a delayed object, allowing for lazy evaluation and parallel execution, 
@@ -778,7 +774,7 @@ class Multiproc:
             >>> for bboxes, gid in enumerate(my_df['bboxes']):
                     mproc.fetch_func(bboxes[0], bboxes[1], gid)
         """
-        single = dask.delayed(self.__fdask)(aoi_latlong, aoi_proj, gid, **kwargs)
+        single = dask.delayed(self.__fdask)(aoi_latlong, aoi_proj, gid, mask, **kwargs)
         self.fetch_dask.append(single)
 
     def del_func(self):
