@@ -393,7 +393,7 @@ class StacAttack:
 
     def loadCube(self, bbox, arrtype='image', dimx=5, dimy=5, resolution=10, crs_out=3035):
         """
-        Load images according to a bounding box, with in option predefined pixels dimensions (x, y)
+        Load images according to a bounding box, with in option predefined pixels dimensions (x, y).
 
         Args:
             bbox (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs unit.
@@ -424,26 +424,60 @@ class StacAttack:
 
     def mask(self, mask_array=None, mask_band='SCL', mask_values=[3, 8, 9, 10]):
         """
-        to fill
+        Load binary mask.
+
+        Args:
+            mask_array (xarray.Dataarray, optional): xarray.dataarray binanry mask 
+                (with same dimensions as ``StacAttack.cube``). Defaults to None.
+            mask_band (string, optional): band name used as a mask (i.e. 'SCL' for Sentinel-2). 
+                Defaults to 'SCL'.
+            mask_values (list, optional): band values related to masked pixels.
+                Defaults to [3, 8, 9, 10].
+
+        Returns:
+            xarray.Dataarray: time-series of binary masks ``StacAttack.mask``
+
+        Example:
+            >>> stacObj.mask()
         """
 
         if mask_array:
             self.mask = mask_array
         else:
             band_mask = getattr(self.cube, mask_band)
-            #self.cube.sel(band=[mask_band])
             self.mask = band_mask.isin(mask_values)
 
     def mask_apply(self):
         """
-        to fill
+        Apply mask pre-loaded as ``StacAttack.mask`` on the satellite time-series ``StacAttack.cube``.
+
+        Example:
+            >>> stacObj.mask()
+            >>> stacObj.mask_apply()
         """
         self.cube = self.cube.where(~self.mask)
 
-    def gapfill(self):
+    def gapfill(self, method='linear', first_last=True, **kwargs):
         """
-        to fill
+        Gap-fill NaN pixel values through the satellite time-series.
+
+        Args:
+            method (string, optional): method to use for interpolation 
+                (see ``xarray.DataArray.interpolate_na``). Defaults to 'linear'.
+            first_last (bool, optional): Interpolation of the first and
+                last image of the satellite time-series with
+                ``xarray.DataArray.bfill`` and ``xarray.DataArray.ffill``.
+                Defaults to True.
+            **kwargs: other arguments of ``xarray.DataArray.interpolate_na``.
+
+        Example:
+            >>> stacObj.gapfill()
         """
+        self.cube = self.cube.interpolate_na()
+
+        if first_last:
+            self.cube = self.cube.bfill(dim='time')
+            self.cube = self.cube.ffill(dim='time')
 
     def __to_df(self):
         """
@@ -594,17 +628,18 @@ class Multiproc:
     """
 
     def __init__(self, array_type, fext, outdir):
-        """ Initialize the attributes of ``Multiproc``. """
+        """ Initialize the attributes of ``Multiproc``."""
         self.arrtype = array_type
         self.outdir = outdir
         self.fext = fext
         self.fetch_dask = []
         self.label = 0
+        self.sa_kwargs = {}
         self.si_kwargs = {}
         self.lc_kwargs = {}
-        self.tr_kwargs = {}
-        self.sa_kwargs = {}
         self.ma_kwargs = {}
+        self.gf_kwargs = {}
+        self.tr_kwargs = {}
 
     def add_label(self, geolayer, id_field):
         """
@@ -624,7 +659,8 @@ class Multiproc:
         self.label = 1
 
     def addParams_stacAttack(self, provider='mpc', collection='sentinel-2-l2a', key_sat='s2',
-                             bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']):
+                             bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 
+                                    'B08', 'B8A', 'B11', 'B12', 'SCL']):
         """
         Add optional parameters for ``StacAttack class instance``
         called through ``Multiproc.fetch_func()``.
@@ -680,11 +716,47 @@ class Multiproc:
 
     def addParams_mask(self, mask_array=None, mask_band='SCL', mask_values=[3, 8, 9, 10]):
         """
-        to fill
+        Add optional parameters for ``StacAttack.mask()``
+        called through ``Multiproc.fetch_func()``.
+        
+        Args:
+            mask_array (xarray.Dataarray, optional): xarray.dataarray binanry mask 
+                (with same dimensions as ``StacAttack.cube``). Defaults to None.
+            mask_band (string, optional): band name used as a mask (i.e. 'SCL' for Sentinel-2). 
+                Defaults to 'SCL'.
+            mask_values (list, optional): band values related to masked pixels.
+                Defaults to [3, 8, 9, 10].
+
+        Example:
+            >>> mproc = Multiproc('patch', 'nc', 'output')
+            >>> mproc.addParams_mask(mask_values=[0]):
         """
         self.ma_kwargs.update({'mask_array': mask_array,
                                'mask_band': mask_band,
                                'mask_values': mask_values})
+
+    def addParams_gapfill(self, method='linear', first_last=True, **kwargs):
+        """
+        Add optional parameters for ``StacAttack.gapfill()``
+        called through ``Multiproc.fetch_func()``.
+
+        Args:
+            method (string, optional): method to use for interpolation 
+                (see ``xarray.DataArray.interpolate_na``). Defaults to 'linear'.
+            first_last (bool, optional): Interpolation of the first and
+                last image of the satellite time-series with
+                ``xarray.DataArray.bfill`` and ``xarray.DataArray.ffill``.
+                Defaults to True.
+            **kwargs: other arguments of ``xarray.DataArray.interpolate_na``.
+
+        Example:
+            >>> mproc = Multiproc('patch', 'nc', 'output')
+            >>> mproc.addParams_gapfill(method='nearest', first_last=False):
+        """
+        self.gf_kwargs.update({'method': method,
+                               'first_last': first_last,
+                               'mask_values': mask_values})
+        self.gf_kwargs.update({k: v for k, v in kwargs.items()})
 
     def addParams_to_raster(self, ext='tif', driver="GTiff"):
         """
@@ -701,7 +773,7 @@ class Multiproc:
         """
         self.si_kwargs.update({'ext': ext, 'driver': driver})
 
-    def __fdask(self, aoi_latlong, aoi_proj, gid, mask=False, **kwargs):
+    def __fdask(self, aoi_latlong, aoi_proj, gid, mask=False, gapfill=False, **kwargs):
         """
         Request items in STAC catalog and convert it as an image or patch.
 
@@ -709,6 +781,9 @@ class Multiproc:
             aoi_latlong (list): coordinates of bounding box.
             aoi_proj (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs.
             gid (int): image/patch index.
+            mask (bool, optional): calculate and apply binary masks. Defaults to False.
+            gapfill (bool, optional): fill in NaNs (masked pixels) by interpolating according 
+                to different methods. Defaults to False.
             **kwargs (dict): additional arguments (i.e. ``StacAttack.searchItems()``,
                                                         ``StacAttack.loadCube()``,
                                                         ``Labels.to_raster()``).
@@ -748,7 +823,9 @@ class Multiproc:
 
         if mask:
             imgcoll.mask(**self.ma_kwargs)
-            imgcoll.mask_apply()
+            imgcoll.mask_apply(**self.gf_kwargs)
+        if gapfill:
+            imgcoll.gapfill()
 
         if self.fext == 'nc':
             imgcoll.to_nc(self.outdir, gid)
@@ -761,7 +838,7 @@ class Multiproc:
             labr.to_raster(self.id_field, imgcoll.geobox, filename, 
                            self.outdir, **self.tr_kwargs)
 
-    def fetch_func(self, aoi_latlong, aoi_proj, gid, mask=False, **kwargs):
+    def fetch_func(self, aoi_latlong, aoi_proj, gid, mask=False, gapfill=False, **kwargs):
         """
         Call of ``dask.delayed`` to convert the ``Multiproc.__fdask()`` function 
         into a delayed object, allowing for lazy evaluation and parallel execution, 
@@ -781,7 +858,7 @@ class Multiproc:
             >>> for bboxes, gid in enumerate(my_df['bboxes']):
                     mproc.fetch_func(bboxes[0], bboxes[1], gid)
         """
-        single = dask.delayed(self.__fdask)(aoi_latlong, aoi_proj, gid, mask, **kwargs)
+        single = dask.delayed(self.__fdask)(aoi_latlong, aoi_proj, gid, mask, gapfill, **kwargs)
         self.fetch_dask.append(single)
 
     def del_func(self):
