@@ -422,20 +422,30 @@ class StacAttack:
 
         self.cube = self.__items_to_array(self.geobox)
 
-    def mask(self, array_type, mask_array=None, mask_band='SCL', mask_values=[3, 8, 9, 10]):
-        e_array = getattr(self, array_type)
+    def mask(self, mask_array=None, mask_band='SCL', mask_values=[3, 8, 9, 10]):
+        """
+        to fill
+        """
 
         if mask_array:
             self.mask = mask_array
         else:
-            band_mask = e_array.sel(band=mask_band)
+            band_mask = getattr(self.cube, mask_band)
+            #self.cube.sel(band=[mask_band])
             self.mask = band_mask.isin(mask_values)
 
-    def mask_apply(self, array_type):
-        e_array = getattr(self, array_type)
-        e_array = e_array.where(~self.mask)
+    def mask_apply(self):
+        """
+        to fill
+        """
+        self.cube = self.cube.where(~self.mask)
 
-    def __to_df(self):#, array_type):
+    def gapfill(self):
+        """
+        to fill
+        """
+
+    def __to_df(self):
         """
         Convert xarray dataset into pandas dataframe
 
@@ -446,8 +456,6 @@ class StacAttack:
         Returns:
             DataFrame: pandas dataframe object (df).
         """
-        #e_array = getattr(self, array_type)
-        #array_trans = e_array.transpose('time', 'y', 'x')
         array_trans = self.cube.transpose('time', 'y', 'x')
         df = array_trans.to_dataframe()
         return df
@@ -674,8 +682,7 @@ class Multiproc:
         """
         to fill
         """
-        self.ma_kwargs.update({'array_type': self.arrtype,
-                               'mask_array': mask_array,
+        self.ma_kwargs.update({'mask_array': mask_array,
                                'mask_band': mask_band,
                                'mask_values': mask_values})
 
@@ -694,7 +701,7 @@ class Multiproc:
         """
         self.si_kwargs.update({'ext': ext, 'driver': driver})
 
-    def __fdask(self, aoi_latlong, aoi_proj, gid, mask, **kwargs):
+    def __fdask(self, aoi_latlong, aoi_proj, gid, mask=False, **kwargs):
         """
         Request items in STAC catalog and convert it as an image or patch.
 
