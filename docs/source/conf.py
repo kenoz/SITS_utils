@@ -5,7 +5,7 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../export/'))
+
 sys.path.insert(0, os.path.abspath('../../sits/'))
 
 
@@ -20,7 +20,8 @@ release = '0.1.0'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.napoleon']
+extensions = ['sphinx.ext.napoleon',
+             'sphinx.ext.autodoc', 'sphinx.ext.autosummary',]
 
 templates_path = ['_templates']
 exclude_patterns = []
