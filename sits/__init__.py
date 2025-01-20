@@ -1,3 +1,3 @@
 from sits.SITS import *
-from sits.export import *
+import sits.export as export
 import sits.display as display
