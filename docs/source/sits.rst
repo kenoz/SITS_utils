@@ -28,3 +28,10 @@ The Labels class
    :members:
    :undoc-members:
    :show-inheritance:
+
+The Multiproc class
+****************
+.. autoclass:: SITS.Multiproc
+   :members:
+   :undoc-members:
+   :show-inheritance:
