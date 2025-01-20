@@ -1,4 +1,4 @@
-sits package
+export sub-package
 ============
 
 The Sits_ds class
