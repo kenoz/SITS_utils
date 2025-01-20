@@ -38,7 +38,7 @@ The Multiproc class
    
 The Sits_ds class
 ****************
-.. autoclass:: SITS.export.Sits_ds
+.. autoclass:: export.Sits_ds
    :members:
    :undoc-members:
    :show-inheritance:
