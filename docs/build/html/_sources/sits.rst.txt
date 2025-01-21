@@ -3,10 +3,7 @@ sits package
 
 The def_geobox function
 ***********************
-.. autoclass:: SITS.def_geobox
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autofunction:: SITS.def_geobox
 
 The Csv2gdf class
 *****************
@@ -28,3 +25,11 @@ The Labels class
    :members:
    :undoc-members:
    :show-inheritance:
+
+The Multiproc class
+****************
+.. autoclass:: SITS.Multiproc
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   

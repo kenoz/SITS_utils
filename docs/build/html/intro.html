@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; sits 0.0.1 documentation</title>
+  <title>Introduction &mdash; sits 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=d45e8c67"></script>
+        <script src="_static/documentation_options.js?v=01f34227"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -52,6 +52,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="sits.html">sits package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sits_sub.html">sits sub-packages</a></li>
 </ul>
 
         </div>
@@ -83,9 +84,13 @@
 <p><code class="docutils literal notranslate"><span class="pre">SITS</span></code> is a high-level Python package which aims to ease the extraction of Satellite Images Time Series (SITS) referenced in STAC catalogs. For each given point or polygon, it delivers image or csv files, with specified dimensions if necessary (e.g. deep learning patches).</p>
 <section id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
-<p>This Python package has been developed for those who want to extract satellite information without spending too much time to understand how to handle PyStac api and some other geospatial librairies.
-- The <a class="reference internal" href="sits.html#SITS.Csv2gdf" title="SITS.Csv2gdf"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.Csv2gdf</span></code></a> allows you to convert a csv table with coordinates into a geodataframe object.
-- The <a class="reference internal" href="sits.html#SITS.StacAttack" title="SITS.StacAttack"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.StacAttack</span></code></a> requests STAC catalog to extract the satellite information needed.</p>
+<p>This Python package has been developed for those who want to extract satellite information without spending too much time to understand how to handle PyStac api and some other geospatial librairies.</p>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="sits.html#SITS.Csv2gdf" title="SITS.Csv2gdf"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.Csv2gdf</span></code></a> allows you to convert a csv table with coordinates into a geodataframe object.</p></li>
+<li><p>The <a class="reference internal" href="sits.html#SITS.StacAttack" title="SITS.StacAttack"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.StacAttack</span></code></a> requests STAC catalog to extract the satellite information needed.</p></li>
+<li><p>The <a class="reference internal" href="sits.html#SITS.Labels" title="SITS.Labels"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.Labels</span></code></a> creates labels’ image for training/testing.</p></li>
+<li><p>The <a class="reference internal" href="sits.html#SITS.Multiproc" title="SITS.Multiproc"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.Multiproc</span></code></a> enables the launch of <cite>SITS.StacAttack</cite> in a mutiprocessing mode.</p></li>
+</ul>
 </section>
 <section id="limitations">
 <h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h2>
@@ -107,7 +112,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Kenji Ose.</p>
+    <p>&#169; Copyright %Y, Kenji Ose.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -12,6 +12,7 @@ Welcome to sits's documentation!
 
    intro
    sits
+   sits_sub
    examples
 
 Indices and tables

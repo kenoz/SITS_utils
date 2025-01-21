@@ -9,4 +9,7 @@ odc-geo
 geopandas
 rasterio
 shapely
+geogif
+sphinx
+sphinx-autobuild
 sphinx-rtd-theme
