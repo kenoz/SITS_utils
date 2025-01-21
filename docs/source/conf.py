@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.abspath('../../sits/'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'sits'
-copyright = '2024, Kenji Ose'
+copyright = '%Y, Kenji Ose'
 author = 'Kenji Ose'
 release = '0.1.0'
 
@@ -21,12 +21,11 @@ release = '0.1.0'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['sphinx.ext.napoleon',
-             'sphinx.ext.autodoc', 'sphinx.ext.autosummary',]
+              'sphinx.ext.autodoc', 
+              'sphinx.ext.autosummary',]
 
 templates_path = ['_templates']
 exclude_patterns = []
-
-
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
