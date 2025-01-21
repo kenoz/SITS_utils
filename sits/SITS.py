@@ -718,7 +718,7 @@ class Multiproc:
         """
         Add optional parameters for ``StacAttack.mask()``
         called through ``Multiproc.fetch_func()``.
-        
+
         Args:
             mask_array (xarray.Dataarray, optional): xarray.dataarray binanry mask 
                 (with same dimensions as ``StacAttack.cube``). Defaults to None.

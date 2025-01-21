@@ -52,6 +52,25 @@
 <li class="toctree-l3"><a class="reference internal" href="#SITS.def_geobox"><code class="docutils literal notranslate"><span class="pre">def_geobox()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#the-compare-crs-function">The compare_crs function</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#SITS.compare_crs"><code class="docutils literal notranslate"><span class="pre">compare_crs()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-gdfgeom-class">The Gdfgeom class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#SITS.Gdfgeom"><code class="docutils literal notranslate"><span class="pre">Gdfgeom</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Gdfgeom.buffer"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.buffer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Gdfgeom.bbox"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.bbox</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Gdfgeom.set_bbox"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.set_bbox()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Gdfgeom.set_buffer"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.set_buffer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.Gdfgeom.to_vector"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.to_vector()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-vec2gdf-class">The Vec2gdf class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#SITS.Vec2gdf"><code class="docutils literal notranslate"><span class="pre">Vec2gdf</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#the-csv2gdf-class">The Csv2gdf class</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#SITS.Csv2gdf"><code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#SITS.Csv2gdf.crs_in"><code class="docutils literal notranslate"><span class="pre">Csv2gdf.crs_in</span></code></a></li>
@@ -168,12 +187,142 @@
 </dd></dl>
 
 </section>
+<section id="the-compare-crs-function">
+<h2>The compare_crs function<a class="headerlink" href="#the-compare-crs-function" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="SITS.compare_crs">
+<span class="sig-prename descclassname"><span class="pre">SITS.</span></span><span class="sig-name descname"><span class="pre">compare_crs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crs_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.compare_crs" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="the-gdfgeom-class">
+<h2>The Gdfgeom class<a class="headerlink" href="#the-gdfgeom-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="SITS.Gdfgeom">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SITS.</span></span><span class="sig-name descname"><span class="pre">Gdfgeom</span></span><a class="headerlink" href="#SITS.Gdfgeom" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class aims to calculate vector’s buffers and bounding box.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.Gdfgeom.buffer">
+<span class="sig-name descname"><span class="pre">buffer</span></span><a class="headerlink" href="#SITS.Gdfgeom.buffer" title="Link to this definition"></a></dt>
+<dd><p>vector layer with buffer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SITS.Gdfgeom.bbox">
+<span class="sig-name descname"><span class="pre">bbox</span></span><a class="headerlink" href="#SITS.Gdfgeom.bbox" title="Link to this definition"></a></dt>
+<dd><p>vector layer’s bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Gdfgeom.set_bbox">
+<span class="sig-name descname"><span class="pre">set_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Gdfgeom.set_bbox" title="Link to this definition"></a></dt>
+<dd><p>Calculate the bounding box for each <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>’s GeoDataFrame feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_attr</strong> (<em>str</em>) – GeoDataFrame attribute of class <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>.
+Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – ouput filepath. Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeoDataFrame object <code class="docutils literal notranslate"><span class="pre">Csv2gdf.bbox</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">set_bbox</span><span class="p">(</span><span class="s1">&#39;buffer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Gdfgeom.set_buffer">
+<span class="sig-name descname"><span class="pre">set_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Gdfgeom.set_buffer" title="Link to this definition"></a></dt>
+<dd><p>Calculate buffer geometries for each <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>’s GeoDataFrame feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_attr</strong> (<em>str</em>) – GeoDataFrame attribute of class <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>.
+Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
+<li><p><strong>radius</strong> (<em>float</em>) – buffer distance in CRS unit.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – ouput filepath. Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeoDataFrame object <code class="docutils literal notranslate"><span class="pre">Csv2gdf.buffer</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">set_buffer</span><span class="p">(</span><span class="s1">&#39;gdf&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.Gdfgeom.to_vector">
+<span class="sig-name descname"><span class="pre">to_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GeoJSON'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Gdfgeom.to_vector" title="Link to this definition"></a></dt>
+<dd><p>Write a <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>’s GeoDataFrame layer as a vector file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_attr</strong> (<em>str</em>) – GeoDataFrame attribute of class <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>.
+Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path. Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>driver</strong> (<em>str</em><em>, </em><em>optional</em>) – Output vector file format (see <em>GDAL/OGR Vector drivers</em>: <a class="reference external" href="https://gdal.org/drivers/vector/index.html">https://gdal.org/drivers/vector/index.html</a>). Defaults to “GeoJSON”.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;mygeom&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">to_vector</span><span class="p">(</span><span class="s1">&#39;gdf&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;output/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">_gdf.geojson&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">to_vector</span><span class="p">(</span><span class="s1">&#39;buffer&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;output/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">_buffer.geojson&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">to_vector</span><span class="p">(</span><span class="s1">&#39;bbox&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;output/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">_bbox.geojson&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="the-vec2gdf-class">
+<h2>The Vec2gdf class<a class="headerlink" href="#the-vec2gdf-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="SITS.Vec2gdf">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SITS.</span></span><span class="sig-name descname"><span class="pre">Vec2gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Vec2gdf" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#SITS.Gdfgeom" title="SITS.Gdfgeom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gdfgeom</span></code></a></p>
+<p>This class aims to load a vector file as a GeoDataFrame object.
+It inherits methods and attributes from <code class="docutils literal notranslate"><span class="pre">Gdfgeom</span></code> class.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">v_path</span> <span class="o">=</span> <span class="s1">&#39;&lt;vector file path&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span> <span class="o">=</span> <span class="n">Vec2gdf</span><span class="p">(</span><span class="n">v_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
 <section id="the-csv2gdf-class">
 <h2>The Csv2gdf class<a class="headerlink" href="#the-csv2gdf-class" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="SITS.Csv2gdf">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SITS.</span></span><span class="sig-name descname"><span class="pre">Csv2gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'no_id'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.Csv2gdf" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Gdfgeom</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#SITS.Gdfgeom" title="SITS.Gdfgeom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gdfgeom</span></code></a></p>
 <p>This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
 It inherits methods and attributes from <code class="docutils literal notranslate"><span class="pre">Gdfgeom</span></code> class</p>
 <dl class="py attribute">
