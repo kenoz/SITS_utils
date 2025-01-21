@@ -4,9 +4,6 @@ sits package
 The def_geobox function
 ***********************
 .. autofunction:: SITS.def_geobox
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 The Csv2gdf class
 *****************
