@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.4.0'
+VERSION = '0.5.0'
 DESCRIPTION = 'Get satellite images time series'
 LONG_DESCRIPTION = 'Create satellite time-series patches from STAC catalogs'
 

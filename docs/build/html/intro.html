@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Introduction &mdash; sits 0.1.0 documentation</title>
+  <title>Introduction &mdash; sits 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=01f34227"></script>
+        <script src="_static/documentation_options.js?v=1dd76d02"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -85,11 +85,25 @@
 <section id="motivation">
 <h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
 <p>This Python package has been developed for those who want to extract satellite information without spending too much time to understand how to handle PyStac api and some other geospatial librairies.</p>
+<p>This Python package has been developed for those who want to extract satellite information without spending too much time to understand how to handle pyStac api and some other geospatial librairies. Now the tool proposes 2 modules:</p>
 <ul class="simple">
+<li><dl class="simple">
+<dt>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">sits</span></code> is the core module for requesting and downloading satellite time-series. It contains the following classes:</dt><dd><ul>
 <li><p>The <a class="reference internal" href="sits.html#SITS.Csv2gdf" title="SITS.Csv2gdf"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.Csv2gdf</span></code></a> allows you to convert a csv table with coordinates into a geodataframe object.</p></li>
 <li><p>The <a class="reference internal" href="sits.html#SITS.StacAttack" title="SITS.StacAttack"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.StacAttack</span></code></a> requests STAC catalog to extract the satellite information needed.</p></li>
 <li><p>The <a class="reference internal" href="sits.html#SITS.Labels" title="SITS.Labels"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.Labels</span></code></a> creates labels’ image for training/testing.</p></li>
 <li><p>The <a class="reference internal" href="sits.html#SITS.Multiproc" title="SITS.Multiproc"><code class="xref py py-class docutils literal notranslate"><span class="pre">SITS.Multiproc</span></code></a> enables the launch of <cite>SITS.StacAttack</cite> in a mutiprocessing mode.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">export</span></code> is a sub-module for loading netcdf file and exporting it as animated gif file. It contains the following class:</dt><dd><ul>
+<li><p>The <a class="reference internal" href="sits_sub.html#export.Sits_ds" title="export.Sits_ds"><code class="xref py py-class docutils literal notranslate"><span class="pre">export.Sits_ds</span></code></a> allows you to load a netcdf file as an <cite>xarray.Dataset</cite> and convert it as an animated gif file.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
 </ul>
 </section>
 <section id="limitations">
