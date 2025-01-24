@@ -299,7 +299,8 @@ class StacAttack:
         Returns:
             xarray.Dataset: xarray dataset of satellite time-series.
         """
-        arr = load(self.items,
+        arr = load(#self.items,
+                   self.items_test,
                    bands=self.bands,
                    groupby="solar_day",
                    chunks={"x": self.stac_conf['chunks_size'], 
@@ -352,6 +353,9 @@ class StacAttack:
                                     **kwargs
                                    )
         self.items = list(query.items())
+        # test
+        self.items_test = query.items()
+        # ---
         self.__getItemsProperties()
 
     def __checkS2shift(self, shift_value=1):
