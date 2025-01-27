@@ -4,7 +4,7 @@ SITS is a Python library for dealing with satellite images time-series.
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [SITS](https://pypi.org/project/SITS/).
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [sits](https://pypi.org/project/SITS/).
 
 ```bash
 pip install SITS
@@ -65,6 +65,14 @@ for index, row in sits_df.bbox.iterrows():
     imgs.to_csv(out_dir, gid)
     imgs.to_nc(out_dir, gid, 'image')
 ```
+
+## Notebooks
+
+If you want to explore the different ways to use the sits package, we recommend running the following Jupyter notebooks, in [Google Colab](https://colab.research.google.com/) for instance:
+
+- [Example 01](examples/colab_sits_ex01.ipynb)
+
+
 
 ## Contributing
 

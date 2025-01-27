@@ -319,7 +319,7 @@ class StacAttack:
         Returns:
             DataFrame: dataframe of image properties ``StacAttack.items_prop``.
         """
-        
+
         self.items_prop = pd.DataFrame(self.items[0].properties)
         for it in self.items[1:]:
             new_df = pd.DataFrame(it.properties)
@@ -532,7 +532,7 @@ class StacAttack:
             >>> outdir = 'output'
             >>> stacObj.to_nc(outdir)
         """
-        self.cube.to_netcdf(f"{outdir}/S2_fid-{gid}_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
+        self.cube.to_netcdf(f"{outdir}/fid-{gid}_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
 
 
 class Labels:
