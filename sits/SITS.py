@@ -299,8 +299,7 @@ class StacAttack:
         Returns:
             xarray.Dataset: xarray dataset of satellite time-series.
         """
-        arr = load(#self.items,
-                   self.items_test,
+        arr = load(self.items,
                    bands=self.bands,
                    groupby="solar_day",
                    chunks={"x": self.stac_conf['chunks_size'], 
@@ -320,6 +319,7 @@ class StacAttack:
         Returns:
             DataFrame: dataframe of image properties ``StacAttack.items_prop``.
         """
+        
         self.items_prop = pd.DataFrame(self.items[0].properties)
         for it in self.items[1:]:
             new_df = pd.DataFrame(it.properties)
@@ -352,10 +352,8 @@ class StacAttack:
                                     bbox=bbox_latlon,
                                     **kwargs
                                    )
+
         self.items = list(query.items())
-        # test
-        self.items_test = query.items()
-        # ---
         self.__getItemsProperties()
 
     def __checkS2shift(self, shift_value=1):

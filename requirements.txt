@@ -3,6 +3,7 @@ pandas
 numpy
 datetime
 pystac_client
+pystac==1.11.0
 planetary_computer
 odc-stac
 odc-geo
@@ -10,6 +11,3 @@ geopandas
 rasterio
 shapely
 geogif
-sphinx
-sphinx-autobuild
-sphinx-rtd-theme

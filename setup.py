@@ -1,8 +1,14 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.5.0'
+# Function to parse requirements.txt
+def parse_requirements(filename):
+    with open(filename, 'r') as file:
+        return [line.strip() for line in file if line.strip() and not line.startswith('#')]
+
+VERSION = '0.5.2'
 DESCRIPTION = 'Get satellite images time series'
 LONG_DESCRIPTION = 'Create satellite time-series patches from STAC catalogs'
+REQUIREMENTS = parse_requirements('requirements.txt')
 
 setup(
     name='SITS',
@@ -12,7 +18,8 @@ setup(
     url='https://github.com/kenoz/SITS_utils',
     author='Kenji Ose',
     author_email='kenji.ose@ec.europa.eu',
-    install_requires=[],
+    install_requires=REQUIREMENTS,
+    extras_require={'dev': parse_requirements('requirements-dev.txt')},
     keywords=['python', 'sits', 'satellite', 'time series', 'STAC'],
     packages=find_packages(),
     classifiers=[

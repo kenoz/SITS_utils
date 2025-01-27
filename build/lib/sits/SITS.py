@@ -319,6 +319,7 @@ class StacAttack:
         Returns:
             DataFrame: dataframe of image properties ``StacAttack.items_prop``.
         """
+        
         self.items_prop = pd.DataFrame(self.items[0].properties)
         for it in self.items[1:]:
             new_df = pd.DataFrame(it.properties)
@@ -351,6 +352,7 @@ class StacAttack:
                                     bbox=bbox_latlon,
                                     **kwargs
                                    )
+
         self.items = list(query.items())
         self.__getItemsProperties()
 
@@ -718,7 +720,7 @@ class Multiproc:
         """
         Add optional parameters for ``StacAttack.mask()``
         called through ``Multiproc.fetch_func()``.
-        
+
         Args:
             mask_array (xarray.Dataarray, optional): xarray.dataarray binanry mask 
                 (with same dimensions as ``StacAttack.cube``). Defaults to None.
