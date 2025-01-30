@@ -11,6 +11,7 @@ geopandas
 rasterio
 shapely
 geogif
+netCDF4
 
 [dev]
 dask
