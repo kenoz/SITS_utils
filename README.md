@@ -59,19 +59,19 @@ for index, row in sits_df.bbox.iterrows():
     imgs.items_prop.to_csv(f'output/id_{gid}_s2_metadata.csv')
     
     # loads time-series images in EPSG:3035
-    imgs.loadImgs(aoi_bounds, crs_out=3035)
+    imgs.loadCube(aoi_bounds, arrtype='image', crs_out=3035)
     
     # exports time-series into csv file and netCDF file
     imgs.to_csv(out_dir, gid)
-    imgs.to_nc(out_dir, gid, 'image')
+    imgs.to_nc(out_dir, gid)
 ```
 
 ## Notebooks
 
 If you want to explore the different ways to use the sits package, we recommend running the following Jupyter notebooks, in [Google Colab](https://colab.research.google.com/) for instance:
 
-- [Example 01](examples/colab_sits_ex01.ipynb)
-
+- [Example 01](examples/colab_sits_ex01.ipynb): explain the basics fro retireving a satellite image time series according to a polygon feature.
+- [Example 02](examples/colab_sits_ex02.ipynb): explain how to parallelize processing tasks in case of multiple vector features. 
 
 
 ## Contributing

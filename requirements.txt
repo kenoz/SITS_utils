@@ -11,3 +11,4 @@ geopandas
 rasterio
 shapely
 geogif
+netCDF4
