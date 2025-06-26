@@ -5,7 +5,7 @@ def parse_requirements(filename):
     with open(filename, 'r') as file:
         return [line.strip() for line in file if line.strip() and not line.startswith('#')]
 
-VERSION = '0.5.3'
+VERSION = '0.6.0'
 DESCRIPTION = 'Get satellite images time series'
 LONG_DESCRIPTION = 'Create satellite time-series patches from STAC catalogs'
 REQUIREMENTS = parse_requirements('requirements.txt')

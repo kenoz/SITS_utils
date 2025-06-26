@@ -12,3 +12,4 @@ rasterio
 shapely
 geogif
 netCDF4
+spyndex

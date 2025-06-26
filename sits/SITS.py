@@ -18,6 +18,8 @@ from rasterio.features import rasterize
 from shapely.geometry import box
 # Dask
 import dask
+# Local imports
+from indices import SpectralIndex
 
 
 def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
@@ -480,6 +482,11 @@ class StacAttack:
         if first_last:
             self.cube = self.cube.bfill(dim='time')
             self.cube = self.cube.ffill(dim='time')
+
+    def spectral_index(self, indices_to_compute: str | list[str],
+                       band_mapping: dict = None, **kwargs):
+        si = SpectralIndex(self.cube, band_mapping)
+        self.indices = si.calculate_indices(indices_to_compute)
 
     def __to_df(self):
         """
