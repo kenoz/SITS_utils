@@ -3,7 +3,7 @@ sits package
 
 The def_geobox function
 ***********************
-.. autofunction:: SITS.def_geobox
+.. autofunction:: sits.def_geobox
 
 The compare_crs function
 ***********************
