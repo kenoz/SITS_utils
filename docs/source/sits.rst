@@ -32,7 +32,7 @@ The Csv2gdf class
 
 The StacAttack class
 ********************
-.. autoclass:: SITS.StacAttack
+.. autoclass:: sits.StacAttack
    :members:
    :undoc-members:
    :show-inheritance:
