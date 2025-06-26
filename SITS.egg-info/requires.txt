@@ -12,6 +12,7 @@ rasterio
 shapely
 geogif
 netCDF4
+spyndex
 
 [dev]
 dask
@@ -30,3 +31,4 @@ geogif
 sphinx
 sphinx-autobuild
 sphinx-rtd-theme
+spyndex

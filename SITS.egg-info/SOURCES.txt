@@ -10,3 +10,4 @@ sits/SITS.py
 sits/__init__.py
 sits/display.py
 sits/export.py
+sits/indices.py
