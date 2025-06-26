@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>sits package &mdash; sits 0.5.0 documentation</title>
+  <title>sits package &mdash; sits 0.6.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -15,7 +15,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=1dd76d02"></script>
+        <script src="_static/documentation_options.js?v=8fa8b3e9"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -90,6 +90,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.mask"><code class="docutils literal notranslate"><span class="pre">StacAttack.mask()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.mask_apply"><code class="docutils literal notranslate"><span class="pre">StacAttack.mask_apply()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.searchItems"><code class="docutils literal notranslate"><span class="pre">StacAttack.searchItems()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.spectral_index"><code class="docutils literal notranslate"><span class="pre">StacAttack.spectral_index()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.to_csv"><code class="docutils literal notranslate"><span class="pre">StacAttack.to_csv()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#SITS.StacAttack.to_nc"><code class="docutils literal notranslate"><span class="pre">StacAttack.to_nc()</span></code></a></li>
 </ul>
@@ -574,6 +575,35 @@ Defaults to [3, 8, 9, 10].</p></li>
 </dl>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stacObj</span><span class="o">.</span><span class="n">searchItems</span><span class="p">(</span><span class="n">aoi_bounds_4326</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SITS.StacAttack.spectral_index">
+<span class="sig-name descname"><span class="pre">spectral_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">indices_to_compute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">band_mapping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SITS.StacAttack.spectral_index" title="Link to this definition"></a></dt>
+<dd><p>Calculate various spectral indices for remote sensing data using the
+spyndex and awesome-spectral-indices libraries.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>xr.Dataset</em>) – The xarray.Dataset containing spectral bands.</p></li>
+<li><p><strong>band_mapping</strong> (<em>dict</em><em>, </em><em>optional</em>) – A dictionary to map your dataset’s
+band names to spyndex’s standard band names (e.g., {‘R’: ‘B04’, ‘N’: ‘B08’}).
+If None, it assumes your dataset’s variable names are directly
+usable by spyndex.</p></li>
+<li><p><strong>**kwargs</strong> – other arguments</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>time-series image <code class="docutils literal notranslate"><span class="pre">StacAttack.indices</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>xarray.Dataarray</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">stacObj</span><span class="o">.</span><span class="n">spectral_index</span><span class="p">(</span><span class="s1">&#39;NDVI&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;B04&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">:</span> <span class="s1">&#39;B08&#39;</span><span class="p">})</span>
 </pre></div>
 </div>
 </dd></dl>

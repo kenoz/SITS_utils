@@ -485,6 +485,24 @@ class StacAttack:
 
     def spectral_index(self, indices_to_compute: str | list[str],
                        band_mapping: dict = None, **kwargs):
+        """
+        Calculate various spectral indices for remote sensing data using the 
+        spyndex and awesome-spectral-indices libraries.
+
+        Args:
+            dataset (xr.Dataset): The xarray.Dataset containing spectral bands.
+            band_mapping (dict, optional): A dictionary to map your dataset's
+                band names to spyndex's standard band names (e.g., {'R': 'B04', 'N': 'B08'}).
+                If None, it assumes your dataset's variable names are directly
+                usable by spyndex.
+            **kwargs: other arguments
+
+        Returns:
+            xarray.Dataarray: time-series image ``StacAttack.indices``.
+
+        Example:
+            >>> stacObj.spectral_index('NDVI', {'R': 'B04', 'N': 'B08'})
+        """
         si = SpectralIndex(self.cube, band_mapping)
         self.indices = si.calculate_indices(indices_to_compute)
 
