@@ -7,11 +7,11 @@ import os
 import sys
 from pathlib import Path
 
-import sits
+#import sits
 
 # Add the project root to sys.path
 #sys.path.insert(0, os.path.join(str(project_root), 'sits'))
-#sys.path.insert(0, os.path.abspath('../../'))
+sys.path.insert(0, os.path.abspath('../../sits/'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
