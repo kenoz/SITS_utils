@@ -30,5 +30,5 @@ formats:
 python:
   install:
     - method: pip
-      path: .
+      path: ./sits
     - requirements: ./requirements-dev.txt

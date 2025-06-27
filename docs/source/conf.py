@@ -15,8 +15,8 @@ docs_dir = docs_source_dir.parent
 project_root = docs_dir.parent
 
 # Add the project root to sys.path
-sys.path.insert(0, os.path.join(str(project_root), 'sits'))
-#sys.path.insert(0, os.path.abspath('../../sits/'))
+#sys.path.insert(0, os.path.join(str(project_root), 'sits'))
+sys.path.insert(0, os.path.abspath('../../sits/'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
