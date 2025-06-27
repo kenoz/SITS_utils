@@ -1,3 +1,3 @@
-from sits.sits import *
-#import sits.SITS as sits
+#from sits.sits import *
+import sits
 import sits.export as export
