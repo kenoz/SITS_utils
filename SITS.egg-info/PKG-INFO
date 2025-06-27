@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: SITS
-Version: 0.6.0
+Version: 0.6.1
 Summary: Get satellite images time series
 Home-page: https://github.com/kenoz/SITS_utils
 Author: Kenji Ose
@@ -42,9 +42,9 @@ Requires-Dist: geopandas; extra == "dev"
 Requires-Dist: rasterio; extra == "dev"
 Requires-Dist: shapely; extra == "dev"
 Requires-Dist: geogif; extra == "dev"
+Requires-Dist: spyndex; extra == "dev"
 Requires-Dist: sphinx; extra == "dev"
 Requires-Dist: sphinx-autobuild; extra == "dev"
 Requires-Dist: sphinx-rtd-theme; extra == "dev"
-Requires-Dist: spyndex; extra == "dev"
 
 Create satellite time-series patches from STAC catalogs

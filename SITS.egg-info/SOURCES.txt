@@ -6,8 +6,8 @@ SITS.egg-info/SOURCES.txt
 SITS.egg-info/dependency_links.txt
 SITS.egg-info/requires.txt
 SITS.egg-info/top_level.txt
-sits/SITS.py
 sits/__init__.py
 sits/display.py
 sits/export.py
 sits/indices.py
+sits/sits.py

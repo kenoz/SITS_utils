@@ -28,7 +28,7 @@ geopandas
 rasterio
 shapely
 geogif
+spyndex
 sphinx
 sphinx-autobuild
 sphinx-rtd-theme
-spyndex
