@@ -1,5 +1,15 @@
 The SITS Module
 ===============
+
+sits.sits
+---------------
+
+.. currentmodule:: sits.sits
+
+.. autosummary::
+
+    def_geobox
+    Gdfgeom
    
 The def_geobox function
 ***********************
