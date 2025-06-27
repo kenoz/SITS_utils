@@ -1,18 +1,18 @@
 The SITS Module
 ===============
 
-.. automodule:: sits.sits
+.. automodule:: sits
    :members:
    :undoc-members:
    :show-inheritance:
    
 The def_geobox function
 ***********************
-.. autofunction:: sits.sits.def_geobox
+.. autofunction:: sits.def_geobox
 
 The Gdfgeom class
 *****************
-.. autoclass:: sits.sits.Gdfgeom
+.. autoclass:: sits.Gdfgeom
    :members:
    :undoc-members:
    :show-inheritance:
