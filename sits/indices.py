@@ -12,20 +12,17 @@ class SpectralIndex:
     possibly an xarray.Dataarray.
     It handles mapping user-defined band names to the generic band names
     required by spyndex.
+
+    Args:
+    dataset (xr.Dataset): The xarray.Dataset containing spectral bands.
+    band_mapping (dict, optional): A dictionary to map your dataset's
+                                   band names to spyndex's standard band
+                                   names (e.g., {'R': 'B04', 'N': 'B08'}).
+                                   If None, it assumes your dataset's
+                                   variable names are directly usable by spyndex.
     """
 
     def __init__(self, dataset: xr.Dataset, band_mapping: dict = None):
-        """
-        Initializes the SpectralIndex Calculator.
-
-        Args:
-            dataset (xr.Dataset): The xarray.Dataset containing spectral bands.
-            band_mapping (dict, optional): A dictionary to map your dataset's
-                                           band names to spyndex's standard band
-                                           names (e.g., {'R': 'B04', 'N': 'B08'}).
-                                           If None, it assumes your dataset's
-                                           variable names are directly usable by spyndex.
-        """
         if not isinstance(dataset, xr.Dataset):
             raise TypeError("Input 'dataset' must be an xarray.Dataset.")
 
