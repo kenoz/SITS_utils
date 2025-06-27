@@ -15,7 +15,7 @@ docs_dir = docs_source_dir.parent
 project_root = docs_dir.parent
 
 # Add the project root to sys.path
-sys.path.insert(0, str(project_root))
+sys.path.insert(0, os.path.join(str(project_root), 'sits'))
 #sys.path.insert(0, os.path.abspath('../../sits/'))
 
 # -- Project information -----------------------------------------------------
@@ -42,7 +42,7 @@ exclude_patterns = ['_build',
 
 autodoc_default_options = {
     'members': True,
-    'undoc-members': True, # Good for debugging, remove later if you don't want undoc members
+    'undoc-members': True,
     'private-members': False,
     'special-members': '__init__',
     'show-inheritance': True,
@@ -52,4 +52,4 @@ autodoc_default_options = {
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
-html_static_path = ['_static']
+#html_static_path = ['_static']
