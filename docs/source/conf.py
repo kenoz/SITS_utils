@@ -7,16 +7,11 @@ import os
 import sys
 from pathlib import Path
 
-# Path to the 'source' directory (where conf.py is)
-docs_source_dir = Path(__file__).parent
-# Go up one level to 'docs'
-docs_dir = docs_source_dir.parent
-# Go up one more level to 'your_project_root/'
-project_root = docs_dir.parent
+import sits
 
 # Add the project root to sys.path
 #sys.path.insert(0, os.path.join(str(project_root), 'sits'))
-sys.path.insert(0, os.path.abspath('../../'))
+#sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -29,27 +24,14 @@ release = '0.6.0'
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ['sphinx.ext.napoleon',
-              'sphinx.ext.autodoc',
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.napoleon',
               'sphinx.ext.autosummary',]
 
 templates_path = ['_templates']
-#exclude_patterns = ['_build',
-#                    'Thumbs.db',
-#                    '.DS_Store',
-#                    '**.ipynb_checkpoints'
-#                   ]
-
-#autodoc_default_options = {
-#    'members': True,
-#    'undoc-members': True,
-#    'private-members': False,
-#    'special-members': '__init__',
-#    'show-inheritance': True,
-#}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'sphinx_rtd_theme'
-#html_static_path = ['_static']
+html_static_path = ['_static']
