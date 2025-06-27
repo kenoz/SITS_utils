@@ -36,6 +36,14 @@ extensions = ['sphinx.ext.napoleon',
 templates_path = ['_templates']
 exclude_patterns = []
 
+autodoc_default_options = {
+    'members': True,
+    'undoc-members': True, # Good for debugging, remove later if you don't want undoc members
+    'private-members': False,
+    'special-members': '__init__',
+    'show-inheritance': True,
+}
+
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
