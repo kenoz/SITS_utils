@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The SITS Module &mdash; sits 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8fa8b3e9"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sits sub-packages" href="sits_sub.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            sits
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">The SITS Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-def-geobox-function">The def_geobox function</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sits.def_geobox"><code class="docutils literal notranslate"><span class="pre">def_geobox()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">The def_geobox function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">The def_geobox function</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sits.sits.def_geobox"><code class="docutils literal notranslate"><span class="pre">def_geobox()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#the-gdfgeom-class">The Gdfgeom class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#sits.Gdfgeom"><code class="docutils literal notranslate"><span class="pre">Gdfgeom</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sits.Gdfgeom.buffer"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.buffer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sits.Gdfgeom.bbox"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.bbox</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sits.Gdfgeom.set_bbox"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.set_bbox()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sits.Gdfgeom.set_buffer"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.set_buffer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sits.Gdfgeom.to_vector"><code class="docutils literal notranslate"><span class="pre">Gdfgeom.to_vector()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sits_sub.html">sits sub-packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="export.html">The Export Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">sits</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">The SITS Module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/sits.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-sits-module">
+<h1>The SITS Module<a class="headerlink" href="#the-sits-module" title="Link to this heading"></a></h1>
+<section id="the-def-geobox-function">
+<h2>The def_geobox function<a class="headerlink" href="#the-def-geobox-function" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="sits.def_geobox">
+<span class="sig-prename descclassname"><span class="pre">sits.</span></span><span class="sig-name descname"><span class="pre">def_geobox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3035</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sits.def_geobox" title="Link to this definition"></a></dt>
+<dd><p>This function creates an odc geobox.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bbox</strong> (<em>list</em>) – coordinates of a bounding box in CRS units.</p></li>
+<li><p><strong>crs_out</strong> (<em>str</em><em>, </em><em>optional</em>) – CRS (EPSG code) of output coordinates. Defaults to 3035.</p></li>
+<li><p><strong>resolution</strong> (<em>float</em><em>, </em><em>optional</em>) – output spatial resolution in CRS units. Defaults to 10 (meters).</p></li>
+<li><p><strong>shape</strong> (<em>tuple</em><em>, </em><em>optional</em>) – output image size in pixels (x, y). Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>geobox object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>odc.geo.geobox.GeoBox</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bbox</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">220</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">crs_out</span> <span class="o">=</span> <span class="mi">3035</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># output geobox closest to the input bbox</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geobox</span> <span class="o">=</span> <span class="n">def_geobox</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">crs_out</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># output geobox with the same dimensions (number of rows and columns)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># as the input shape.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geobox</span> <span class="o">=</span> <span class="n">def_geobox</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">crs_out</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="id1">
+<h2>The def_geobox function<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+</section>
+<section id="id2">
+<h2>The def_geobox function<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="sits.sits.def_geobox">
+<span class="sig-prename descclassname"><span class="pre">sits.sits.</span></span><span class="sig-name descname"><span class="pre">def_geobox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bbox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3035</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sits.sits.def_geobox" title="Link to this definition"></a></dt>
+<dd><p>This function creates an odc geobox.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bbox</strong> (<em>list</em>) – coordinates of a bounding box in CRS units.</p></li>
+<li><p><strong>crs_out</strong> (<em>str</em><em>, </em><em>optional</em>) – CRS (EPSG code) of output coordinates. Defaults to 3035.</p></li>
+<li><p><strong>resolution</strong> (<em>float</em><em>, </em><em>optional</em>) – output spatial resolution in CRS units. Defaults to 10 (meters).</p></li>
+<li><p><strong>shape</strong> (<em>tuple</em><em>, </em><em>optional</em>) – output image size in pixels (x, y). Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>geobox object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>odc.geo.geobox.GeoBox</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bbox</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">220</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">crs_out</span> <span class="o">=</span> <span class="mi">3035</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># output geobox closest to the input bbox</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geobox</span> <span class="o">=</span> <span class="n">def_geobox</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">crs_out</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># output geobox with the same dimensions (number of rows and columns)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># as the input shape.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geobox</span> <span class="o">=</span> <span class="n">def_geobox</span><span class="p">(</span><span class="n">bbox</span><span class="p">,</span> <span class="n">crs_out</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="the-gdfgeom-class">
+<h2>The Gdfgeom class<a class="headerlink" href="#the-gdfgeom-class" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="sits.Gdfgeom">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sits.</span></span><span class="sig-name descname"><span class="pre">Gdfgeom</span></span><a class="headerlink" href="#sits.Gdfgeom" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class aims to calculate vector’s buffers and bounding box.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sits.Gdfgeom.buffer">
+<span class="sig-name descname"><span class="pre">buffer</span></span><a class="headerlink" href="#sits.Gdfgeom.buffer" title="Link to this definition"></a></dt>
+<dd><p>vector layer with buffer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="sits.Gdfgeom.bbox">
+<span class="sig-name descname"><span class="pre">bbox</span></span><a class="headerlink" href="#sits.Gdfgeom.bbox" title="Link to this definition"></a></dt>
+<dd><p>vector layer’s bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sits.Gdfgeom.set_bbox">
+<span class="sig-name descname"><span class="pre">set_bbox</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sits.Gdfgeom.set_bbox" title="Link to this definition"></a></dt>
+<dd><p>Calculate the bounding box for each <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>’s GeoDataFrame feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_attr</strong> (<em>str</em>) – GeoDataFrame attribute of class <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>.
+Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – ouput filepath. Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeoDataFrame object <code class="docutils literal notranslate"><span class="pre">Csv2gdf.bbox</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">set_bbox</span><span class="p">(</span><span class="s1">&#39;buffer&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sits.Gdfgeom.set_buffer">
+<span class="sig-name descname"><span class="pre">set_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sits.Gdfgeom.set_buffer" title="Link to this definition"></a></dt>
+<dd><p>Calculate buffer geometries for each <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>’s GeoDataFrame feature.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_attr</strong> (<em>str</em>) – GeoDataFrame attribute of class <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>.
+Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
+<li><p><strong>radius</strong> (<em>float</em>) – buffer distance in CRS unit.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – ouput filepath. Defaults to <cite>None</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>GeoDataFrame object <code class="docutils literal notranslate"><span class="pre">Csv2gdf.buffer</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>GeoDataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">set_buffer</span><span class="p">(</span><span class="s1">&#39;gdf&#39;</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="sits.Gdfgeom.to_vector">
+<span class="sig-name descname"><span class="pre">to_vector</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df_attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outfile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">driver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GeoJSON'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sits.Gdfgeom.to_vector" title="Link to this definition"></a></dt>
+<dd><p>Write a <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>’s GeoDataFrame layer as a vector file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df_attr</strong> (<em>str</em>) – GeoDataFrame attribute of class <code class="docutils literal notranslate"><span class="pre">Csv2gdf</span></code>.
+Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
+<li><p><strong>outfile</strong> (<em>str</em><em>, </em><em>optional</em>) – Output path. Defaults to <cite>None</cite>.</p></li>
+<li><p><strong>driver</strong> (<em>str</em><em>, </em><em>optional</em>) – Output vector file format (see <em>GDAL/OGR Vector drivers</em>: <a class="reference external" href="https://gdal.org/drivers/vector/index.html">https://gdal.org/drivers/vector/index.html</a>). Defaults to “GeoJSON”.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;mygeom&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">to_vector</span><span class="p">(</span><span class="s1">&#39;gdf&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;output/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">_gdf.geojson&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">to_vector</span><span class="p">(</span><span class="s1">&#39;buffer&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;output/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">_buffer.geojson&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">geotable</span><span class="o">.</span><span class="n">to_vector</span><span class="p">(</span><span class="s1">&#39;bbox&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;output/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">_bbox.geojson&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sits_sub.html" class="btn btn-neutral float-right" title="sits sub-packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright %Y, Kenji Ose.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

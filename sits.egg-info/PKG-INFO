@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: sits
-Version: 0.6.3
+Version: 0.6.4
 Summary: Online processing of Satellite Image Time Series
 Home-page: https://github.com/kenoz/SITS_utils
 Author: Kenji Ose
@@ -37,6 +37,7 @@ Requires-Dist: pytest; extra == "tests"
 Provides-Extra: docs
 Requires-Dist: sphinx==7.4.7; extra == "docs"
 Requires-Dist: dask; extra == "docs"
+Requires-Dist: pyarrow; extra == "docs"
 Requires-Dist: sphinx_rtd_theme==2.0.0; extra == "docs"
 Requires-Dist: matplotlib==3.9.1; extra == "docs"
 Requires-Dist: sphinx-gallery==0.17.0; extra == "docs"

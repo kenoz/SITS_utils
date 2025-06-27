@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Introduction &mdash; sits 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8fa8b3e9"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="The SITS Module" href="sits.html" />
+    <link rel="prev" title="Welcome to sits’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            sits
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#motivation">Motivation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#limitations">Limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="sits.html">The SITS Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sits_sub.html">sits sub-packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="export.html">The Export Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">sits</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/intro.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">SITS</span></code> is a high-level Python package which aims to ease the extraction of Satellite Images Time Series (SITS) referenced in STAC catalogs. For each given point or polygon, it delivers image or csv files, with specified dimensions if necessary (e.g. deep learning patches).</p>
+<section id="motivation">
+<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading"></a></h2>
+<p>This Python package has been developed for those who want to extract satellite information without spending too much time to understand how to handle pyStac api and some other geospatial librairies. Now the tool proposes 2 modules:</p>
+<ul class="simple">
+<li><p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">sits</span></code> is the core module for requesting and downloading satellite time-series.</p></li>
+</ul>
+<p>It contains the following classes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">sits.Csv2gdf</span></code> allows you to convert a csv table with coordinates into a geodataframe object.</p></li>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">sits.StacAttack</span></code> requests STAC catalog to extract the satellite information needed. It also applies binary masks and gap-fill the nodata pixels.</p></li>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">sits.Labels</span></code> creates labels’ image for training/testing.</p></li>
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">sits.Multiproc</span></code> enables the launch of <cite>SITS.StacAttack</cite> in a mutiprocessing mode.</p></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>The <code class="xref py py-mod docutils literal notranslate"><span class="pre">export</span></code> is a sub-module for loading netcdf file and exporting it as animated gif file.</p></li>
+</ul>
+<p>It contains the following class:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">export.Sits_ds</span></code> allows you to load a netcdf file as an <cite>xarray.Dataset</cite> and convert it as an animated gif file.</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="limitations">
+<h2>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>The current implementation has been developed and tested in Python 3.</p></li>
+<li><p>The developments are still in progress.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to sits’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sits.html" class="btn btn-neutral float-right" title="The SITS Module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright %Y, Kenji Ose.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

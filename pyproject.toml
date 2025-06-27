@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sits"
-version = "0.6.3"
+version = "0.6.4"
 description = "Online processing of Satellite Image Time Series"
 readme = "README.rst"
 keywords = ["xarray", "datacube", "sits", "satellite", "time series", "STAC"]
@@ -50,6 +50,7 @@ tests = ["pytest"]
 docs = [
     "sphinx==7.4.7",
     "dask",
+    "pyarrow",
     "sphinx_rtd_theme==2.0.0",
     "matplotlib==3.9.1",
     "sphinx-gallery==0.17.0"
