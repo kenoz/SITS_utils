@@ -19,7 +19,7 @@ from shapely.geometry import box
 # Dask
 import dask
 # Local imports
-from . import indices
+from .indices import SpectralIndex
 
 
 def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
@@ -503,7 +503,7 @@ class StacAttack:
         Example:
             >>> stacObj.spectral_index('NDVI', {'R': 'B04', 'N': 'B08'})
         """
-        si = indices.SpectralIndex(self.cube, band_mapping)
+        si = SpectralIndex(self.cube, band_mapping)
         self.indices = si.calculate_indices(indices_to_compute)
 
     def __to_df(self):
