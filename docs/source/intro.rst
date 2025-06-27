@@ -11,10 +11,10 @@ This Python package has been developed for those who want to extract satellite i
 * The :mod:`sits` is the core module for requesting and downloading satellite time-series. 
 It contains the following classes:
 
-    * The :class:`SITS.Csv2gdf` allows you to convert a csv table with coordinates into a geodataframe object.
-    * The :class:`SITS.StacAttack` requests STAC catalog to extract the satellite information needed. It also applies binary masks and gap-fill the nodata pixels.
-    * The :class:`SITS.Labels` creates labels' image for training/testing.
-    * The :class:`SITS.Multiproc` enables the launch of `SITS.StacAttack` in a mutiprocessing mode.   
+    * The :class:`sits.Csv2gdf` allows you to convert a csv table with coordinates into a geodataframe object.
+    * The :class:`sits.StacAttack` requests STAC catalog to extract the satellite information needed. It also applies binary masks and gap-fill the nodata pixels.
+    * The :class:`sits.Labels` creates labels' image for training/testing.
+    * The :class:`sits.Multiproc` enables the launch of `SITS.StacAttack` in a mutiprocessing mode.   
 
 * The :mod:`export` is a sub-module for loading netcdf file and exporting it as animated gif file. 
 It contains the following class:
