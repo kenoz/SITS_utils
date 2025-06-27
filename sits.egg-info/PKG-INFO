@@ -1,0 +1,45 @@
+Metadata-Version: 2.4
+Name: sits
+Version: 0.6.3
+Summary: Online processing of Satellite Image Time Series
+Home-page: https://github.com/kenoz/SITS_utils
+Author: Kenji Ose
+Author-email: Kenji Ose <kenji.ose@ec.europa.eu>
+License: GPL-3.0
+Project-URL: Homepage, https://github.com/kenoz/SITS_utils.git
+Keywords: xarray,datacube,sits,satellite,time series,STAC
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Requires-Python: >=3.9
+Description-Content-Type: text/x-rst
+License-File: LICENSE
+Requires-Dist: dask
+Requires-Dist: pandas
+Requires-Dist: numpy
+Requires-Dist: datetime
+Requires-Dist: pystac_client
+Requires-Dist: pystac==1.11.0
+Requires-Dist: planetary_computer
+Requires-Dist: xarray
+Requires-Dist: odc-stac
+Requires-Dist: odc-geo
+Requires-Dist: geopandas
+Requires-Dist: rasterio
+Requires-Dist: shapely
+Requires-Dist: geogif
+Requires-Dist: netCDF4
+Requires-Dist: spyndex
+Provides-Extra: tests
+Requires-Dist: pytest; extra == "tests"
+Provides-Extra: docs
+Requires-Dist: sphinx==7.4.7; extra == "docs"
+Requires-Dist: dask; extra == "docs"
+Requires-Dist: sphinx_rtd_theme==2.0.0; extra == "docs"
+Requires-Dist: matplotlib==3.9.1; extra == "docs"
+Requires-Dist: sphinx-gallery==0.17.0; extra == "docs"
+Dynamic: author
+Dynamic: home-page
+Dynamic: license-file
