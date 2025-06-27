@@ -3,50 +3,50 @@ sits package
 
 The def_geobox function
 ***********************
-.. autofunction:: SITS.def_geobox
+.. autofunction:: sits.def_geobox
 
 The compare_crs function
 ***********************
-.. autofunction:: SITS.compare_crs
+.. autofunction:: sits.compare_crs
 
 The Gdfgeom class
 *****************
-.. autoclass:: SITS.Gdfgeom
+.. autoclass:: sits.Gdfgeom
    :members:
    :undoc-members:
    :show-inheritance:
    
 The Vec2gdf class
 *****************
-.. autoclass:: SITS.Vec2gdf
+.. autoclass:: sits.Vec2gdf
    :members:
    :undoc-members:
    :show-inheritance:
 
 The Csv2gdf class
 *****************
-.. autoclass:: SITS.Csv2gdf
+.. autoclass:: sits.Csv2gdf
    :members:
    :undoc-members:
    :show-inheritance:
 
 The StacAttack class
 ********************
-.. autoclass:: SITS.StacAttack
+.. autoclass:: sits.StacAttack
    :members:
    :undoc-members:
    :show-inheritance:
 
 The Labels class
 ****************
-.. autoclass:: SITS.Labels
+.. autoclass:: sits.Labels
    :members:
    :undoc-members:
    :show-inheritance:
 
 The Multiproc class
 ****************
-.. autoclass:: SITS.Multiproc
+.. autoclass:: sits.Multiproc
    :members:
    :undoc-members:
    :show-inheritance:
