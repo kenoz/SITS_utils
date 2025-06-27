@@ -1,10 +1,5 @@
 The SITS Module
 ===============
-
-.. automodule:: sits
-   :members:
-   :undoc-members:
-   :show-inheritance:
    
 The def_geobox function
 ***********************
