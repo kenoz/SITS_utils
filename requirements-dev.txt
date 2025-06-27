@@ -15,4 +15,3 @@ spyndex
 sphinx
 sphinx-autobuild
 sphinx-rtd-theme
-sphinx.ext.napoleon

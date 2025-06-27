@@ -46,6 +46,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sits.html">The SITS Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sits_sub.html">sits sub-packages</a></li>
 <li class="toctree-l1"><a class="reference internal" href="export.html">The Export Module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 </ul>
@@ -232,7 +233,7 @@ Can be one of the following: ‘gdf’, ‘buffer’, ‘bbox’.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="sits.Vec2gdf">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sits.</span></span><span class="sig-name descname"><span class="pre">Vec2gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sits.Vec2gdf" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="sits.html#id1" title="sits.sits.Gdfgeom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gdfgeom</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#sits.Gdfgeom" title="sits.sits.Gdfgeom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gdfgeom</span></code></a></p>
 <p>This class aims to load a vector file as a GeoDataFrame object.
 It inherits methods and attributes from <code class="docutils literal notranslate"><span class="pre">Gdfgeom</span></code> class.</p>
 <p class="rubric">Example</p>
@@ -253,7 +254,7 @@ It inherits methods and attributes from <code class="docutils literal notranslat
 <dl class="py class">
 <dt class="sig sig-object py" id="sits.Csv2gdf">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">sits.</span></span><span class="sig-name descname"><span class="pre">Csv2gdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs_in</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">id_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'no_id'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#sits.Csv2gdf" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="sits.html#id1" title="sits.sits.Gdfgeom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gdfgeom</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#sits.Gdfgeom" title="sits.sits.Gdfgeom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Gdfgeom</span></code></a></p>
 <p>This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
 It inherits methods and attributes from <code class="docutils literal notranslate"><span class="pre">Gdfgeom</span></code> class</p>
 <dl class="py attribute">
