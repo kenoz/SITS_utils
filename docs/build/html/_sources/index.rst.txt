@@ -7,12 +7,12 @@ Welcome to sits's documentation!
 ================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
 
    intro
    sits
-   sits_sub
+   export
    examples
 
 Indices and tables
