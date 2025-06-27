@@ -1,5 +1,3 @@
-# export.rst
-
 The Export Module
 =================
 

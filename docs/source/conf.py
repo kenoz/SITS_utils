@@ -16,7 +16,7 @@ project_root = docs_dir.parent
 
 # Add the project root to sys.path
 #sys.path.insert(0, os.path.join(str(project_root), 'sits'))
-sys.path.insert(0, os.path.abspath('../../sits/'))
+sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -40,13 +40,13 @@ templates_path = ['_templates']
 #                    '**.ipynb_checkpoints'
 #                   ]
 
-autodoc_default_options = {
-    'members': True,
-    'undoc-members': True,
-    'private-members': False,
-    'special-members': '__init__',
-    'show-inheritance': True,
-}
+#autodoc_default_options = {
+#    'members': True,
+#    'undoc-members': True,
+#    'private-members': False,
+#    'special-members': '__init__',
+#    'show-inheritance': True,
+#}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
