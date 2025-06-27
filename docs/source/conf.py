@@ -5,9 +5,18 @@
 
 import os
 import sys
+from pathlib import Path
 
-sys.path.insert(0, os.path.abspath('../../sits/'))
+# Path to the 'source' directory (where conf.py is)
+docs_source_dir = Path(__file__).parent
+# Go up one level to 'docs'
+docs_dir = docs_source_dir.parent
+# Go up one more level to 'your_project_root/'
+project_root = docs_dir.parent
 
+# Add the project root to sys.path
+sys.path.insert(0, str(project_root))
+#sys.path.insert(0, os.path.abspath('../../sits/'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
