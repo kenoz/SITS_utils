@@ -4,6 +4,7 @@ sits.sits.StacAttack
 .. currentmodule:: sits.sits
 
 .. autoclass:: StacAttack
-
-   .. automethod:: gapfill
+   :members:
+   :undoc-members:
+   :show-inheritance:
    
