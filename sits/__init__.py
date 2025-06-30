@@ -1,3 +1,7 @@
-#from sits.sits import *
-import sits.sits as sits
-import sits.export as export
+"""spyndex - Awesome Spectral Indices in Python"""
+
+__version__ = "0.6.4"
+__author__ = "Kenji Ose <kenji.ose@ec.europa.eu>"
+__all__ = []
+
+from . import sits, export
