@@ -1,9 +1,9 @@
-﻿sits.sits.StacAttack
-====================
+﻿sits.sits.Labels
+================
 
 .. currentmodule:: sits.sits
 
-.. autoclass:: StacAttack
+.. autoclass:: Labels
 
    
    .. automethod:: __init__
@@ -13,9 +13,8 @@
 
    .. autosummary::
    
-      StacAttack.gapfill
-   
-
+      ~Labels.__init__
+      ~Labels.to_raster
    
    
 

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; sits 0.6.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8fa8b3e9"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="sits.sits.def_geobox" href="api_ref/sits.sits.def_geobox.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            sits
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sits-sits">sits.sits</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api_ref/sits.sits.def_geobox.html">sits.sits.def_geobox</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ref/sits.sits.StacAttack.html">sits.sits.StacAttack</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ref/sits.sits.Gdfgeom.html">sits.sits.Gdfgeom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ref/sits.sits.Vec2gdf.html">sits.sits.Vec2gdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ref/sits.sits.Csv2gdf.html">sits.sits.Csv2gdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ref/sits.sits.Labels.html">sits.sits.Labels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api_ref/sits.sits.Multiproc.html">sits.sits.Multiproc</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">sits</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/sits.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<p>Here you will find all sits methods:</p>
+<section id="sits-sits">
+<h2>sits.sits<a class="headerlink" href="#sits-sits" title="Link to this heading"></a></h2>
+<p>Core module of spyndex. All functions here are automatically loaded with <code class="code docutils literal notranslate"><span class="pre">import</span> <span class="pre">sits</span></code>
+and can be called from it:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="api_ref/sits.sits.def_geobox.html#sits.sits.def_geobox" title="sits.sits.def_geobox"><code class="xref py py-obj docutils literal notranslate"><span class="pre">def_geobox</span></code></a>(bbox[, crs_out, resolution, shape])</p></td>
+<td><p>This function creates an odc geobox.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api_ref/sits.sits.StacAttack.html#sits.sits.StacAttack" title="sits.sits.StacAttack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StacAttack</span></code></a>([provider, collection, key_sat, ...])</p></td>
+<td><p>This class aims to request time-series datasets on STAC catalog and store it as image or csv files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api_ref/sits.sits.Gdfgeom.html#sits.sits.Gdfgeom" title="sits.sits.Gdfgeom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gdfgeom</span></code></a>()</p></td>
+<td><p>This class aims to calculate vector's buffers and bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api_ref/sits.sits.Vec2gdf.html#sits.sits.Vec2gdf" title="sits.sits.Vec2gdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Vec2gdf</span></code></a>(vec_file)</p></td>
+<td><p>This class aims to load a vector file as a GeoDataFrame object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api_ref/sits.sits.Csv2gdf.html#sits.sits.Csv2gdf" title="sits.sits.Csv2gdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Csv2gdf</span></code></a>(csv_file, x_name, y_name, crs_in[, ...])</p></td>
+<td><p>This class aims to load csv tables with geographic coordinates into GeoDataFrame object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="api_ref/sits.sits.Labels.html#sits.sits.Labels" title="sits.sits.Labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Labels</span></code></a>(geolayer)</p></td>
+<td><p>This class aims to produce a image of labels from a vector file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="api_ref/sits.sits.Multiproc.html#sits.sits.Multiproc" title="sits.sits.Multiproc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Multiproc</span></code></a>(array_type, fext, outdir)</p></td>
+<td><p>This class aims to parallelize the production of images or patches.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_ref/sits.sits.def_geobox.html" class="btn btn-neutral float-right" title="sits.sits.def_geobox" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright %Y, Kenji Ose.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
