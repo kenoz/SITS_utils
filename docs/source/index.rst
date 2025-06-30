@@ -12,8 +12,6 @@ Welcome to sits's documentation!
 
    intro
    sits
-   sits_sub
-   export
    examples
 
 Indices and tables
