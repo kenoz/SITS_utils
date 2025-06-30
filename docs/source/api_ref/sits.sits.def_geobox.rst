@@ -1,6 +1,6 @@
-sits.sits.def_geobox
-==============================
+﻿sits.sits.def\_geobox
+=====================
 
 .. currentmodule:: sits.sits
 
-..  autofunction:: def_geobox
+.. autofunction:: def_geobox

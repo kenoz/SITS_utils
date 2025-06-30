@@ -12,6 +12,7 @@ rasterio
 shapely
 geogif
 spyndex
+pyarrow
 sphinx
 sphinx-autobuild
 sphinx-rtd-theme

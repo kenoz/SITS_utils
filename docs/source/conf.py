@@ -13,8 +13,6 @@ from pathlib import Path
 #sys.path.insert(0, os.path.join(str(project_root), 'sits'))
 sys.path.insert(0, os.path.abspath('../..'))
 
-project_root = os.path.abspath('../..')
-
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
