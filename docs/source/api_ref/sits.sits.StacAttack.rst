@@ -4,7 +4,11 @@ sits.sits.StacAttack
 .. currentmodule:: sits.sits
 
 .. autoclass:: StacAttack
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   
+
+.. rubric:: Methods
+
+   .. autosummary::
+
+      ~StacAttack.searchItems
+
+   .. automethod:: searchItems
