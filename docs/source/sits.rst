@@ -11,14 +11,37 @@ and can be called from it:
 
 .. currentmodule:: sits.sits
 
-.. autosummary::
-   :toctree: api_ref
-
-   def_geobox
-   StacAttack
-   Gdfgeom
-   Vec2gdf
-   Csv2gdf
-   Labels
-   Multiproc
+.. autofunction:: def_geobox
+   :members:
+   :undoc-members:
+   :show-inheritance:
    
+.. autoclass:: StacAttack
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Gdfgeom
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Vec2gdf
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Csv2gdf
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Labels
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+.. autoclass:: Multiproc
+   :members:
+   :undoc-members:
+   :show-inheritance:

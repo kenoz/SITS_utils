@@ -6,6 +6,11 @@
 Welcome to sits's documentation!
 ================================
 
+.. image:: _static/logo_sits.png
+   :alt: SITS logo
+   :width: 300px
+   :align: center
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
