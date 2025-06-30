@@ -16,3 +16,9 @@ and can be called from it:
 
    def_geobox
    StacAttack
+   Gdfgeom
+   Vec2gdf
+   Csv2gdf
+   Labels
+   Multiproc
+   

@@ -13,3 +13,4 @@ shapely
 geogif
 netCDF4
 spyndex
+pyarrow

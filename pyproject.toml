@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sits"
-version = "0.6.4"
+version = "0.6.5"
 description = "Online processing of Satellite Image Time Series"
 readme = "README.rst"
 keywords = ["xarray", "datacube", "sits", "satellite", "time series", "STAC"]
@@ -58,6 +58,7 @@ docs = [
 
 [tool.setuptools.packages.find]
 where = ["."]
+exclude = ["data*", "test*", "docs*", "examples*", "**/__pycache__"]
 
 [tool.setuptools_scm]
 fallback_version = "9999"

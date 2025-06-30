@@ -1,5 +1,2 @@
-data
 dist
-docs
-examples
 sits
