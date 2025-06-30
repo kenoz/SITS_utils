@@ -1,24 +1,9 @@
-﻿sits.sits.StacAttack
+sits.sits.StacAttack
 ====================
 
 .. currentmodule:: sits.sits
 
 .. autoclass:: StacAttack
 
-   
-   .. automethod:: __init__
-
-   
-   .. rubric:: Methods
-
-   .. autosummary::
-   
-      StacAttack.gapfill
-   
-
-   
-   
-
-   
-   
+   .. automethod:: gapfill
    
