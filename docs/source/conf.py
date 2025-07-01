@@ -26,7 +26,8 @@ release = '0.6.0'
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.napoleon',
-              'sphinx.ext.autosummary',]
+              'sphinx.ext.autosummary',
+              'nbsphinx',]
 
 templates_path = ['_templates']
 
