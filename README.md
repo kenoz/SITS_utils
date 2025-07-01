@@ -1,13 +1,25 @@
 # SITS Python Package
 
-``SITS`` is a high-level Python package which aims to ease the extraction of Satellite Images Time Series (SITS) referenced in STAC catalogs. For each given point or polygon, it delivers image or csv files, with specified dimensions if necessary (e.g. deep learning patches).
+``SITS`` is a high-level Python package designed to simplify the extraction and processing of Satellite Images Time Series (SITS) referenced in STAC catalogs. For any given point or polygon, it efficiently handles data retrieval and, leveraging ``spyndex``, can also calculate a wide array of spectral indices. The processed results can then be exported in various formats, including image files, CSV tables, or dynamic animated GIFs, with customizable dimensions suitable for applications like deep learning.
+
+---
+
+**GitHub**: [https://github.com/kenoz/SITS_utils](https://github.com/kenoz/SITS_utils)
+
+**Documentation**: [https://sits.readthedocs.io/](https://sits.readthedocs.io/)
+
+**PyPI**: [https://pypi.org/project/sits/](hhttps://pypi.org/project/sits/)
+
+**Tutorials**: [https://sits.readthedocs.io/en/latest/tutorials.html](https://sits.readthedocs.io/en/latest/tutorials.html)
+
+---
 
 ## Installation
 
-Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [sits](https://pypi.org/project/SITS/).
+Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [sits](https://pypi.org/project/sits/).
 
 ```bash
-pip install SITS
+pip install sits
 ```
 
 ## Usage
@@ -70,8 +82,8 @@ for index, row in sits_df.bbox.iterrows():
 
 If you want to explore the different ways to use the sits package, we recommend running the following Jupyter notebooks, in [Google Colab](https://colab.research.google.com/) for instance:
 
-- [Example 01](docs/source/tutorials/colab_sits_ex01.ipynb): explain the basics fro retireving a satellite image time series according to a polygon feature.
-- [Example 02](docs/source/tutorials/colab_sits_ex02.ipynb): explain how to parallelize processing tasks in case of multiple vector features. 
+- [Example 01](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex01.ipynb): explain the basics fro retireving a satellite image time series according to a polygon feature.
+- [Example 02](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex02.ipynb): explain how to parallelize processing tasks in case of multiple vector features. 
 
 
 ## Contributing
