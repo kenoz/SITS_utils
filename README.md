@@ -8,7 +8,7 @@
 
 **Documentation**: [https://sits.readthedocs.io/](https://sits.readthedocs.io/)
 
-**PyPI**: [https://pypi.org/project/sits/](hhttps://pypi.org/project/sits/)
+**PyPI**: [https://pypi.org/project/sits/](https://pypi.org/project/sits/)
 
 **Tutorials**: [https://sits.readthedocs.io/en/latest/tutorials.html](https://sits.readthedocs.io/en/latest/tutorials.html)
 
