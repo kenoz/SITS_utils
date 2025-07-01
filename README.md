@@ -1,6 +1,6 @@
 # SITS Python Package
 
-SITS is a Python library for dealing with satellite images time-series.
+``SITS`` is a high-level Python package which aims to ease the extraction of Satellite Images Time Series (SITS) referenced in STAC catalogs. For each given point or polygon, it delivers image or csv files, with specified dimensions if necessary (e.g. deep learning patches).
 
 ## Installation
 
@@ -15,7 +15,7 @@ pip install SITS
 Here is a basic Python script example. For more details, read the documentation [here](https://sits.readthedocs.io/en/latest/index.html).
 
 ```python
-import sits
+from sits import sits
 
 # loads csv table with geographic coordinates into GeoDataFrame object
 csv_file = 'my_file.csv'
@@ -70,8 +70,8 @@ for index, row in sits_df.bbox.iterrows():
 
 If you want to explore the different ways to use the sits package, we recommend running the following Jupyter notebooks, in [Google Colab](https://colab.research.google.com/) for instance:
 
-- [Example 01](examples/colab_sits_ex01.ipynb): explain the basics fro retireving a satellite image time series according to a polygon feature.
-- [Example 02](examples/colab_sits_ex02.ipynb): explain how to parallelize processing tasks in case of multiple vector features. 
+- [Example 01](docs/source/tutorials/colab_sits_ex01.ipynb): explain the basics fro retireving a satellite image time series according to a polygon feature.
+- [Example 02](docs/source/tutorials/colab_sits_ex02.ipynb): explain how to parallelize processing tasks in case of multiple vector features. 
 
 
 ## Contributing

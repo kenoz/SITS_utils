@@ -15,7 +15,7 @@ Welcome to sits's documentation!
    intro
    sits
    export
-   tutorials
+   examples
 
 Indices and tables
 ==================
