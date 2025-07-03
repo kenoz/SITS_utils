@@ -41,5 +41,5 @@ html_logo = "_static/logo_sits.png"
 html_theme_options = {
     'logo_only': True,
     'display_version': False,
-    'style_nav_header_background': "#F7FFE6"
+    'style_nav_header_background': "#64FF96"
 }
