@@ -490,7 +490,7 @@ class StacAttack:
         spyndex and awesome-spectral-indices libraries.
 
         Args:
-            dataset (xr.Dataset): The xarray.Dataset containing spectral bands.
+            indices_to_compute (string or list): The short names (see Spyndex) of spectral indices.
             band_mapping (dict, optional): A dictionary to map your dataset's
                 band names to spyndex's standard band names (e.g., {'R': 'B04', 'N': 'B08'}).
                 If None, it assumes your dataset's variable names are directly
@@ -686,7 +686,7 @@ class Multiproc:
         self.label = 1
 
     def addParams_stacAttack(self, provider='mpc', collection='sentinel-2-l2a', key_sat='s2',
-                             bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07', 
+                             bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07',
                                     'B08', 'B8A', 'B11', 'B12', 'SCL']):
         """
         Add optional parameters for ``StacAttack class instance``
@@ -785,6 +785,28 @@ class Multiproc:
                                'mask_values': mask_values})
         self.gf_kwargs.update({k: v for k, v in kwargs.items()})
 
+    def addParams_spectral_index(self, indices_to_compute: str | list[str],
+                                 band_mapping: dict = None, **kwargs):
+        """
+        Add optional parameters for ``StacAttack.spectral_index()``
+        called through ``Multiproc.fetch_func()``.
+
+        Args:
+            indices_to_compute (string or list): The short names (see Spyndex) of spectral indices.
+            band_mapping (dict, optional): A dictionary to map your dataset's
+                band names to spyndex's standard band names (e.g., {'R': 'B04', 'N': 'B08'}).
+                If None, it assumes your dataset's variable names are directly
+                usable by spyndex.
+            **kwargs: other arguments
+
+        Example:
+            >>> mproc = Multiproc('patch', 'nc', 'output')
+            >>> mproc.addParams_spectral_index('NDVI', {'R': 'B04', 'N': 'B08'})
+        """
+        self.id_kwargs.update({'indices_to_compute': indices_to_compute,
+                               'band_mapping': band_mapping})
+        self.id_kwargs.update({k: v for k, v in kwargs.items()})
+
     def addParams_to_raster(self, ext='tif', driver="GTiff"):
         """
         Add optional parameters for ``Labels.to_raster()``
@@ -800,7 +822,8 @@ class Multiproc:
         """
         self.si_kwargs.update({'ext': ext, 'driver': driver})
 
-    def __fdask(self, aoi_latlong, aoi_proj, gid, mask=False, gapfill=False, **kwargs):
+    def __fdask(self, aoi_latlong, aoi_proj, gid, mask=False, gapfill=False,
+                indices=False, **kwargs):
         """
         Request items in STAC catalog and convert it as an image or patch.
 
@@ -811,6 +834,7 @@ class Multiproc:
             mask (bool, optional): calculate and apply binary masks. Defaults to False.
             gapfill (bool, optional): fill in NaNs (masked pixels) by interpolating according 
                 to different methods. Defaults to False.
+            indices (bool, optional): compute spectral index or indices. Defaults to False.
             **kwargs (dict): additional arguments (i.e. ``StacAttack.searchItems()``,
                                                         ``StacAttack.loadCube()``,
                                                         ``Labels.to_raster()``).
@@ -853,7 +877,8 @@ class Multiproc:
             imgcoll.mask_apply(**self.gf_kwargs)
         if gapfill:
             imgcoll.gapfill()
-
+        if indices:
+            imgcoll.spectral_index(**self.id_kwargs)
         if self.fext == 'nc':
             imgcoll.to_nc(self.outdir, gid)
         elif self.fext == 'csv':
