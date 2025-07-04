@@ -1,7 +1,7 @@
 Introduction
 ============
 
-``SITS`` is a high-level Python package which aims to ease the extraction of Satellite Images Time Series (SITS) referenced in STAC catalogs. For each given point or polygon, it delivers image or csv files, with specified dimensions if necessary (e.g. deep learning patches). 
+``sits`` is a high-level `Python package <https://github.com/kenoz/SITS_utils>`_ which aims to ease the extraction of Satellite Images Time Series (SITS) referenced in STAC catalogs. For each given point or polygon, it delivers image or csv files, with specified dimensions if necessary (e.g. deep learning patches). 
 
 Motivation
 **********
