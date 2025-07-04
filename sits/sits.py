@@ -15,6 +15,7 @@ import geopandas as gpd
 import rasterio
 from rasterio.crs import CRS
 from rasterio.features import rasterize
+import rioxarray
 from shapely.geometry import box
 # Dask
 import dask
@@ -425,6 +426,11 @@ class StacAttack:
             self.geobox = def_geobox(bbox, crs_out, resolution, shape)
 
         self.cube = self.__items_to_array(self.geobox)
+        # set up geospatial reference
+        self.cube.rio.write_transform(self.geobox.transform, inplace=True)
+        self.cube.rio.set_spatial_dims(x_dim="x", y_dim="y", inplace=True)
+        self.cube.rio.write_crs(f"epsg:{crs_out}", inplace=True)
+        self.cube.rio.write_coordinate_system(inplace=True)
 
     def mask(self, mask_array=None, mask_band='SCL', mask_values=[3, 8, 9, 10]):
         """
@@ -543,21 +549,30 @@ class StacAttack:
         else:
             df.to_csv(os.path.join(outdir, f'id_none_{self.arrtype}.csv'))
 
-    def to_nc(self, outdir, gid=None):
+    def to_nc(self, outdir, gid=None, cube='sat'):
         """
         Convert xarray dataset into netcdf file.
 
         Args:
             outdir (str): output directory.
             gid (str, optional): column name of ID. Defaults to `None`.
-            array_type (str, optional): xarray dataset name. Defaults to 'image'.
-                Can be one of the following: 'patch', 'image', 'masked'.
+            cube (str, optional): datacube type. Defaults to 'sat'.
+                Can be one of the following: 'sat', 'indices'.
 
         Example:
             >>> outdir = 'output'
             >>> stacObj.to_nc(outdir)
         """
-        self.cube.to_netcdf(f"{outdir}/fid-{gid}_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
+        for var_name in self.cube.data_vars:
+            self.cube[var_name].attrs['grid_mapping'] = 'spatial_ref'
+
+        if cube == 'sat':
+            with rioxarray.set_options(export_grid_mapping=True):
+                self.cube.to_netcdf(f"{outdir}/fid-{gid}_sat_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
+        if cube == 'indices':
+            self.indices.attrs["grid_mapping"] = "spatial_ref"
+            with rioxarray.set_options(export_grid_mapping=True):
+                self.indices.to_netcdf(f"{outdir}/fid-{gid}_idx_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
 
 
 class Labels:
@@ -667,6 +682,7 @@ class Multiproc:
         self.ma_kwargs = {}
         self.gf_kwargs = {}
         self.tr_kwargs = {}
+        self.id_kwargs = {}
 
     def add_label(self, geolayer, id_field):
         """
@@ -880,14 +896,17 @@ class Multiproc:
         if indices:
             imgcoll.spectral_index(**self.id_kwargs)
         if self.fext == 'nc':
-            imgcoll.to_nc(self.outdir, gid)
+            if indices:
+                imgcoll.to_nc(self.outdir, gid, cube='indices')
+            else:
+                imgcoll.to_nc(self.outdir, gid)
         elif self.fext == 'csv':
             imgcoll.to_csv(self.outdir, gid, id_point='station_id')
 
         if self.label == 1:
             labr = Labels(self.geolayer)
             filename = f"label_{self.id_field}_{gid}"
-            labr.to_raster(self.id_field, imgcoll.geobox, filename, 
+            labr.to_raster(self.id_field, imgcoll.geobox, filename,
                            self.outdir, **self.tr_kwargs)
 
     def fetch_func(self, aoi_latlong, aoi_proj, gid, mask=False, gapfill=False, **kwargs):

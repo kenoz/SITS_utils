@@ -1,6 +1,6 @@
-# SITS Python Package
+# Sits Python Package
 
-``SITS`` is a high-level Python package designed to simplify the extraction and processing of Satellite Images Time Series (SITS) referenced in STAC catalogs. For any given point or polygon, it efficiently handles data retrieval and, leveraging ``spyndex``, can also calculate a wide array of spectral indices. The processed results can then be exported in various formats, including image files, CSV tables, or dynamic animated GIFs, with customizable dimensions suitable for applications like deep learning.
+``sits`` is a high-level Python package designed to simplify the extraction and processing of Satellite Images Time Series (SITS) referenced in STAC catalogs. For any given point or polygon, it efficiently handles data retrieval and, leveraging ``spyndex``, can also calculate a wide array of spectral indices. The processed results can then be exported in various formats, including image files, CSV tables, or dynamic animated GIFs, with customizable dimensions suitable for applications like deep learning.
 
 ---
 

@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: sits
-Version: 0.6.6
+Version: 0.6.7
 Summary: Online processing of Satellite Image Time Series
 Author-email: Kenji Ose <kenji.ose@ec.europa.eu>
 License: GPL-3.0
@@ -41,9 +41,9 @@ Requires-Dist: matplotlib==3.9.1; extra == "docs"
 Requires-Dist: sphinx-gallery==0.17.0; extra == "docs"
 Dynamic: license-file
 
-# SITS Python Package
+# Sits Python Package
 
-``SITS`` is a high-level Python package designed to simplify the extraction and processing of Satellite Images Time Series (SITS) referenced in STAC catalogs. For any given point or polygon, it efficiently handles data retrieval and, leveraging ``spyndex``, can also calculate a wide array of spectral indices. The processed results can then be exported in various formats, including image files, CSV tables, or dynamic animated GIFs, with customizable dimensions suitable for applications like deep learning.
+``sits`` is a high-level Python package designed to simplify the extraction and processing of Satellite Images Time Series (SITS) referenced in STAC catalogs. For any given point or polygon, it efficiently handles data retrieval and, leveraging ``spyndex``, can also calculate a wide array of spectral indices. The processed results can then be exported in various formats, including image files, CSV tables, or dynamic animated GIFs, with customizable dimensions suitable for applications like deep learning.
 
 ---
 
@@ -51,7 +51,7 @@ Dynamic: license-file
 
 **Documentation**: [https://sits.readthedocs.io/](https://sits.readthedocs.io/)
 
-**PyPI**: [https://pypi.org/project/sits/](hhttps://pypi.org/project/sits/)
+**PyPI**: [https://pypi.org/project/sits/](https://pypi.org/project/sits/)
 
 **Tutorials**: [https://sits.readthedocs.io/en/latest/tutorials.html](https://sits.readthedocs.io/en/latest/tutorials.html)
 
@@ -125,8 +125,9 @@ for index, row in sits_df.bbox.iterrows():
 
 If you want to explore the different ways to use the sits package, we recommend running the following Jupyter notebooks, in [Google Colab](https://colab.research.google.com/) for instance:
 
-- [Example 01](docs/source/tutorials/colab_sits_ex01.ipynb): explain the basics fro retireving a satellite image time series according to a polygon feature.
-- [Example 02](docs/source/tutorials/colab_sits_ex02.ipynb): explain how to parallelize processing tasks in case of multiple vector features. 
+- [Example 01](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex01.ipynb): explain the basics fro retireving a satellite image time series according to a polygon feature.
+- [Example 02](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex02.ipynb): explain how to parallelize processing tasks in case of multiple vector features.
+- [Example 03](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex03.ipynb): explain how to compute spectral indices with `sits` and `spyndex` packages. 
 
 
 ## Contributing
