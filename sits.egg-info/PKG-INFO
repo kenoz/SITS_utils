@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: sits
-Version: 0.6.7
+Version: 0.6.8
 Summary: Online processing of Satellite Image Time Series
 Author-email: Kenji Ose <kenji.ose@ec.europa.eu>
 License: GPL-3.0
@@ -30,6 +30,8 @@ Requires-Dist: shapely
 Requires-Dist: geogif
 Requires-Dist: netCDF4
 Requires-Dist: spyndex
+Requires-Dist: pyarrow
+Requires-Dist: rioxarray
 Provides-Extra: tests
 Requires-Dist: pytest; extra == "tests"
 Provides-Extra: docs

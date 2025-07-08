@@ -12,10 +12,10 @@ from odc.geo.geobox import GeoBox
 from odc.stac import load
 # Geospatial librairies
 import geopandas as gpd
+import rioxarray
 import rasterio
 from rasterio.crs import CRS
 from rasterio.features import rasterize
-import rioxarray
 from shapely.geometry import box
 # Dask
 import dask
@@ -201,7 +201,7 @@ class Csv2gdf(Gdfgeom):
         Initialize the attributes of `Csv2gdf`.
         """
         self.crs_in = crs_in
-        self.table = pd.read_csv(csv_file, encoding= 'unicode_escape')
+        self.table = pd.read_csv(csv_file, encoding='unicode_escape')
         self.table = self.table.rename(columns={x_name: 'coord_X',
                                                 y_name: 'coord_Y',
                                                 id_name: 'gid'})
@@ -240,11 +240,11 @@ class Csv2gdf(Gdfgeom):
         """
 
         size_before = len(self.table)
-        del_rows = {col_name:rows_values}
+        del_rows = {col_name: rows_values}
         for col in del_rows:
             for row in del_rows[col]:
-                self.table.drop(self.table[self.table[col] == row].index, 
-                                inplace = True)
+                self.table.drop(self.table[self.table[col] == row].index,
+                                inplace=True)
         size_after = len(self.table)
         print(f'rows length before:{size_before}\nrows length after:{size_after}')
 
@@ -297,7 +297,8 @@ class StacAttack:
         Convert stac items to xarray dataset.
 
         Args:
-            geobox (odc.geo.geobox.GeoBox): odc geobox that specifies bbox, crs, spatial res. and dimensions.
+            geobox (odc.geo.geobox.GeoBox): odc geobox that specifies bbox, crs,
+                spatial res. and dimensions.
 
         Returns:
             xarray.Dataset: xarray dataset of satellite time-series.
@@ -361,7 +362,8 @@ class StacAttack:
 
     def __checkS2shift(self, shift_value=1):
         """
-        Check whether the Sentinel-2 images values need to be shifted according to the processing baseline version.
+        Check whether the Sentinel-2 images values need to be shifted according
+        to the processing baseline version.
 
         Args:
             shift_value (int): number used to flag images that need to be shifted
@@ -492,7 +494,7 @@ class StacAttack:
     def spectral_index(self, indices_to_compute: str | list[str],
                        band_mapping: dict = None, **kwargs):
         """
-        Calculate various spectral indices for remote sensing data using the 
+        Calculate various spectral indices for remote sensing data using the
         spyndex and awesome-spectral-indices libraries.
 
         Args:
@@ -504,7 +506,7 @@ class StacAttack:
             **kwargs: other arguments
 
         Returns:
-            xarray.Dataarray: time-series image ``StacAttack.indices``.
+            xarray.Dataset: time-series image ``StacAttack.indices``.
 
         Example:
             >>> stacObj.spectral_index('NDVI', {'R': 'B04', 'N': 'B08'})
@@ -549,7 +551,7 @@ class StacAttack:
         else:
             df.to_csv(os.path.join(outdir, f'id_none_{self.arrtype}.csv'))
 
-    def to_nc(self, outdir, gid=None, cube='sat'):
+    def to_nc(self, outdir, gid=None, cube='sat', filename=None):
         """
         Convert xarray dataset into netcdf file.
 
@@ -558,21 +560,24 @@ class StacAttack:
             gid (str, optional): column name of ID. Defaults to `None`.
             cube (str, optional): datacube type. Defaults to 'sat'.
                 Can be one of the following: 'sat', 'indices'.
+            filename (str, optional): output filename with .nc extension.
+                Defaults to `None`.
 
         Example:
             >>> outdir = 'output'
             >>> stacObj.to_nc(outdir)
         """
-        for var_name in self.cube.data_vars:
-            self.cube[var_name].attrs['grid_mapping'] = 'spatial_ref'
-
         if cube == 'sat':
-            with rioxarray.set_options(export_grid_mapping=True):
+            if not filename:
                 self.cube.to_netcdf(f"{outdir}/fid-{gid}_sat_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
+            else:
+                self.cube.to_netcdf(f"{outdir}/{filename}")
+
         if cube == 'indices':
-            self.indices.attrs["grid_mapping"] = "spatial_ref"
-            with rioxarray.set_options(export_grid_mapping=True):
+            if not filename:
                 self.indices.to_netcdf(f"{outdir}/fid-{gid}_idx_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
+            else:
+                self.indices.to_netcdf(f"{outdir}/{filename}")
 
 
 class Labels:

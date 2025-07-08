@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sits"
-version = "0.6.7"
+version = "0.6.8"
 description = "Online processing of Satellite Image Time Series"
 readme = "README.md"
 keywords = ["xarray", "datacube", "sits", "satellite", "time series", "STAC"]
@@ -40,6 +40,8 @@ dependencies = [
     "geogif",
     "netCDF4",
     "spyndex",
+    "pyarrow",
+    "rioxarray"
 ]
 
 [project.urls]

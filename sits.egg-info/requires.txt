@@ -14,6 +14,8 @@ shapely
 geogif
 netCDF4
 spyndex
+pyarrow
+rioxarray
 
 [docs]
 sphinx==7.4.7

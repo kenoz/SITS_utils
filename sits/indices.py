@@ -14,12 +14,11 @@ class SpectralIndex:
     required by spyndex.
 
     Args:
-    dataset (xr.Dataset): The xarray.Dataset containing spectral bands.
-    band_mapping (dict, optional): A dictionary to map your dataset's
-                                   band names to spyndex's standard band
-                                   names (e.g., {'R': 'B04', 'N': 'B08'}).
-                                   If None, it assumes your dataset's
-                                   variable names are directly usable by spyndex.
+        dataset (xr.Dataset): The xarray.Dataset containing spectral bands.
+        band_mapping (dict, optional): A dictionary to map your dataset's
+            band names to spyndex's standard band names
+            (e.g., {'R': 'B04', 'N': 'B08'}). If None, it assumes your 
+            dataset's variable names are directly usable by spyndex.
     """
 
     def __init__(self, dataset: xr.Dataset, band_mapping: dict = None):
@@ -28,6 +27,35 @@ class SpectralIndex:
 
         self.dataset = dataset
         self.band_mapping = band_mapping if band_mapping is not None else {}
+
+    def __da2ds(self, da, index_list):
+        """
+        Convert xr.DataArray to xr.Dataset.
+
+        Args:
+            da (xr.DataArray): xr.DataArray of computed spectral indices.
+            index_list (list): list of short name (str) of computed indices.
+
+        Returns:
+            xr.Dataset
+        """
+        if len(index_list) == 1:
+            index_name = index_list[0]
+            ds = xr.Dataset({index_name: da})
+            ds[index_name].attrs["grid_mapping"] = "spatial_ref"
+
+        elif len(index_list) > 1:
+            new_vars = {}
+            for i in da.index.values:
+                slice_i = da.sel(index=i).reset_coords("index", drop=True)
+                new_vars[f"{i}"] = slice_i
+            ds = xr.Dataset(new_vars)
+            ds["spatial_ref"] = self.dataset["spatial_ref"]
+
+            for var_name in ds.data_vars:
+                ds[var_name].attrs['grid_mapping'] = "spatial_ref"
+
+        return ds
 
     def calculate_indices(self, indices_to_compute: str | list[str],
                           band_mapping: dict = None,
@@ -52,11 +80,9 @@ class SpectralIndex:
                 directly match the generic band names expected by `spyndex`.
 
         Returns:
-            xarray.DataArray or xarray.Dataset: Returns an xarray.DataArray
-                if a single index is requested, or an xarray.Dataset if 
-                multiple indices are requested.
-                The calculated index values will have NaNs where division by 
-                zero or other invalid operations occurred.
+            xarray.Dataset: Returns an xarray.Dataset. The calculated index
+                values will have NaNs where division by zero or other invalid 
+                operations occurred.
         """
 
         # Ensure indices_to_compute is a list for consistent processing
@@ -109,7 +135,10 @@ class SpectralIndex:
             )
 
         # Post-processing: Ensure NaNs from invalid operations are handled consistently.
-        computed_indices = computed_indices.where(np.isfinite(computed_indices), 
+        computed_indices = computed_indices.where(np.isfinite(computed_indices),
                                                   other=np.nan)
 
-        return computed_indices
+        computed_indices_ds = self.__da2ds(computed_indices,
+                                           indices_to_compute)
+
+        return computed_indices_ds

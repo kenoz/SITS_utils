@@ -6,8 +6,9 @@ import geogif
 class Sits_ds:
     """handle xarray.dataset"""
 
-    def __init__(self, nc_path):
-        self.ds = xr.open_dataset(nc_path, engine="netcdf4")
+    def __init__(self, nc_path=None):
+        if nc_path:
+            self.ds = xr.open_dataset(nc_path, engine="netcdf4")
 
     def ds2da(self, keep_bands=['B04', 'B03', 'B02']):
         """
