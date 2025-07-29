@@ -37,6 +37,23 @@ class Sits_ds:
         return xr.Dataset(blended_vars, coords=ds1.coords)
 
     def blender(self, steps_between=5):
+        """
+        Generates intermediate blended frames between consecutive images 
+        to achieve smooth transitions in animated GIFs.
+
+        Args:
+            steps_between (int, optional): number of intermediate blended 
+                frames to generate between each pair of images. 
+                Defaults to 5.
+
+        Returns:
+            Sits_ds.ds (xr.Dataset): Dataset with regular time steps.
+
+        Example:
+            >>> geo_dc = Sits_ds(netcdf_file)
+            >>> geo_dc.time_interp()
+            >>> geo_dc.blender()
+        """
         frames = []
         for i in range(len(self.ds.time) - 1):
             ds_start = self.ds.isel(time=i)
@@ -55,8 +72,6 @@ class Sits_ds:
                                                      dims="time",
                                                      name="time"))
 
-        #self.dsblend = xr.concat(frames, dim=xr.DataArray(frames, dims="time", name="time"))
-
     def time_interp(self, method='slinear', nb_period=100):
         """
         Transforms the input ``Sits_ds.ds`` (xarray.Dataset) into a regular
@@ -70,7 +85,7 @@ class Sits_ds:
             nb_period (int, optional): number of output dates. Defaults to 100
 
         Returns:
-            Sits_ds.dsint (xr.Dataset): Dataset with regular time steps
+            Sits_ds.ds (xr.Dataset): Dataset with regular time steps
 
         Example:
             >>> geo_dc = Sits_ds(netcdf_file)
