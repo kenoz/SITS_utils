@@ -494,13 +494,9 @@ class StacAttack:
         """
         Filters time steps in the specified data cube based on the ratio of masked pixels.
 
-        Args:
-            mask_cover (float, optional): maximum allowed ratio of masked pixels
-                (min:0, max:1). Defaults to 0.5.
-            cube (str, optional): datacube type. Defaults to 'sat'.
-                Can be one of the following: 'sat', 'indices'.
-            mask_update (bool, optional): update the related mask array. 
-                Defaults to True.
+        Parameters:
+        - mask_cover (float): Maximum allowed ratio of masked pixels (between 0 and 1).
+        - cube (str): Which cube to filter ('sat' or 'indices').
         """
         # Compute mask ratio per time step
         mask_ratio = (self.mask.sum(dim=['x', 'y']) / self.mask_size).compute()

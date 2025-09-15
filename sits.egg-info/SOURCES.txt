@@ -8,10 +8,6 @@ requirements-dev.txt
 requirements.txt
 data/banc_arguin.geojson
 data/rand_pts.geojson
-dist/sits-0.6.6-py3-none-any.whl
-dist/sits-0.6.6.tar.gz
-dist/sits-0.6.7-py3-none-any.whl
-dist/sits-0.6.7.tar.gz
 docs/Makefile
 docs/make.bat
 docs/source/conf.py
@@ -32,6 +28,7 @@ docs/source/tutorials/img/fig_patch.png
 sits/__init__.py
 sits/display.py
 sits/export.py
+sits/export_old.py
 sits/indices.py
 sits/sits.py
 sits.egg-info/PKG-INFO

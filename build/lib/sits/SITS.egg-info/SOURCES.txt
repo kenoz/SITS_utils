@@ -1,0 +1,7 @@
+LICENSE
+README.md
+setup.py
+sits/SITS.egg-info/PKG-INFO
+sits/SITS.egg-info/SOURCES.txt
+sits/SITS.egg-info/dependency_links.txt
+sits/SITS.egg-info/top_level.txt

@@ -1,0 +1,13 @@
+Metadata-Version: 2.1
+Name: SITS
+Version: 0.2
+Summary: Create satellite time-series patches from STAC catalogs
+Home-page: https://github.com/kenoz/SITS_utils
+Author: Kenji Ose
+Author-email: kenji.ose@ec.europa.eu
+License: UNKNOWN
+Platform: UNKNOWN
+License-File: LICENSE
+
+UNKNOWN
+

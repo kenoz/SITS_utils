@@ -182,7 +182,3 @@ class Nrt_plot():
         self.__legend()
         plt.tight_layout()
         plt.savefig(outpath)
-        
-# class Plot_TS():
-#    def __init__(self, ts_array, ):
-        
