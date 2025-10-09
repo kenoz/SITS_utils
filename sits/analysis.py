@@ -94,7 +94,6 @@ def sktime_fitpred(ts,
                    predict_time,
                    model_name='ThetaForecaster',
                    model_params=None,
-                   regular_freq=False,
                    freq='D',
                    reindex_params=None):
     """to fill
@@ -106,7 +105,8 @@ def sktime_fitpred(ts,
     df = pd.DataFrame({'ds': time_index, 'y': ts})
     df.set_index('ds', inplace=True)
 
-    df = reindexTS(df, freq=freq, regular_freq=regular_freq, **reindex_params)
+    reindex_params = reindex_params or {}
+    df = reindexTS(df, freq=freq, **reindex_params)
 
     # Get forecaster class by name
     forecaster_cls = dict(
@@ -126,7 +126,7 @@ def xr_forecast(dataarray,
                 predict_time,
                 model_name='ThetaForecaster',
                 model_params=None,
-                regular_freq=False,
+                reindex_params=None,
                 freq='D'):
     """to fill
     """
@@ -142,7 +142,7 @@ def xr_forecast(dataarray,
             "predict_time": predict_time,
             "model_name": model_name,
             "model_params": model_params,
-            "regular_freq": regular_freq,
+            "reindex_params": reindex_params,
             "freq": freq},
         vectorize=True,
         dask='parallelized',
