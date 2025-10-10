@@ -158,6 +158,7 @@ def xr_forecast(dataarray,
         dataarray['time'],
         input_core_dims=[['time'], ['time']],
         output_core_dims=[['forecast_time']],
+        keep_attrs=True,
         kwargs={
             "predict_time": predict_time,
             "model_name": model_name,
@@ -174,5 +175,6 @@ def xr_forecast(dataarray,
 
     result = result.rename({"forecast_time": "time"})
     result = result.assign_coords(time=("time", predict_time))
+    result = result.transpose('time', 'y', 'x')
 
     return result
