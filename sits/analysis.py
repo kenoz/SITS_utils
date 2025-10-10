@@ -24,6 +24,8 @@ def initialize_dask_client(n_cores=False, threads_per_worker=1):
     client = Client(n_workers=n_cores, threads_per_worker=threads_per_worker)
     client.restart()
 
+    return client
+
 
 def date_range(start_date, end_date, freq='D'):
     """to fill
