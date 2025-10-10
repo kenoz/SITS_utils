@@ -5,6 +5,26 @@ from sktime.forecasting.base import ForecastingHorizon
 from sktime.registry import all_estimators
 
 
+def initialize_dask_client(n_cores=False, threads_per_worker=1):
+    """
+    Initializes a Dask distributed client using by default all
+    available CPU cores, with one thread per worker.
+    Restarts the client to ensure a clean state.
+
+    Returns:
+        Client: A Dask distributed client instance.
+    """
+    import multiprocessing
+    from dask.distributed import Client
+
+    if n_cores:
+        n_cores = n_cores
+    else:
+        n_cores = multiprocessing.cpu_count()
+    client = Client(n_workers=n_cores, threads_per_worker=threads_per_worker)
+    client.restart()
+
+
 def date_range(start_date, end_date, freq='D'):
     """to fill
     """
