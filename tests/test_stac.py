@@ -11,7 +11,7 @@ bbox_3035 = [4010426.347893443, 2794557.087497158,
              4010587.1105397893, 2794787.4926693346]
 
 
-@pytest.fixture#(scope="module")
+@pytest.fixture(scope="module")
 def sitsStac():
     stacObj = sits.StacAttack(provider='mpc',
                               collection='sentinel-2-l2a',
@@ -39,14 +39,6 @@ def test_fixS2shift(sitsStac):
     assert int(sitsStac.cube.isel(time=-1).B04.values) == 422
     """
 
-
-def test_filter_by_mask(sitsStac):
-    sitsStac.mask()
-    assert len(sitsStac.cube.time) == 209
-    sitsStac.filter_by_mask(mask_cover=0.05)
-    assert len(sitsStac.cube.time) == 201
-
-
 def test_gapfill(sitsStac):
     sitsStac.mask()
     sitsStac.mask_apply()
@@ -55,6 +47,25 @@ def test_gapfill(sitsStac):
                                        time=71).B04.values)
     sitsStac.gapfill()
 
-    float(sitsStac.cube.isel(x=10,
-                             y=10,
-                             time=71).B04.values) == 269.
+    assert float(sitsStac.cube.isel(x=10,
+                                    y=10,
+                                    time=71).B04.values) == 131.0
+
+
+def test_filter_by_mask(sitsStac):
+    #sitsStac.mask()
+    assert len(sitsStac.cube.time) == 209
+    sitsStac.filter_by_mask(mask_cover=0.05)
+    assert len(sitsStac.cube.time) == 201
+
+
+def test_spectral_index(sitsStac):
+    indices_to_compute = 'NDVI'
+    band_mapping = {'G': 'B03', 'R': 'B04', 'N': 'B08'}
+    sitsStac.spectral_index(indices_to_compute, band_mapping)
+    assert float(sitsStac.indices.NDVI.isel(x=10,
+                                            y=10,
+                                            time=72).values) == 0.625
+
+
+

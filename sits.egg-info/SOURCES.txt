@@ -26,6 +26,7 @@ docs/source/tutorials/img/eu_random_pts.png
 docs/source/tutorials/img/fig_image.png
 docs/source/tutorials/img/fig_patch.png
 sits/__init__.py
+sits/analysis.py
 sits/display.py
 sits/export.py
 sits/export_old.py
@@ -40,3 +41,6 @@ sits/SITS.egg-info/PKG-INFO
 sits/SITS.egg-info/SOURCES.txt
 sits/SITS.egg-info/dependency_links.txt
 sits/SITS.egg-info/top_level.txt
+tests/__init__.py
+tests/test_stac.py
+tests/test_vector.py
