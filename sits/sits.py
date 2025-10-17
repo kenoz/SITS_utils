@@ -363,7 +363,7 @@ class StacAttack:
         self.items = list(query.items())
         self.__getItemsProperties()
 
-    def __checkS2shift(self, shiftval, minval, proc_keyword, version, mask):
+    def __checkS2shift_old(self, shiftval, minval, proc_keyword, version, mask):
         item_tofix = list()
 
         for item in self.items:
@@ -383,6 +383,43 @@ class StacAttack:
             for t in matched_times:
                 self.cube[var].loc[dict(time=t)] -= 1000
                 self.cube[var] = self.cube[var].clip(min=1).astype("int16")
+
+    def __checkS2shift(self, shiftval, minval, proc_keyword, version, mask):
+        # Filter items based on version threshold
+        item_times = pd.to_datetime([
+            item.datetime.replace(tzinfo=None)
+            for item in self.items
+            if float(item.properties[proc_keyword]) >= version
+        ])
+
+        # Convert cube times once
+        ds_times = pd.to_datetime(self.cube.time.values)
+
+        # Find min/max time to slice cube
+        if item_times.empty:
+            return  # No matching items
+
+        t_min, t_max = item_times.min(), item_times.max()
+
+        # Slice cube over time range
+        cube_slice = self.cube.sel(time=slice(t_min, t_max))
+
+        # Create a boolean mask for matching times
+        time_mask = np.isin(cube_slice.time.values, item_times)
+
+        # Apply shift to all variables except "SCL"
+        for var in self.cube.data_vars:
+            if var == "SCL":
+                self.cube[var] = self.cube[var].astype("int16")
+                continue
+
+            # Apply shift only to matching times
+            shifted = cube_slice[var].copy()
+            shifted[dict(time=time_mask)] -= 1000
+            shifted = shifted.clip(min=1).astype("int16")
+
+            # Replace original data
+            self.cube[var].loc[dict(time=slice(t_min, t_max))] = shifted
 
     def fixS2shift(self,
                    shiftval=-1000,
@@ -408,9 +445,9 @@ class StacAttack:
         if self.data_corrected:
             print("Warning: Data correction has already been applied.")
         else:
-            self.data_corrected = True
             self.__checkS2shift(shiftval, minval, proc_keyword,
                                 version, mask)
+            self.data_corrected = True
 
     def loadCube(self, bbox, arrtype='image', dimx=5, dimy=5, resolution=10, crs_out=3035):
         """

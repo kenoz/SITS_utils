@@ -1,6 +1,8 @@
 /output01
 /test
 /dist
+/build
+/tests/test01.ipynb
 .ipynb_checkpoints
 .swp
 __pycache__
