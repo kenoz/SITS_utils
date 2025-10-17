@@ -11,7 +11,7 @@ bbox_3035 = [4010426.347893443, 2794557.087497158,
              4010587.1105397893, 2794787.4926693346]
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture#(scope="module")
 def sitsStac():
     stacObj = sits.StacAttack(provider='mpc',
                               collection='sentinel-2-l2a',
@@ -46,23 +46,15 @@ def test_filter_by_mask(sitsStac):
     sitsStac.filter_by_mask(mask_cover=0.05)
     assert len(sitsStac.cube.time) == 201
 
-    
-"""
+
 def test_gapfill(sitsStac):
     sitsStac.mask()
     sitsStac.mask_apply()
-    assert np.isnan(sitsStac.cube.isel(x=100,
-                                       y=100,
-                                       time=25).B04.values) is True
+    assert np.isnan(sitsStac.cube.isel(x=10,
+                                       y=10,
+                                       time=71).B04.values)
     sitsStac.gapfill()
 
-    float(sitsStac.cube.isel(x=100,
-                             y=100,
-                             time=25).B04.values) == 269.
-
-"""
-
-
-    
-if __name__ == "__main__":
-    print("testing StacAttack class...")
+    float(sitsStac.cube.isel(x=10,
+                             y=10,
+                             time=71).B04.values) == 269.
