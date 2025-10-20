@@ -1,27 +1,28 @@
 Introduction
 ============
 
-``sits`` is a high-level `Python package <https://github.com/kenoz/SITS_utils>`_ which aims to ease the extraction of Satellite Images Time Series (SITS) referenced in STAC catalogs. For each given point or polygon, it delivers image or csv files, with specified dimensions if necessary (e.g. deep learning patches). 
+``sits`` is a high-level `Python package <https://github.com/kenoz/SITS_utils>`_ designed to simplify the extraction of Satellite Images Time Series (SITS) from STAC catalogs. For each specified point or polygon, it delivers image or csv files, optionally with defined dimensions (e.g., deep learning patches). The package is organized into several modules, including the core `sits` module for data extraction, an `export` module for visualization, and an `analysis` module for experimental time series forecasting. These components work together to streamline satellite data workflows and reduce the complexity of interacting with geospatial APIs.
 
 Motivation
 **********
 
-This Python package has been developed for those who want to extract satellite information without spending too much time to understand how to handle pyStac api and some other geospatial librairies. Now the tool proposes 2 modules:
+This Python package is intended for users who want to extract satellite data without delving into the complexities of the ``pySTAC`` API and other geospatial libraries. The tool currently offers three modules:
 
-* The :mod:`sits` is the core module for requesting and downloading satellite time-series.
+* Core Module :mod:`sits` 
+This is the main module for querying and downloading satellite time series. It includes the following classes:
 
-It contains the following classes:
+    * :class:`sits.Csv2gdf`: Converts a CSV file containing coordinates into a GeoDataFrame.
+    * :class:`sits.StacAttack`: Queries STAC catalogs to extract satellite data. It also provides utilities for applying binary masks, gap-filling missing pixels, and computing spectral indices.
+    * :class:`sits.Labels`: Generates label images for training and testing purposes.
+    * :class:`sits.Multiproc`: Enables multiprocessing for parallel execution of `SITS.StacAttack`.   
 
-    * The :class:`sits.Csv2gdf` allows you to convert a csv table with coordinates into a geodataframe object.
-    * The :class:`sits.StacAttack` requests STAC catalog to extract the satellite information needed. It also applies binary masks and gap-fill the nodata pixels.
-    * The :class:`sits.Labels` creates labels' image for training/testing.
-    * The :class:`sits.Multiproc` enables the launch of `SITS.StacAttack` in a mutiprocessing mode.   
+* Export Module :mod:`export`
+This submodule handles NetCDF file loading and conversion to animated GIFs.
 
-* The :mod:`export` is a sub-module for loading netcdf file and exporting it as animated gif file.
+    * :class:`export.Sits_ds`: Loads a NetCDF file as an xarray.Dataset and exports it as an animated GIF.
 
-It contains the following class:
-
-    * The :class:`export.Sits_ds` allows you to load a netcdf file as an `xarray.Dataset` and convert it as an animated gif file.
+* Analysis Module :mod:`analysis`
+This experimental submodule integrates forecasting methods from the ``sktime`` package.
 
 Limitations
 ***********

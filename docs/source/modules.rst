@@ -6,3 +6,4 @@ sits
 
    sits
    export
+   analysis
