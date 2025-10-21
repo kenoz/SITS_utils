@@ -11,8 +11,12 @@ and can be called from it:
 
 .. currentmodule:: sits.analysis
 
-.. automodule:: sits.analysis
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. autofunction:: initialize_dask_client
 
+.. autofunction:: date_range
+
+.. autofunction:: reindexTS
+
+.. autofunction:: sktime_fitpred
+
+.. autofunction:: xr_forecast
