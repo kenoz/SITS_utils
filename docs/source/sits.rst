@@ -1,26 +1,32 @@
 Module sits
 =============
 
-Here you will find all sits methods:
+Here you will find all ``sits`` core methods:
 
 sits.sits
----------------
+---------
 
-Core module of spyndex. All functions here are automatically loaded with :code:`import sits`
-and can be called from it:
+All functions here are automatically loaded with :code:`from sits import sits`.
 
 .. currentmodule:: sits.sits
 
 .. autofunction:: def_geobox
-   :members:
-   :undoc-members:
-   :show-inheritance:
+
+sits.stacAttack
+---------------
+
+This class aims to simplify the search and download of satellite image time series via STAC catalogs.
    
 .. autoclass:: StacAttack
    :members:
    :undoc-members:
    :show-inheritance:
-   
+  
+sits.Gdfgeom
+------------
+
+This class aims to calculate vector buffers and bounding boxes that can later be used to query satellite data.
+
 .. autoclass:: Gdfgeom
    :members:
    :undoc-members:
