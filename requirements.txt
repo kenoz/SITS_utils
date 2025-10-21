@@ -16,4 +16,3 @@ spyndex
 pyarrow
 rioxarray
 sktime
-multiprocessing

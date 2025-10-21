@@ -42,8 +42,7 @@ dependencies = [
     "spyndex",
     "pyarrow",
     "rioxarray",
-    "sktime",
-    "multiprocessing"
+    "sktime"
 ]
 
 [project.urls]
