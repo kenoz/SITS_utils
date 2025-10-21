@@ -10,9 +10,6 @@ Core module of spyndex. All functions here are automatically loaded with :code:`
 and can be called from it:
 
 .. currentmodule:: sits.analysis
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 .. autofunction:: initialize_dask_client
    :members:
