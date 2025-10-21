@@ -41,7 +41,9 @@ dependencies = [
     "netCDF4",
     "spyndex",
     "pyarrow",
-    "rioxarray"
+    "rioxarray",
+    "sktime",
+    "multiprocessing"
 ]
 
 [project.urls]
