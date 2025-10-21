@@ -62,24 +62,6 @@ def date_range(start_date, end_date, freq='D'):
     return date_range
 
 
-def reindexTS_old(df, freq='D', regular_freq=False,
-              aggregate=False, interpolate=False, 
-              method='linear'):
-    """to fill
-    """
-    df.index = df.index.normalize()
-
-    if freq != 'D':
-        df = df.resample(freq).mean()
-
-    df = df.reindex(pd.date_range(df.index.min(), df.index.max(), freq=freq))
-
-    if interpolate:
-        df = df.interpolate(method=method).ffill().bfill()
-
-    return df
-
-
 def _ensure_datetime_index(df):
     if not isinstance(df.index, pd.DatetimeIndex):
         df.index = pd.to_datetime(df.index)
