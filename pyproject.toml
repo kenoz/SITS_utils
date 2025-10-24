@@ -65,6 +65,7 @@ exclude = ["data*", "test*", "docs*", "examples*", "**/__pycache__"]
 
 [tool.setuptools.package-data]
 "sits.data" = ["data/*.geojson"]
+"sits.fonts" = ["*.ttf"]
 
 [tool.setuptools_scm]
 fallback_version = "9999"

@@ -6,10 +6,9 @@ old_setup.py
 pyproject.toml
 requirements-dev.txt
 requirements.txt
-data/banc_arguin.geojson
-data/rand_pts.geojson
 docs/Makefile
 docs/make.bat
+docs/source/analysis.rst
 docs/source/conf.py
 docs/source/export.rst
 docs/source/index.rst
@@ -22,6 +21,7 @@ docs/source/tutorials/colab_sits_ex01.ipynb
 docs/source/tutorials/colab_sits_ex02.ipynb
 docs/source/tutorials/colab_sits_ex03.ipynb
 docs/source/tutorials/img/banc_arguin.gif
+docs/source/tutorials/img/banc_arguin_v2.gif
 docs/source/tutorials/img/eu_random_pts.png
 docs/source/tutorials/img/fig_image.png
 docs/source/tutorials/img/fig_patch.png
@@ -41,6 +41,10 @@ sits/SITS.egg-info/PKG-INFO
 sits/SITS.egg-info/SOURCES.txt
 sits/SITS.egg-info/dependency_links.txt
 sits/SITS.egg-info/top_level.txt
+sits/data/banc_arguin.geojson
+sits/data/rand_pts.geojson
+sits/fonts/NotoSans-Regular.ttf
+sits/fonts/__init__.py
 tests/__init__.py
 tests/test_stac.py
 tests/test_vector.py

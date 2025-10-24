@@ -16,6 +16,7 @@ netCDF4
 spyndex
 pyarrow
 rioxarray
+sktime
 
 [docs]
 sphinx==7.4.7

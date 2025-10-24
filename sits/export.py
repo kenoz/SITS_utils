@@ -2,6 +2,12 @@ import xarray as xr
 import dask.array as dask_array
 import geogif
 import pandas as pd
+import imageio.v2 as imageio
+import numpy as np
+from PIL import Image, ImageDraw, ImageFont
+import matplotlib.cm as cm
+from importlib.resources import files
+#import os
 
 
 class Sits_ds:
@@ -127,4 +133,159 @@ class Sits_ds:
                     f.write(self.gif.data)
         else:
             self.gif = geogif.gif(self.da, fps=fps, robust=robust, to=imgfile, **kwargs)
+
+    def __add_watermark(self, frame: np.ndarray, text: str,
+                        position='bottom right',
+                        font_size=40, color=(255, 255, 255),
+                        opacity=128):
+        """
+        Adds a semi-transparent text watermark to a NumPy RGB image using Pillow.
+
+        Parameters:
+            frame (np.ndarray): RGB image of shape (H, W, 3), dtype=uint8
+            text (str): Watermark text
+            position (str): One of 'top left', 'top right', 'bottom left', 'bottom right'
+            font_size (int): Font size in points
+            color (tuple): RGB color of the text
+            opacity (int): 0–255 transparency level
+
+        Returns:
+            np.ndarray: Watermarked image as uint8 RGB array
+        """
+        img = Image.fromarray(frame).convert("RGBA")
+        txt_layer = Image.new("RGBA", img.size, (255, 255, 255, 0))
+        draw = ImageDraw.Draw(txt_layer)
+
+        try:
+            font_path = files("sits.fonts").joinpath("NotoSans-Regular.ttf")
+            font = ImageFont.truetype(str(font_path), font_size)
+        except IOError:
+            font = ImageFont.load_default()
+
+        text_size = draw.textbbox((0, 0), text, font=font)
+        text_width = text_size[2] - text_size[0]
+        text_height = text_size[3] - text_size[1]
+
+        margin = 10
+        positions = {
+            'top left': (margin, margin),
+            'top right': (img.width - text_width - margin, margin),
+            'bottom left': (margin, img.height - text_height - margin),
+            'bottom right': (img.width - text_width - margin, img.height - text_height - margin),
+        }
+        xy = positions.get(position, positions['bottom right'])
+
+        draw.text(xy, text, font=font, fill=color + (opacity,))
+        watermarked = Image.alpha_composite(img, txt_layer).convert("RGB")
+        return np.array(watermarked, dtype=np.uint8)
+
+    def __pad_to_square(self, frame: np.ndarray, fill_color=(0, 0, 0)):
+        """to fill
+        """
+        img = Image.fromarray(frame)
+        w, h = img.size
+        scale = 1080 / max(w, h)
+        new_w, new_h = int(w * scale), int(h * scale)
+        img = img.resize((new_w, new_h), Image.BICUBIC)
+
+        # Create 1080x1080 canvas
+        canvas = Image.new("RGB", (1080, 1080), fill_color)
+        offset = ((1080 - new_w) // 2, (1080 - new_h) // 2)
+        canvas.paste(img, offset)
+        return np.array(canvas)
+
+    def export2vid_old(self, output_path: str,
+                   keep_bands: list,
+                   fps: int = 10, rgb_indices=(0, 1, 2),
+                   vmin=None, vmax=None,
+                   square=False,
+                   watermark_text=None,
+                   watermark_loc='bottom right',
+                   watermark_param=None,
+                   square_param=None):
+        """to fill
+        """
+
+        self.__ds2da(keep_bands)
+
+        assert self.da.ndim == 4 and self.da.shape[1] >= 3, "Expected shape (time, bands, y, x)"
+
+        with imageio.get_writer(output_path, fps=fps) as writer:
+            for t in range(self.da.sizes['time']):
+                rgb = self.da.isel(time=t).values[rgb_indices, :, :]
+                rgb = np.transpose(rgb, (1, 2, 0))  # (y, x, 3)
+
+                if vmin is None:
+                    vmin = rgb.min()
+                if vmax is None:
+                    vmax = rgb.max()
+
+                rgb = np.clip((rgb - vmin) / (vmax - vmin), 0, 1)
+                rgb = (rgb * 255).astype(np.uint8)
+
+                if square:
+                    square_param = square_param or {}
+                    rgb = self.__pad_to_square(rgb, fill_color=(0, 0, 0),
+                                               **square_param)
+
+                if watermark_text:
+                    watermark_param = watermark_param or {}
+                    rgb = self.__add_watermark(rgb,
+                                               text=watermark_text,
+                                               position=watermark_loc,
+                                               **watermark_param)
+
+                writer.append_data(rgb)
+
+    def export2vid(self, output_path: str,
+                   keep_bands: list,
+                   fps: int = 10,
+                   #rgb_indices=(0, 1, 2),
+                   colormap: str = "viridis",
+                   vmin=None, vmax=None,
+                   square=False,
+                   watermark_text=None,
+                   watermark_loc='bottom right',
+                   watermark_param=None,
+                   square_param=None):
+        """Export EO time series to video, supporting RGB and monoband with colormap.
+        """
+
+        self.__ds2da(keep_bands)
+        #assert self.da.ndim == 4, "Expected shape (time, bands, y, x)"
+
+        mono_mode = self.da.shape[1] == 1
+
+        with imageio.get_writer(output_path, fps=fps) as writer:
+            for t in range(self.da.sizes['time']):
+                arr = self.da.isel(time=t).values  # shape: (bands, y, x)
+
+                if mono_mode:
+                    band = arr[0, :, :]
+                    if vmin is None: vmin = band.min()
+                    if vmax is None: vmax = band.max()
+                    norm = np.clip((band - vmin) / (vmax - vmin), 0, 1)
+                    cmap = cm.get_cmap(colormap)
+                    rgb = (cmap(norm)[:, :, :3] * 255).astype(np.uint8)  # drop alpha
+                else:
+                    #rgb = arr[rgb_indices, :, :]
+                    rgb = arr[(0, 1, 2), :, :]
+                    rgb = np.transpose(rgb, (1, 2, 0))  # (y, x, 3)
+                    if vmin is None: vmin = rgb.min()
+                    if vmax is None: vmax = rgb.max()
+                    rgb = np.clip((rgb - vmin) / (vmax - vmin), 0, 1)
+                    rgb = (rgb * 255).astype(np.uint8)
+
+                if square:
+                    square_param = square_param or {}
+                    rgb = self.__pad_to_square(rgb, fill_color=(0, 0, 0), **square_param)
+
+                if watermark_text:
+                    watermark_param = watermark_param or {}
+                    rgb = self.__add_watermark(rgb,
+                                               text=watermark_text,
+                                               position=watermark_loc,
+                                               **watermark_param)
+
+                writer.append_data(rgb)
 
