@@ -10,7 +10,23 @@ from importlib.resources import files
 
 
 class Sits_ds:
-    """handle xarray.dataset"""
+    """
+    This class aims to convert xarray objects (Dataset or DataArray) to animated formats.
+    It provides functionality to convert xarray objects to GIF or video formats.
+    Optional features include time frequency regularization through pixel interpolation
+    and smooth frame transitions using blender mode.
+
+    Attributes:
+        ds (xr.Dataset): time series ('time', 'y', 'x')
+        da (xr.Dataarray): time series ('time', 'band', 'y', 'x')
+
+    Args:
+        nc_path (str, optional): netcdf filename to import into xarray object.
+            Defaults to None.
+
+    Example:
+            >>> geo_dc = Sits_ds(netcdf_file)
+    """
 
     def __init__(self, nc_path=None):
         if nc_path:
@@ -18,7 +34,7 @@ class Sits_ds:
 
     def __ds2da(self, keep_bands=['B04', 'B03', 'B02']):
         """
-        Transform ``xarray.dataset`` into ``xarray.dataarray``
+        Transforms ``xarray.Dataset`` into ``xarray.Dataarray``
         with dimensions ordered as follows: 'time', 'band', 'y', 'x'.
 
         Args:
@@ -55,7 +71,6 @@ class Sits_ds:
             Sits_ds.ds (xr.Dataset): Dataset with regular time steps.
 
         Example:
-            >>> geo_dc = Sits_ds(netcdf_file)
             >>> geo_dc.time_interp()
             >>> geo_dc.blender()
         """
@@ -79,7 +94,7 @@ class Sits_ds:
 
     def time_interp(self, method='slinear', nb_period=100):
         """
-        Transforms the input ``Sits_ds.ds`` (xarray.Dataset) into a regular
+        Transforms the input ``Sits_ds.ds`` (xr.Dataset) into a regular
         time-step datacube. This function resamples or interpolates the input
         Dataset to create a uniformly spaced time dimension. It is particularly
         useful for preparing data for animations, temporal analysis, or
@@ -105,7 +120,7 @@ class Sits_ds:
     def export2gif(self, imgfile=None, fps=8, robust=True,
                    keep_bands=['B04', 'B03', 'B02'], **kwargs):
         """
-        Create satellite timelapse, and export it as animated GIF file.
+        Creates satellite timelapse, and exports it as animated GIF file.
 
         Args:
             imgfile (string, optional): GIF file path.
@@ -119,8 +134,6 @@ class Sits_ds:
             Sits_ds.gif: ``IPython.display.Image`` if ``imgfile`` is None.
 
         Example:
-            >>> geo_dc = Sits_ds(netcdf_file)
-            >>> geo_dc.ds2da()
             >>> geo_dc.export2gif(imgfile='myTimeSeries.gif')
         """
         self.__ds2da(keep_bands)
@@ -178,68 +191,35 @@ class Sits_ds:
         watermarked = Image.alpha_composite(img, txt_layer).convert("RGB")
         return np.array(watermarked, dtype=np.uint8)
 
-    def __pad_to_square(self, frame: np.ndarray, fill_color=(0, 0, 0)):
-        """to fill
+    def __pad_to_square(self, frame: np.ndarray, dim=1080, fill_color=(0, 0, 0)):
+        """
+        Resizes frames to square format with the specified dimensions (in pixels).
+
+        Args:
+            frame (np.ndarray): frame to resize.
+            dim (int, optional): size in pixels of the square side.
+            fill_color (tuple, optional): fill color in RGB.
+                Defaults to (0, 0, 0), i.e. black.
+
+        Returns:
+            np.array
         """
         img = Image.fromarray(frame)
         w, h = img.size
-        scale = 1080 / max(w, h)
+        scale = dim / max(w, h)
         new_w, new_h = int(w * scale), int(h * scale)
         img = img.resize((new_w, new_h), Image.BICUBIC)
 
         # Create 1080x1080 canvas
-        canvas = Image.new("RGB", (1080, 1080), fill_color)
-        offset = ((1080 - new_w) // 2, (1080 - new_h) // 2)
+        canvas = Image.new("RGB", (dim, dim), fill_color)
+        offset = ((dim - new_w) // 2, (dim - new_h) // 2)
         canvas.paste(img, offset)
         return np.array(canvas)
 
-    def export2vid_old(self, output_path: str,
-                   keep_bands: list,
-                   fps: int = 10, rgb_indices=(0, 1, 2),
-                   vmin=None, vmax=None,
-                   square=False,
-                   watermark_text=None,
-                   watermark_loc='bottom right',
-                   watermark_param=None,
-                   square_param=None):
-        """to fill
-        """
-
-        self.__ds2da(keep_bands)
-
-        assert self.da.ndim == 4 and self.da.shape[1] >= 3, "Expected shape (time, bands, y, x)"
-
-        with imageio.get_writer(output_path, fps=fps) as writer:
-            for t in range(self.da.sizes['time']):
-                rgb = self.da.isel(time=t).values[rgb_indices, :, :]
-                rgb = np.transpose(rgb, (1, 2, 0))  # (y, x, 3)
-
-                if vmin is None:
-                    vmin = rgb.min()
-                if vmax is None:
-                    vmax = rgb.max()
-
-                rgb = np.clip((rgb - vmin) / (vmax - vmin), 0, 1)
-                rgb = (rgb * 255).astype(np.uint8)
-
-                if square:
-                    square_param = square_param or {}
-                    rgb = self.__pad_to_square(rgb, fill_color=(0, 0, 0),
-                                               **square_param)
-
-                if watermark_text:
-                    watermark_param = watermark_param or {}
-                    rgb = self.__add_watermark(rgb,
-                                               text=watermark_text,
-                                               position=watermark_loc,
-                                               **watermark_param)
-
-                writer.append_data(rgb)
 
     def export2vid(self, output_path: str,
                    keep_bands: list,
                    fps: int = 10,
-                   #rgb_indices=(0, 1, 2),
                    colormap: str = "viridis",
                    vmin=None, vmax=None,
                    square=False,
@@ -247,12 +227,31 @@ class Sits_ds:
                    watermark_loc='bottom right',
                    watermark_param=None,
                    square_param=None):
-        """Export EO time series to video, supporting RGB and monoband with colormap.
         """
+        Export EO time series to video, supporting RGB and monoband with colormap.
 
+        Args:
+            output_path (str): output filename. The video format is determined
+                by the file extension, if supported by the ImageIO library.
+            keep_bands (list): list of band names/indices to retain.
+                (requires 1-3 bands)
+            fps (int, optional): Defaults to 10.
+            colormap (str, optional): Defaults to "viridis".
+            vmin (float, optional): minimum value for band contrast.
+                Defaults to None.
+            vmax (float, optional): maximum value for band contrast.
+                Defaults to None.
+            square (bool, optional): resizes frames to square format
+                (see `Sits_ds.__pad_to_square()`). Defaults to False.
+            watermark_text (str, optional): watermark text.
+                Defaults to None.
+            watermark_loc (str, optional): position of watermark text.
+                Choices: 'top left', 'top right', 'bottom left', 'bottom right'.
+                Defaults to 'bottom right'.
+            watermark_param (**kwargs, optional): see `Sits_ds.__add_watermark()`.
+            square_param (**kwargs, optional): see `Sits_ds.__pad_to_square()`.
+        """
         self.__ds2da(keep_bands)
-        #assert self.da.ndim == 4, "Expected shape (time, bands, y, x)"
-
         mono_mode = self.da.shape[1] == 1
 
         with imageio.get_writer(output_path, fps=fps) as writer:
@@ -267,7 +266,6 @@ class Sits_ds:
                     cmap = cm.get_cmap(colormap)
                     rgb = (cmap(norm)[:, :, :3] * 255).astype(np.uint8)  # drop alpha
                 else:
-                    #rgb = arr[rgb_indices, :, :]
                     rgb = arr[(0, 1, 2), :, :]
                     rgb = np.transpose(rgb, (1, 2, 0))  # (y, x, 3)
                     if vmin is None: vmin = rgb.min()
