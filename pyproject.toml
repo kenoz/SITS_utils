@@ -42,7 +42,9 @@ dependencies = [
     "spyndex",
     "pyarrow",
     "rioxarray",
-    "sktime"
+    "sktime",
+    "pillow",
+    "imageio"
 ]
 
 [project.urls]

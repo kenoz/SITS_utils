@@ -7,7 +7,6 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import matplotlib.cm as cm
 from importlib.resources import files
-#import os
 
 
 class Sits_ds:

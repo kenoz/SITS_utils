@@ -17,3 +17,5 @@ pyarrow
 rioxarray
 sktime
 xarray
+pillow
+imageio
