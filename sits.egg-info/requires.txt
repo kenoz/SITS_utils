@@ -17,6 +17,8 @@ spyndex
 pyarrow
 rioxarray
 sktime
+pillow
+imageio
 
 [docs]
 sphinx==7.4.7

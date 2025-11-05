@@ -33,6 +33,8 @@ Requires-Dist: spyndex
 Requires-Dist: pyarrow
 Requires-Dist: rioxarray
 Requires-Dist: sktime
+Requires-Dist: pillow
+Requires-Dist: imageio
 Provides-Extra: tests
 Requires-Dist: pytest; extra == "tests"
 Provides-Extra: docs
