@@ -19,4 +19,5 @@ sktime
 xarray
 pillow
 imageio
-scikit-image
+scikit-image>=0.21.0
+scipy
