@@ -44,7 +44,8 @@ dependencies = [
     "rioxarray",
     "sktime",
     "pillow",
-    "imageio"
+    "imageio",
+    "scikit-image"
 ]
 
 [project.urls]

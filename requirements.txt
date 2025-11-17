@@ -19,3 +19,4 @@ sktime
 xarray
 pillow
 imageio
+scikit-image

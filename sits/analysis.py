@@ -1,5 +1,8 @@
 import xarray as xr
 import pandas as pd
+from scipy.ndimage import label
+from skimage.filters.rank import modal
+from skimage.morphology import square
 # sktime package
 from sktime.forecasting.base import ForecastingHorizon
 from sktime.registry import all_estimators
@@ -285,3 +288,211 @@ def xr_forecast(dataarray,
     result = result.transpose('time', 'y', 'x')
 
     return result
+
+
+class ClearCut:
+    """to fill
+    """
+
+    def __init__(self, da: xr.DataArray):
+        self.da = da
+
+    def season_of_interest(self, start: str = "06-01", end: str = "08-31", compute = True):
+        """
+        Filters the datacube to retain only dates between start and end (format: 'mm-dd').
+
+        Parameters:
+        - start: start date in 'mm-dd' format (e.g., '06-01')
+        - end: end date in 'mm-dd' format (e.g., '08-31')
+
+        Returns:
+        - Filtered DataArray with only dates in the specified range
+        """
+        mmdd = self.da['time'].dt.strftime('%m-%d')
+        mask = (mmdd >= start) & (mmdd <= end)
+        if compute:
+            self.da = self.da.sel(time=self.da['time'][mask]).compute()
+        else:
+            self.da = self.da.sel(time=self.da['time'][mask])
+
+    def __select_window(self, pivot_date: date, window: int, direction: str):
+        d = np.datetime64(pivot_date)
+        if direction == "forward":
+            return self.da.sel(time=slice(d, d + np.timedelta64(window, 'D')))
+        elif direction == "backward":
+            return self.da.sel(time=slice(d - np.timedelta64(window, 'D'), d))
+        else:
+            raise ValueError("direction must be 'forward' or 'backward'")
+
+    def __compute_mean_and_mask(self, da_sub: xr.DataArray, min_obs: int):
+        valid_count = da_sub.notnull().sum(dim='time')
+        mean_fixed = da_sub.mean(dim='time', skipna=True)
+        mask = valid_count >= min_obs
+        return mean_fixed.where(mask), mask
+
+    def __extend_window(self, result: xr.DataArray, mask: xr.DataArray, start, end, min_obs: int, direction: str):
+        if direction == "forward":
+            time_iter = self.da.time.sel(time=slice(end, None))
+            slice_fn = lambda t: slice(end, t)
+        else:  # backward
+            time_iter = self.da.time.sel(time=slice(None, start))[::-1]
+            slice_fn = lambda t: slice(t, start)
+
+        for t in time_iter:
+            da_sub = self.da.sel(time=slice_fn(t.values))
+            valid_count = da_sub.notnull().sum(dim='time')
+            new_mask = (valid_count >= min_obs) & result.isnull()
+            result = result.where(~new_mask, da_sub.mean(dim='time', skipna=True))
+            if new_mask.sum() == 0:
+                break
+        return result
+
+    def __mean_with_fallback(self, pivot_date: date, window: int, direction: str = 'forward', min_obs: int = 2):
+        da_sub = self.__select_window(pivot_date, window, direction)
+        start, end = da_sub['time'].min().values, da_sub['time'].max().values
+        result, mask = self.__compute_mean_and_mask(da_sub, min_obs)
+        result = self.__extend_window(result, mask, start, end, min_obs, direction)
+        return result, mask
+
+    def __classify_anomalies(self, mag_layer: xr.DataArray, thresholds: list):
+        class_layer = xr.full_like(mag_layer, 0, dtype=int)
+        for i, th in enumerate(thresholds, start=1):
+            class_layer = xr.where(mag_layer > th, i, class_layer)
+        class_layer.name = "anomaly_class"
+        class_layer.attrs["thresholds"] = str(thresholds)
+        return class_layer
+
+    def detect_anomalies(self,
+                         thresholds: list = [0.2, 0.3, 0.4],
+                         window_backward: int = 720,
+                         window_forward: int = 60,
+                         min_obs_backward: int = 5,
+                         min_obs_forward: int = 2,
+                         out_crs: str = "epsg:3035"):
+
+        da_window = self.da.sel(
+            time=slice(
+                self.da['time'].min().values + np.timedelta64(window_backward, 'D'),
+                self.da['time'].max().values - np.timedelta64(window_forward, 'D')
+            ))
+
+        time = da_window['time'].values
+        first_mag = xr.full_like(self.da.isel(time=0), np.nan)
+        first_date = xr.full_like(self.da.isel(time=0), np.nan)
+        max_mag = xr.full_like(self.da.isel(time=0), np.nan)
+        max_date = xr.full_like(self.da.isel(time=0), np.nan)
+        last_mag = xr.full_like(self.da.isel(time=0), np.nan)
+        last_date = xr.full_like(self.da.isel(time=0), np.nan)
+        in_range = xr.full_like(self.da.isel(time=0), False, dtype=bool)
+
+        for d in time:
+            mean_before, inrange_b = self.__mean_with_fallback(pivot_date = d,
+                                                               window = window_backward,
+                                                               direction='backward',
+                                                               min_obs = min_obs_backward)
+            mean_after, inrange_f = self.__mean_with_fallback(pivot_date = d,
+                                                              window = window_forward,
+                                                              direction='forward',
+                                                              min_obs = min_obs_forward)
+
+            mag = abs(mean_after - mean_before)
+
+            mask = mag > thresholds[0]
+
+            # First anomaly
+            first_mask = mask & np.isnan(first_mag)
+            first_mag = first_mag.where(~first_mask, mag)
+            first_date = first_date.where(~first_mask,
+                                  (pd.Timestamp(d) - pd.Timestamp("1970-01-01")) // pd.Timedelta(days=1),
+                                  )
+
+            # Max anomaly
+            max_mask = mask & ((mag > max_mag) | np.isnan(max_mag))
+            max_mag = max_mag.where(~max_mask, mag)
+            max_date = max_date.where(~max_mask,
+                                  (pd.Timestamp(d) - pd.Timestamp("1970-01-01")) // pd.Timedelta(days=1),
+                                  )
+
+            # Last anomaly
+            last_mag = xr.where(mask, mag, last_mag)
+            last_mag = last_mag.where(~mask, mag)
+            last_date = last_date.where(~mask,
+                                  (pd.Timestamp(d) - pd.Timestamp("1970-01-01")) // pd.Timedelta(days=1),
+                                  )
+
+            in_range = in_range | inrange_b | inrange_f
+
+        # Classification based on max magnitude
+        class_layer = self.__classify_anomalies(max_mag, thresholds)
+
+        self.detection = xr.Dataset({
+            'magnitude_first': first_mag,
+            'date_first': first_date,
+            'magnitude_max': max_mag,
+            'date_max': max_date,
+            'magnitude_last': last_mag,
+            'date_last': last_date,
+            'mask': ~np.isnan(first_mag),
+            'inrange': in_range,
+            'classif': class_layer,
+        })
+        self.detection = self.detection.rio.write_crs(out_crs)
+
+
+def remove_small_objects_with_majority(dataarray, min_size=3, window_size=3, ignore_nan=True, connectivity=1, out_crs = 'epsg:3035'):
+    """
+    Remove small connected objects and replace them with local majority value.
+    Preserves original coordinates and CRS.
+    
+    Parameters:
+    -----------
+    dataarray : xr.DataArray
+        Input array with integer classification values.
+    min_size : int
+        Minimum size (number of pixels) to keep.
+    window_size : int
+        Size of the moving window for majority filter.
+    ignore_nan : bool
+        If True, NaNs are treated as background (converted to 0).
+    connectivity : int
+        Connectivity for labeling (1=4-connectivity, 2=8-connectivity).
+    
+    Returns:
+    --------
+    xr.DataArray
+        Filtered DataArray with original coords and CRS.
+    """
+    # Force float for final output to allow NaNs
+    arr_float = dataarray.values.astype(float).copy()
+    
+    # Handle NaNs
+    nan_mask = np.isnan(arr_float) if ignore_nan else np.zeros_like(arr_float, dtype=bool)
+    arr_int = arr_float.copy()
+    if ignore_nan:
+        arr_int[nan_mask] = 0  # treat NaN as background
+    
+    # Step 1: Identify small objects
+    output = arr_int.copy()
+    for cls in np.unique(arr_int):
+        if cls == 0:  # skip background
+            continue
+        mask = arr_int == cls
+        labeled, num_features = label(mask, structure=np.ones((3,3)) if connectivity == 2 else None)
+        sizes = np.bincount(labeled.ravel())
+        small_ids = np.where(sizes < min_size)[0]
+        remove_mask = np.isin(labeled, small_ids)
+        output[remove_mask] = 0  # mark small objects as background
+    
+    # Step 2: Compute majority filter using skimage (fast)
+    arr_uint = output.astype(np.uint16)
+    majority_neighborhood = modal(arr_uint, square(window_size))
+    
+    # Step 3: Replace zeros with local majority
+    output[output == 0] = majority_neighborhood[output == 0]
+    
+    # Restore NaNs if needed
+    if ignore_nan:
+        output[nan_mask] = np.nan
+    
+    # Preserve coords and CRS
+    return xr.DataArray(output, coords=dataarray.coords, dims=dataarray.dims, attrs=dataarray.attrs).rio.write_crs(out_crs)
