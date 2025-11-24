@@ -19,6 +19,8 @@ rioxarray
 sktime
 pillow
 imageio
+scikit-image
+scipy
 
 [docs]
 sphinx==7.4.7

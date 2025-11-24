@@ -70,6 +70,7 @@ def _ensure_datetime_index(df):
         df.index = pd.to_datetime(df.index)
     return df
 
+
 def _resample_df(df, freq):
     df = df.resample(freq).mean()
     return df
@@ -338,7 +339,7 @@ class ClearCut:
         else:
             self.da = self.da.sel(time=self.da['time'][mask])
 
-    def __select_window(self, pivot_date: date, window: int, direction: str):
+    def __select_window(self, pivot_date, window: int, direction: str):
         d = np.datetime64(pivot_date)
         if direction == "forward":
             return self.da.sel(time=slice(d, d + np.timedelta64(window, 'D')))
@@ -370,7 +371,7 @@ class ClearCut:
                 break
         return result
 
-    def __mean_with_fallback(self, pivot_date: date, window: int, direction: str = 'forward', min_obs: int = 2):
+    def __mean_with_fallback(self, pivot_date, window: int, direction: str = 'forward', min_obs: int = 2):
         da_sub = self.__select_window(pivot_date, window, direction)
         start, end = da_sub['time'].min().values, da_sub['time'].max().values
         result, mask = self.__compute_mean_and_mask(da_sub, min_obs)

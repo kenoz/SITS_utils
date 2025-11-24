@@ -20,8 +20,11 @@ docs/source/_static/logo_sits.png
 docs/source/tutorials/colab_sits_ex01.ipynb
 docs/source/tutorials/colab_sits_ex02.ipynb
 docs/source/tutorials/colab_sits_ex03.ipynb
+docs/source/tutorials/colab_sits_ex04.ipynb
 docs/source/tutorials/img/banc_arguin.gif
+docs/source/tutorials/img/banc_arguin.mp4
 docs/source/tutorials/img/banc_arguin_v2.gif
+docs/source/tutorials/img/banc_arguin_v2.mp4
 docs/source/tutorials/img/eu_random_pts.png
 docs/source/tutorials/img/fig_image.png
 docs/source/tutorials/img/fig_patch.png

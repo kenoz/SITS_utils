@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: sits
-Version: 0.6.9
+Version: 0.7.0
 Summary: Online processing of Satellite Image Time Series
 Author-email: Kenji Ose <kenji.ose@ec.europa.eu>
 License: GPL-3.0
@@ -35,6 +35,8 @@ Requires-Dist: rioxarray
 Requires-Dist: sktime
 Requires-Dist: pillow
 Requires-Dist: imageio
+Requires-Dist: scikit-image
+Requires-Dist: scipy
 Provides-Extra: tests
 Requires-Dist: pytest; extra == "tests"
 Provides-Extra: docs
@@ -132,8 +134,9 @@ for index, row in sits_df.bbox.iterrows():
 If you want to explore the different ways to use the sits package, we recommend running the following Jupyter notebooks, in [Google Colab](https://colab.research.google.com/) for instance:
 
 - [Example 01](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex01.ipynb): explain the basics fro retireving a satellite image time series according to a polygon feature.
-- [Example 02](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex02.ipynb): explain how to parallelize processing tasks in case of multiple vector features.
-- [Example 03](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex03.ipynb): explain how to compute spectral indices with `sits` and `spyndex` packages. 
+- [Example 02](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex02.ipynb): explain how to export a satellite time series into an animated GIF or video file.
+- [Example 03](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex03.ipynb): explain how to compute spectral indices with `sits` and `spyndex` packages.
+- [Example 04](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex04.ipynb): explain how to parallelize processing tasks in case of multiple vector features. 
 
 
 ## Contributing
