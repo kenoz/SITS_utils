@@ -535,8 +535,8 @@ def sieve_maj(dataarray,
     Returns:
         xr.DataArray: filtered DataArray with original coords and CRS.
 
-        Example:
-            >>> sieve_maj(ndvi_ts.detection.classif)
+    Example:
+        >>> sieve_maj(ndvi_ts.detection.classif)
     """
     # Force float for final output to allow NaNs
     arr_float = dataarray.values.astype(float).copy()
