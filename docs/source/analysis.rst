@@ -37,4 +37,8 @@ analysis.ClearCut
    :members:
    :undoc-members:
    :show-inheritance:
-  
+
+analysis.sieve_maj
+------------------
+
+.. autofunction:: sits.analysis.sieve_maj
