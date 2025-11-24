@@ -393,6 +393,60 @@ class ClearCut:
                          min_obs_backward: int = 5,
                          min_obs_forward: int = 2,
                          out_crs: str = "epsg:3035"):
+        """
+        Detect anomalies in a univariate time series (e.g., spectral indices such as NDVI)
+        by comparing values between backward and forward moving windows.
+
+        For each date in the series (excluding margins defined by the window sizes),
+        the method computes:
+            - Mean of the backward window (past observations).
+            - Mean of the forward window (future observations).
+            - Magnitude of change as the absolute difference between the two means.
+
+        An anomaly is flagged when the magnitude exceeds the first threshold. The
+        function records the first, maximum, and last anomalies detected, along with
+        their dates, and classifies anomalies based on the maximum magnitude relative
+        to the provided thresholds.
+
+        Args:
+            thresholds (list, optional): list of float. Thresholds used to
+                classify anomaly magnitudes. Defaults to [0.2, 0.3, 0.4].
+            window_backward (int, optional): size of the backward window in days.
+                Defaults to 720.
+            window_forward (int, optional): size of the forward window in days.
+                Defaults to 60.
+            min_obs_backward (int, optional): minimum number of valid observations
+                required in the backward window. Defaults to 5.
+            min_obs_forward (int, optional): minimum number of valid observations
+                required in the forward window. Defaults to 2.
+            out_crs (str, optional): Coordinate Reference System (CRS) to assign
+                to the output dataset. Defaults to "epsg:3035".
+
+        Returns:
+            ClearCut.detection (xr.Dataset): results are stored with the
+                following variables:
+                    - magnitude_first (float): Magnitude of the first anomaly
+                        detected.
+                    - date_first (Unix epoch): Date (days since epoch) of the
+                        first anomaly.
+                    - magnitude_max (float): Maximum anomaly magnitude
+                        detected.
+                    - date_max (Unix epoch): Date of the maximum anomaly.
+                    - magnitude_last (float): Magnitude of the last anomaly
+                        detected.
+                    - date_last (Unix epoch): Date of the last anomaly.
+                    - mask (binary): Boolean mask indicating anomaly presence.
+                    - inrange (binary): Boolean mask indicating whether
+                        sufficient observations were available in both windows.
+                    - classif (int): Classification layer based on thresholds.
+
+        Notes:
+            - Dates are stored as integer days since 1970-01-01.
+            - The classification is performed using the maximum anomaly magnitude
+                  compared against the provided thresholds.
+            - The output dataset is tagged with the specified CRS for spatial
+                  consistency in geospatial workflows.
+    """
 
         da_window = self.da.sel(
             time=slice(
