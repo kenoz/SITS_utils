@@ -13,3 +13,11 @@ sits.analysis
    :undoc-members:
    :show-inheritance:
 
+analysis.ClearCut
+---------------
+   
+.. autoclass:: ClearCut
+   :members:
+   :undoc-members:
+   :show-inheritance:
+  
