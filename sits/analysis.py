@@ -49,8 +49,7 @@ def date_range(start_date, end_date, freq='D'):
             Default to 'D' for daily.
 
     Returns:
-        date_range (pd.DatetimeIndex): pandas DatetimeIndex object
-            representing the date range.
+        date_range (pd.DatetimeIndex): pandas DatetimeIndex object representing the date range.
 
     Examples
     --------
@@ -121,9 +120,7 @@ def reindexTS(df, freq='D',
         ValueError: if `regular_freq` is True while `freq` is not 'D'.
 
     Notes:
-        - The function uses internal helpers: `_ensure_datetime_index`,
-            `_resample_df`, `_convert_to_period`, `_regularize_index`, and
-            `_fill_nan`.
+        - The function uses internal helpers: `_ensure_datetime_index`, `_resample_df`, `_convert_to_period`, `_regularize_index`, and `_fill_nan`.
         - The index is normalized to remove time components before processing.
 
     Examples:
@@ -250,12 +247,10 @@ def xr_forecast(dataarray,
             Default to 'D' for daily.
 
     Returns:
-        result (xr.DataArray): a DataArray with dimensions ('time', 'y', 'x')
-            containing the forecasted values for each pixel.
+        result (xr.DataArray): a DataArray with dimensions ('time', 'y', 'x') containing the forecasted values for each pixel.
 
     Notes:
-        - The function uses Dask for parallelized execution, making it suitable
-            for large datasets.
+        - The function uses Dask for parallelized execution, making it suitable for large datasets.
         - The output time coordinate is replaced with `predict_time`.
 
     Examples:
@@ -318,7 +313,7 @@ class ClearCut:
     def __init__(self, da: xr.DataArray):
         self.da = da
 
-    def season_of_interest(self, start: str = "06-01", end: str = "08-31", compute = True):
+    def season_of_interest(self, start: str = "06-01", end: str = "08-31", compute=True):
         """
         Filters the datacube to retain only dates between start and end (format: 'mm-dd').
 
@@ -329,8 +324,10 @@ class ClearCut:
                 Defaults to '08-31'.
 
         Returns:
-            ClearCut.da (xr.Dataarray): filtered Dataarray with only dates in
-                the specified range.
+            ClearCut.da (xr.Dataarray): Filtered Dataarray with only dates in the specified range.
+
+        Example:
+            >>> ndvi_ts.season_of_interest()
         """
         mmdd = self.da['time'].dt.strftime('%m-%d')
         mask = (mmdd >= start) & (mmdd <= end)
@@ -423,29 +420,25 @@ class ClearCut:
                 to the output dataset. Defaults to "epsg:3035".
 
         Returns:
-            ClearCut.detection (xr.Dataset): results are stored with the
-                following variables:
-                    - magnitude_first (float): Magnitude of the first anomaly
-                        detected.
-                    - date_first (Unix epoch): Date (days since epoch) of the
-                        first anomaly.
-                    - magnitude_max (float): Maximum anomaly magnitude
-                        detected.
-                    - date_max (Unix epoch): Date of the maximum anomaly.
-                    - magnitude_last (float): Magnitude of the last anomaly
-                        detected.
-                    - date_last (Unix epoch): Date of the last anomaly.
-                    - mask (binary): Boolean mask indicating anomaly presence.
-                    - inrange (binary): Boolean mask indicating whether
-                        sufficient observations were available in both windows.
-                    - classif (int): Classification layer based on thresholds.
+            ClearCut.detection (xr.Dataset):
+                Results are stored with the following variables:
+                - magnitude_first (float): Magnitude of the first anomaly detected.
+                - date_first (Unix epoch): Date (days since epoch) of the first anomaly.
+                - magnitude_max (float): Maximum anomaly magnitude detected.
+                - date_max (Unix epoch): Date of the maximum anomaly.
+                - magnitude_last (float): Magnitude of the last anomaly detected.
+                - date_last (Unix epoch): Date of the last anomaly.
+                - mask (binary): Boolean mask indicating anomaly presence.
+                - inrange (binary): Boolean mask indicating whether sufficient observations were available in both windows.
+                - classif (int): Classification layer based on thresholds.
 
         Notes:
             - Dates are stored as integer days since 1970-01-01.
-            - The classification is performed using the maximum anomaly magnitude
-                  compared against the provided thresholds.
-            - The output dataset is tagged with the specified CRS for spatial
-                  consistency in geospatial workflows.
+            - The classification is performed using the maximum anomaly magnitude compared against the provided thresholds.
+            - The output dataset is tagged with the specified CRS for spatial consistency in geospatial workflows.
+
+        Example:
+            >>> ndvi_ts.detect_anomalies()
     """
 
         da_window = self.da.sel(
@@ -517,7 +510,12 @@ class ClearCut:
         self.detection = self.detection.rio.write_crs(out_crs)
 
 
-def remove_small_objects_with_majority(dataarray, min_size=3, window_size=3, ignore_nan=True, connectivity=1, out_crs = 'epsg:3035'):
+def sieve_maj(dataarray,
+              min_size=3,
+              window_size=3,
+              ignore_nan=True,
+              connectivity=1,
+              out_crs='epsg:3035'):
     """
     Remove small connected objects and replace them with local majority value.
     Preserves original coordinates and CRS.
@@ -536,6 +534,9 @@ def remove_small_objects_with_majority(dataarray, min_size=3, window_size=3, ign
 
     Returns:
         xr.DataArray: filtered DataArray with original coords and CRS.
+
+        Example:
+            >>> sieve_maj(ndvi_ts.detection.classif)
     """
     # Force float for final output to allow NaNs
     arr_float = dataarray.values.astype(float).copy()
