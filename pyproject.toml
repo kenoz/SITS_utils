@@ -45,7 +45,8 @@ dependencies = [
     "sktime",
     "pillow",
     "imageio",
-    "skimage",
+    "scikit-image",
+    "scipy",
 ]
 
 [project.urls]
