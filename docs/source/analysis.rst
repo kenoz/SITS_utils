@@ -5,11 +5,9 @@ Module analysis
 
 All functions here are automatically loaded with :code:`from sits import analysis`.
 
-analysis.ClearCut
----------------
-   
-.. autoclass:: ClearCut
+.. automodule:: sits.analysis
    :members:
    :undoc-members:
    :show-inheritance:
+
   
