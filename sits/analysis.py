@@ -291,7 +291,27 @@ def xr_forecast(dataarray,
 
 
 class ClearCut:
-    """to fill
+    """
+    This class aims to detect changes in univariate time series
+    (e.g., spectral indices such as NDVI). It identifies potential
+    change points by comparing values in two moving windows:
+      - A **backward window** summarizes past observations.
+      - A **forward window** summarizes upcoming observations.
+    A change is flagged when the forward window shows a significant drop
+    relative to the backward window, according to a configurable threshold.
+
+    Typical use case: detecting vegetation loss or disturbance events in
+    spectral index time series (NDVI, EVI, etc.), where sudden drops may
+    indicate deforestation, fire, or degradation.
+
+    Attributes:
+        da (xr.Dataarray): index time series ('time', 'band', 'y', 'x')
+
+    Args:
+        da (xr.Dataarray): index time series ('time', 'band', 'y', 'x')
+
+    Example:
+            >>> ndvi_ts = ClearCut(Dataarray)
     """
 
     def __init__(self, da: xr.DataArray):
@@ -301,12 +321,15 @@ class ClearCut:
         """
         Filters the datacube to retain only dates between start and end (format: 'mm-dd').
 
-        Parameters:
-        - start: start date in 'mm-dd' format (e.g., '06-01')
-        - end: end date in 'mm-dd' format (e.g., '08-31')
+        Args:
+            start (str, optional): start date in 'mm-dd' format.
+                Defaults to '06-01'.
+            end (str, optional): end date in 'mm-dd' format.
+                Defaults to '08-31'.
 
         Returns:
-        - Filtered DataArray with only dates in the specified range
+            ClearCut.da (xr.Dataarray): filtered Dataarray with only dates in
+                the specified range.
         """
         mmdd = self.da['time'].dt.strftime('%m-%d')
         mask = (mmdd >= start) & (mmdd <= end)
