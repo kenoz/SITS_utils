@@ -46,7 +46,6 @@ dependencies = [
     "pillow",
     "imageio",
     "scikit-image",
-    "scipy"
 ]
 
 [project.urls]
