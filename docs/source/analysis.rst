@@ -10,4 +10,11 @@ All functions here are automatically loaded with :code:`from sits import analysi
    :undoc-members:
    :show-inheritance:
 
+analysis.ClearCut
+---------------
+   
+.. autoclass:: ClearCut
+   :members:
+   :undoc-members:
+   :show-inheritance:
   
