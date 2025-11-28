@@ -1,5 +1,6 @@
 import xarray as xr
 import pandas as pd
+import numpy as np
 from scipy.ndimage import label
 from skimage.filters.rank import modal
 from skimage.morphology import square
