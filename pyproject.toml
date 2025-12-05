@@ -27,7 +27,6 @@ dependencies = [
     "dask",
     "pandas",
     "numpy",
-    "datetime",
     "pystac_client",
     "pystac==1.11.0",
     "planetary_computer",
