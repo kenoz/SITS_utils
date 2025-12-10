@@ -96,6 +96,48 @@ to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
+### Testing
+
+To ensure the correct behaviour of the module, you can run:
+
+```bash
+# Or any of the supported python versions
+uv run --python 3.10 --group dev pytest tests/
+
+```
+
+If you want to test all the supported python versions, you can run `./test_all_versions.sh`.
+
+If you want an isolated environment, you can use the `Dockerfile` provided.
+
+To run the matrix test in the isolated environment you can do:
+
+```bash
+# Build the image
+docker build -t sits-gdal .
+
+# Then run the tests with persistent caching
+docker run --rm \
+  -v uv-cache:/root/.cache/uv \
+  sits-test
+
+
+```
+
+Or if you want to test live changes, you can Bind Mount your working directory as:
+ 
+```bash
+# Run this AFTER building the image
+docker run --rm \
+  -v uv-cache:/root/.cache/uv \
+  -v $(pwd):/app \
+  sits-test
+
+
+```
+Remember that if you make changes to the Dockerfile, you will need to build your image again.
+
+
 ## License
 
 [GNU GPL v.3.0](LICENSE)
