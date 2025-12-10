@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "dask",
     "pandas",
@@ -46,13 +46,13 @@ dependencies = [
     "imageio",
     "scikit-image",
     "scipy",
+    "Bottleneck",
 ]
 
 [project.urls]
 "Homepage" = "https://github.com/kenoz/SITS_utils.git"
 
 [project.optional-dependencies]
-tests = ["pytest"]
 docs = [
     "sphinx==7.4.7",
     "dask",
@@ -60,6 +60,15 @@ docs = [
     "sphinx_rtd_theme==2.0.0",
     "matplotlib==3.9.1",
     "sphinx-gallery==0.17.0"
+]
+
+# UV SPECIFIC: Development dependencies
+# These are NOT installable by users
+[dependency-groups]
+dev = [
+    "pytest",
+    "build",
+    "twine",
 ]
 
 [tool.setuptools.packages.find]
