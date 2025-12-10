@@ -4,22 +4,27 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 import logging
+
 # STAC API
 from pystac_client import Client
 import planetary_computer as pc
+
 # ODC tools
 import odc
 from odc.geo.geobox import GeoBox
 from odc.stac import load
+
 # Geospatial librairies
 import geopandas as gpd
-import rioxarray
+import rioxarray  # noqa: F401
 import rasterio
 from rasterio.crs import CRS
 from rasterio.features import rasterize
 from shapely.geometry import box
+
 # Dask
 import dask
+
 # Local imports
 from .indices import SpectralIndex
 
@@ -43,7 +48,7 @@ def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
         >>> # output geobox closest to the input bbox
         >>> geobox = def_geobox(bbox, crs_out)
 
-        >>> # output geobox with the same dimensions (number of rows and columns) 
+        >>> # output geobox with the same dimensions (number of rows and columns)
         >>> # as the input shape.
         >>> geobox = def_geobox(bbox, crs_out, shape=(10, 10))
     """
@@ -56,8 +61,8 @@ def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
         shift_x = round((shape[0] - size_x) / 2)
         shift_y = round((shape[1] - size_y) / 2)
         # coordinates of the shaped bbox
-        min_x = resolution * (round(bbox[0]/resolution) - shift_x)
-        min_y = resolution * (round(bbox[1]/resolution) - shift_y)
+        min_x = resolution * (round(bbox[0] / resolution) - shift_x)
+        min_y = resolution * (round(bbox[1] / resolution) - shift_y)
         max_x = min_x + shape[0] * resolution
         max_y = min_y + shape[1] * resolution
 
@@ -65,9 +70,9 @@ def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
     else:
         newbbox = bbox
 
-    geobox = GeoBox.from_bbox(odc.geo.geom.BoundingBox(*newbbox),
-                              crs=crs,
-                              resolution=resolution)
+    geobox = GeoBox.from_bbox(
+        odc.geo.geom.BoundingBox(*newbbox), crs=crs, resolution=resolution
+    )
     return geobox
 
 
@@ -104,7 +109,7 @@ class Gdfgeom:
 
         df = getattr(self, df_attr)
         self.buffer = df.copy()
-        self.buffer['geometry'] = self.buffer.geometry.buffer(radius)
+        self.buffer["geometry"] = self.buffer.geometry.buffer(radius)
 
     def set_bbox(self, df_attr):
         """
@@ -124,7 +129,7 @@ class Gdfgeom:
 
         df = getattr(self, df_attr)
         self.bbox = df.copy()
-        self.bbox['geometry'] = self.bbox.apply(self.__create_bounding_box, axis=1)
+        self.bbox["geometry"] = self.bbox.apply(self.__create_bounding_box, axis=1)
 
     def to_vector(self, df_attr, outfile=None, driver="GeoJSON"):
         """
@@ -145,7 +150,7 @@ class Gdfgeom:
         """
 
         df = getattr(self, df_attr)
-        df.to_file(outfile, driver=driver, encoding='utf-8')
+        df.to_file(outfile, driver=driver, encoding="utf-8")
 
     def __create_bounding_box(self, row):
         """
@@ -164,8 +169,8 @@ class Gdfgeom:
 
 class Vec2gdf(Gdfgeom):
     """
-    This class aims to load a vector file as a GeoDataFrame object. 
-    It inherits methods and attributes from ``Gdfgeom`` class. 
+    This class aims to load a vector file as a GeoDataFrame object.
+    It inherits methods and attributes from ``Gdfgeom`` class.
 
     Example:
         >>> v_path = '<vector file path>'
@@ -178,7 +183,7 @@ class Vec2gdf(Gdfgeom):
 
 class Csv2gdf(Gdfgeom):
     """
-    This class aims to load csv tables with geographic coordinates into GeoDataFrame object. 
+    This class aims to load csv tables with geographic coordinates into GeoDataFrame object.
     It inherits methods and attributes from ``Gdfgeom`` class
 
     Attributes:
@@ -198,19 +203,19 @@ class Csv2gdf(Gdfgeom):
         >>> geotable = Csv2gdf(csv_file, 'longitude', 'latitude', crs_in)
     """
 
-    def __init__(self, csv_file, x_name, y_name, crs_in, id_name='no_id'):
+    def __init__(self, csv_file, x_name, y_name, crs_in, id_name="no_id"):
         """
         Initialize the attributes of `Csv2gdf`.
         """
         self.crs_in = crs_in
-        self.table = pd.read_csv(csv_file, encoding='unicode_escape')
-        self.table = self.table.rename(columns={x_name: 'coord_X',
-                                                y_name: 'coord_Y',
-                                                id_name: 'gid'})
+        self.table = pd.read_csv(csv_file, encoding="unicode_escape")
+        self.table = self.table.rename(
+            columns={x_name: "coord_X", y_name: "coord_Y", id_name: "gid"}
+        )
 
     def set_gdf(self, crs_out):
         """
-        Convert the class attribute ``Csv2gdf.table`` (DataFrame) into GeoDataFrame object, 
+        Convert the class attribute ``Csv2gdf.table`` (DataFrame) into GeoDataFrame object,
         in the specified output CRS projection.
 
         Args:
@@ -224,13 +229,12 @@ class Csv2gdf(Gdfgeom):
             >>> geotable.set_gdf(3035)
         """
 
-        self.gdf = gpd.GeoDataFrame(self.table,
-                                    geometry=gpd.points_from_xy(self.table.coord_X,
-                                                                self.table.coord_Y)
-                                   )
+        self.gdf = gpd.GeoDataFrame(
+            self.table,
+            geometry=gpd.points_from_xy(self.table.coord_X, self.table.coord_Y),
+        )
         self.gdf = self.gdf.set_crs(self.crs_in, allow_override=True)
         self.gdf = self.gdf.to_crs(crs_out)
-
 
     def del_rows(self, col_name, rows_values):
         """
@@ -245,10 +249,9 @@ class Csv2gdf(Gdfgeom):
         del_rows = {col_name: rows_values}
         for col in del_rows:
             for row in del_rows[col]:
-                self.table.drop(self.table[self.table[col] == row].index,
-                                inplace=True)
+                self.table.drop(self.table[self.table[col] == row].index, inplace=True)
         size_after = len(self.table)
-        print(f'rows length before:{size_before}\nrows length after:{size_after}')
+        print(f"rows length before:{size_before}\nrows length after:{size_after}")
 
 
 class StacAttack:
@@ -269,31 +272,51 @@ class StacAttack:
         >>> stacObj = StacAttack()
     """
 
-    def __init__(self, provider='mpc',
-                       collection='sentinel-2-l2a',
-                       key_sat='s2',
-                       bands=['B02', 'B03', 'B04', 'B05', 'B06', 
-                              'B07', 'B08', 'B8A', 'B11', 'B12', 'SCL']
-                ):
+    def __init__(
+        self,
+        provider="mpc",
+        collection="sentinel-2-l2a",
+        key_sat="s2",
+        bands=[
+            "B02",
+            "B03",
+            "B04",
+            "B05",
+            "B06",
+            "B07",
+            "B08",
+            "B8A",
+            "B11",
+            "B12",
+            "SCL",
+        ],
+    ):
         """
         Initialize the attributes of `StacAttack`.
         """
-        self.prov_stac = {'mpc':{'stac': 'https://planetarycomputer.microsoft.com/api/stac/v1',
-                                 'coll': collection,
-                                 'key_sat':key_sat,
-                                 'modifier': pc.sign_inplace,
-                                 'patch_url': pc.sign},
-                                 'aws':{'stac': 'https://earth-search.aws.element84.com/v1/',
-                                 'coll': collection,
-                                 'key_sat':key_sat,
-                                 'modifier': None,
-                                 'patch_url': None}
-                         }
+        self.prov_stac = {
+            "mpc": {
+                "stac": "https://planetarycomputer.microsoft.com/api/stac/v1",
+                "coll": collection,
+                "key_sat": key_sat,
+                "modifier": pc.sign_inplace,
+                "patch_url": pc.sign,
+            },
+            "aws": {
+                "stac": "https://earth-search.aws.element84.com/v1/",
+                "coll": collection,
+                "key_sat": key_sat,
+                "modifier": None,
+                "patch_url": None,
+            },
+        }
         self.data_corrected = False
         self.stac = self.prov_stac[provider]
-        self.catalog = Client.open(self.stac['stac'], modifier=self.stac['modifier'])
+        self.catalog = (
+            None  # Client.open(self.stac['stac'], modifier=self.stac['modifier'])
+        )
         self.bands = bands
-        self.stac_conf = {'chunks_size':612, 'dtype':"uint16", 'nodata':0}
+        self.stac_conf = {"chunks_size": 612, "dtype": "uint16", "nodata": 0}
 
     def __items_to_array(self, geobox):
         """
@@ -306,16 +329,19 @@ class StacAttack:
         Returns:
             xarray.Dataset: xarray dataset of satellite time-series.
         """
-        arr = load(self.items,
-                   bands=self.bands,
-                   groupby="solar_day",
-                   chunks={"x": self.stac_conf['chunks_size'],
-                           "y": self.stac_conf['chunks_size']},
-                   patch_url=self.stac['patch_url'],
-                   dtype=self.stac_conf['dtype'],
-                   nodata=self.stac_conf['nodata'],
-                   geobox=geobox
-                  )
+        arr = load(
+            self.items,
+            bands=self.bands,
+            groupby="solar_day",
+            chunks={
+                "x": self.stac_conf["chunks_size"],
+                "y": self.stac_conf["chunks_size"],
+            },
+            patch_url=self.stac["patch_url"],
+            dtype=self.stac_conf["dtype"],
+            nodata=self.stac_conf["nodata"],
+            geobox=geobox,
+        )
 
         return arr
 
@@ -331,11 +357,31 @@ class StacAttack:
         for it in self.items[1:]:
             new_df = pd.DataFrame(it.properties)
             self.items_prop = pd.concat([self.items_prop, new_df], ignore_index=True)
-        self.items_prop['date'] = (self.items_prop['datetime']).apply(
-            lambda x: int(datetime.strptime(x, '%Y-%m-%dT%H:%M:%S.%fZ').timestamp()*1e9))
+        self.items_prop["date"] = (self.items_prop["datetime"]).apply(
+            lambda x: int(
+                datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * 1e9
+            )
+        )
 
-    def searchItems(self, bbox_latlon, date_start=datetime(2023, 1, 1),
-                    date_end=datetime(2023, 12, 31), **kwargs):
+    def _connect_to_catalog(self) -> None:
+        """
+        Connect to the specified the stac catalog
+
+        Returns:
+            None
+        """
+        if self.catalog is None:
+            self.catalog = Client.open(
+                self.stac["stac"], modifier=self.stac["modifier"]
+            )
+
+    def searchItems(
+        self,
+        bbox_latlon,
+        date_start=datetime(2023, 1, 1),
+        date_end=datetime(2023, 12, 31),
+        **kwargs,
+    ):
         """
         Get list of stac collection's items.
 
@@ -351,14 +397,16 @@ class StacAttack:
         Example:
             >>> stacObj.searchItems(aoi_bounds_4326)
         """
+        self._connect_to_catalog()
         self.startdate = date_start
         self.enddate = date_end
         time_range = [self.startdate, self.enddate]
-        query = self.catalog.search(collections=[self.stac['coll']],
-                                    datetime=time_range,
-                                    bbox=bbox_latlon,
-                                    **kwargs
-                                   )
+        query = self.catalog.search(
+            collections=[self.stac["coll"]],
+            datetime=time_range,
+            bbox=bbox_latlon,
+            **kwargs,
+        )
 
         self.items = list(query.items())
         self.__getItemsProperties()
@@ -386,11 +434,13 @@ class StacAttack:
 
     def __checkS2shift(self, shiftval, minval, proc_keyword, version, mask):
         # Filter items based on version threshold
-        item_times = pd.to_datetime([
-            item.datetime.replace(tzinfo=None)
-            for item in self.items
-            if float(item.properties[proc_keyword]) >= version
-        ])
+        item_times = pd.to_datetime(
+            [
+                item.datetime.replace(tzinfo=None)
+                for item in self.items
+                if float(item.properties[proc_keyword]) >= version
+            ]
+        )
 
         # Convert cube times once
         ds_times = pd.to_datetime(self.cube.time.values)
@@ -421,21 +471,22 @@ class StacAttack:
             # Replace original data
             self.cube[var].loc[dict(time=slice(t_min, t_max))] = shifted
 
-    def fixS2shift(self,
-                   shiftval=-1000,
-                   minval=1,
-                   proc_keyword='s2:processing_baseline',
-                   version=4.0,
-                   mask='SCL'
-                  ):
+    def fixS2shift(
+        self,
+        shiftval=-1000,
+        minval=1,
+        proc_keyword="s2:processing_baseline",
+        version=4.0,
+        mask="SCL",
+    ):
         """
-        Fix Sentinel-2 radiometric offset applied since the ESA Processing Baseline 04.00. 
+        Fix Sentinel-2 radiometric offset applied since the ESA Processing Baseline 04.00.
         For more information: https://sentinels.copernicus.eu/web/sentinel/-/copernicus-sentinel-2-major-products-upgrade-upcoming
 
         Args:
             shiftval (int): radiometric offset value. Defaults to -1000.
             minval (int): minimum radiometric value. Defaults to 1.
-            proc_keyword (str): item metadata related to the version of 
+            proc_keyword (str): item metadata related to the version of
                 Sentinel-2 processing baseline. Defaults to 's2:processing_baseline'.
             version (float): version of the processing baseline. Defaults to 4.0.
             mask (str): name of mask variable. Defaults to 'SCL'.
@@ -445,11 +496,12 @@ class StacAttack:
         if self.data_corrected:
             print("Warning: Data correction has already been applied.")
         else:
-            self.__checkS2shift(shiftval, minval, proc_keyword,
-                                version, mask)
+            self.__checkS2shift(shiftval, minval, proc_keyword, version, mask)
             self.data_corrected = True
 
-    def loadCube(self, bbox, arrtype='image', dimx=5, dimy=5, resolution=10, crs_out=3035):
+    def loadCube(
+        self, bbox, arrtype="image", dimx=5, dimy=5, resolution=10, crs_out=3035
+    ):
         """
         Load images according to a bounding box, with in option predefined pixels dimensions (x, y).
 
@@ -472,9 +524,9 @@ class StacAttack:
         """
         self.arrtype = arrtype
 
-        if arrtype == 'image':
+        if arrtype == "image":
             self.geobox = def_geobox(bbox, crs_out, resolution)
-        if arrtype == 'patch':
+        if arrtype == "patch":
             shape = (dimx, dimy)
             self.geobox = def_geobox(bbox, crs_out, resolution, shape)
 
@@ -485,14 +537,14 @@ class StacAttack:
         self.cube.rio.write_crs(f"epsg:{crs_out}", inplace=True)
         self.cube.rio.write_coordinate_system(inplace=True)
 
-    def mask(self, mask_array=None, mask_band='SCL', mask_values=[3, 8, 9, 10]):
+    def mask(self, mask_array=None, mask_band="SCL", mask_values=[3, 8, 9, 10]):
         """
         Load binary mask.
 
         Args:
-            mask_array (xarray.Dataarray, optional): xarray.dataarray binanry mask 
+            mask_array (xarray.Dataarray, optional): xarray.dataarray binanry mask
                 (with same dimensions as ``StacAttack.cube``). Defaults to None.
-            mask_band (string, optional): band name used as a mask (i.e. 'SCL' for Sentinel-2). 
+            mask_band (string, optional): band name used as a mask (i.e. 'SCL' for Sentinel-2).
                 Defaults to 'SCL'.
             mask_values (list, optional): band values related to masked pixels.
                 Defaults to [3, 8, 9, 10].
@@ -511,8 +563,8 @@ class StacAttack:
             self.mask = band_mask.isin(mask_values)
 
         size = list(zip(self.mask.dims, self.mask.shape))
-        y = [i[1] for i in size if 'y' in i][0]
-        x = [i[1] for i in size if 'x' in i][0]
+        y = [i[1] for i in size if "y" in i][0]
+        x = [i[1] for i in size if "x" in i][0]
         self.mask_size = x * y
 
     def mask_apply(self):
@@ -525,9 +577,9 @@ class StacAttack:
         """
         self.cube = self.cube.where(~self.mask)
 
-    def filter_by_mask(self, mask_cover: float = 0.5,
-                       cube: str = 'sat',
-                       mask_update: bool = True):
+    def filter_by_mask(
+        self, mask_cover: float = 0.5, cube: str = "sat", mask_update: bool = True
+    ):
         """
         Filters time steps in the specified data cube based on the ratio of masked pixels.
 
@@ -536,32 +588,34 @@ class StacAttack:
                 (min:0, max:1). Defaults to 0.5.
             cube (str, optional): datacube type. Defaults to 'sat'.
                 Can be one of the following: 'sat', 'indices'.
-            mask_update (bool, optional): update the related mask array. 
+            mask_update (bool, optional): update the related mask array.
                 Defaults to True.
         """
         # Compute mask ratio per time step
-        mask_ratio = (self.mask.sum(dim=['x', 'y']) / self.mask_size).compute()
+        mask_ratio = (self.mask.sum(dim=["x", "y"]) / self.mask_size).compute()
         valid_times = mask_ratio <= mask_cover
 
         if mask_update:
             self.mask = self.mask.where(valid_times, drop=True)
 
-        if cube == 'sat':
+        if cube == "sat":
             self.cube = self.cube.where(valid_times, drop=True)
-        elif cube == 'indices':
-            if hasattr(self, 'indices'):
+        elif cube == "indices":
+            if hasattr(self, "indices"):
                 self.indices = self.indices.where(valid_times, drop=True)
             else:
-                logging.warning("Attribute 'indices' does not exist. Skipping filtering for 'indices'.")
+                logging.warning(
+                    "Attribute 'indices' does not exist. Skipping filtering for 'indices'."
+                )
         else:
             raise ValueError(f"Invalid cube name '{cube}'. Choose 'sat' or 'indices'.")
 
-    def gapfill(self, method='linear', first_last=True, **kwargs):
+    def gapfill(self, method="linear", first_last=True, **kwargs):
         """
         Gap-fill NaN pixel values through the satellite time-series.
 
         Args:
-            method (string, optional): method to use for interpolation 
+            method (string, optional): method to use for interpolation
                 (see ``xarray.DataArray.interpolate_na``). Defaults to 'linear'.
             first_last (bool, optional): Interpolation of the first and
                 last image of the satellite time-series with
@@ -575,11 +629,12 @@ class StacAttack:
         self.cube = self.cube.interpolate_na()
 
         if first_last:
-            self.cube = self.cube.bfill(dim='time')
-            self.cube = self.cube.ffill(dim='time')
+            self.cube = self.cube.bfill(dim="time")
+            self.cube = self.cube.ffill(dim="time")
 
-    def spectral_index(self, indices_to_compute: str | list[str],
-                       band_mapping: dict = None, **kwargs):
+    def spectral_index(
+        self, indices_to_compute: str | list[str], band_mapping: dict = None, **kwargs
+    ):
         """
         Calculate various spectral indices for remote sensing data using the
         spyndex and awesome-spectral-indices libraries.
@@ -612,11 +667,11 @@ class StacAttack:
         Returns:
             DataFrame: pandas dataframe object (df).
         """
-        array_trans = self.cube.transpose('time', 'y', 'x')
+        array_trans = self.cube.transpose("time", "y", "x")
         df = array_trans.to_dataframe()
         return df
 
-    def to_csv(self, outdir, gid=None, id_point='station_id'):
+    def to_csv(self, outdir, gid=None, id_point="station_id"):
         """
         Convert xarray dataset into csv file.
 
@@ -630,15 +685,15 @@ class StacAttack:
         """
         df = self.__to_df()
         df = df.reset_index()
-        df['ID'] = df.index
+        df["ID"] = df.index
         df[id_point] = gid
 
         if gid is not None:
-            df.to_csv(os.path.join(outdir, f'id_{gid}_{self.arrtype}.csv'))
+            df.to_csv(os.path.join(outdir, f"id_{gid}_{self.arrtype}.csv"))
         else:
-            df.to_csv(os.path.join(outdir, f'id_none_{self.arrtype}.csv'))
+            df.to_csv(os.path.join(outdir, f"id_none_{self.arrtype}.csv"))
 
-    def to_nc(self, outdir, gid=None, cube='sat', filename=None):
+    def to_nc(self, outdir, gid=None, cube="sat", filename=None):
         """
         Convert xarray dataset into netcdf file.
 
@@ -654,15 +709,19 @@ class StacAttack:
             >>> outdir = 'output'
             >>> stacObj.to_nc(outdir)
         """
-        if cube == 'sat':
+        if cube == "sat":
             if not filename:
-                self.cube.to_netcdf(f"{outdir}/fid-{gid}_sat_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
+                self.cube.to_netcdf(
+                    f"{outdir}/fid-{gid}_sat_{self.arrtype}_{self.startdate}-{self.enddate}.nc"
+                )
             else:
                 self.cube.to_netcdf(f"{outdir}/{filename}")
 
-        if cube == 'indices':
+        if cube == "indices":
             if not filename:
-                self.indices.to_netcdf(f"{outdir}/fid-{gid}_idx_{self.arrtype}_{self.startdate}-{self.enddate}.nc")
+                self.indices.to_netcdf(
+                    f"{outdir}/fid-{gid}_idx_{self.arrtype}_{self.startdate}-{self.enddate}.nc"
+                )
             else:
                 self.indices.to_netcdf(f"{outdir}/{filename}")
 
@@ -696,7 +755,7 @@ class Labels:
 
         self.crs_gdf = self.gdf.crs.to_epsg()
 
-    def to_raster(self, id_field, geobox, filename, outdir, ext='tif', driver="GTiff"):
+    def to_raster(self, id_field, geobox, filename, outdir, ext="tif", driver="GTiff"):
         """
         Convert geodataframe into raster file while keeping a column attribute as pixel values.
 
@@ -717,7 +776,7 @@ class Labels:
         """
         self.crs_geobox = geobox.crs.to_epsg()
 
-        #if self.crs_gdf != self.crs_geobox:
+        # if self.crs_gdf != self.crs_geobox:
         #    self.gdf = self.gdf.to_crs(self.crs_geobox)
         #    self.crs_gdf = self.gdf.crs.to_epsg()
 
@@ -729,20 +788,30 @@ class Labels:
             print(e)
             sys.exit(1)
 
-        shapes = ((geom, value) for geom, value in zip(self.gdf.geometry, self.gdf[id_field]))
-        rasterized = rasterize(shapes,
-                               out_shape=(geobox.height, geobox.width),
-                               transform=geobox.transform,
-                               fill=0,
-                               all_touched=False,
-                               dtype='uint16')
+        shapes = (
+            (geom, value) for geom, value in zip(self.gdf.geometry, self.gdf[id_field])
+        )
+        rasterized = rasterize(
+            shapes,
+            out_shape=(geobox.height, geobox.width),
+            transform=geobox.transform,
+            fill=0,
+            all_touched=False,
+            dtype="uint16",
+        )
 
         # Write the rasterized feature to a new raster file
-        with rasterio.open(os.path.join(outdir, f"{filename}.{ext}"), 'w',
-                           driver=driver, crs=f"EPSG:{crs_out}",
-                           transform=geobox.transform, dtype=rasterio.uint16,
-                           count=1, width=geobox.width,
-                           height=geobox.height) as dst:
+        with rasterio.open(
+            os.path.join(outdir, f"{filename}.{ext}"),
+            "w",
+            driver=driver,
+            crs=f"EPSG:{crs_out}",
+            transform=geobox.transform,
+            dtype=rasterio.uint16,
+            count=1,
+            width=geobox.width,
+            height=geobox.height,
+        ) as dst:
             dst.write(rasterized, 1)
 
 
@@ -762,7 +831,7 @@ class Multiproc:
     """
 
     def __init__(self, array_type, fext, outdir):
-        """ Initialize the attributes of ``Multiproc``."""
+        """Initialize the attributes of ``Multiproc``."""
         self.arrtype = array_type
         self.outdir = outdir
         self.fext = fext
@@ -793,9 +862,25 @@ class Multiproc:
         self.id_field = id_field
         self.label = 1
 
-    def addParams_stacAttack(self, provider='mpc', collection='sentinel-2-l2a', key_sat='s2',
-                             bands=['B02', 'B03', 'B04', 'B05', 'B06', 'B07',
-                                    'B08', 'B8A', 'B11', 'B12', 'SCL']):
+    def addParams_stacAttack(
+        self,
+        provider="mpc",
+        collection="sentinel-2-l2a",
+        key_sat="s2",
+        bands=[
+            "B02",
+            "B03",
+            "B04",
+            "B05",
+            "B06",
+            "B07",
+            "B08",
+            "B8A",
+            "B11",
+            "B12",
+            "SCL",
+        ],
+    ):
         """
         Add optional parameters for ``StacAttack class instance``
         called through ``Multiproc.fetch_func()``.
@@ -811,9 +896,18 @@ class Multiproc:
             >>> mproc = Multiproc('patch', 'nc', 'output')
             >>> mproc.addParams_stacAttack(bands=['B02', 'B03', 'B04'])
         """
-        self.sa_kwargs.update({'provider': provider, 'collection': collection, 'key_sat': key_sat, 'bands': bands})
+        self.sa_kwargs.update(
+            {
+                "provider": provider,
+                "collection": collection,
+                "key_sat": key_sat,
+                "bands": bands,
+            }
+        )
 
-    def addParams_searchItems(self, date_start=datetime(2023, 1, 1), date_end=datetime(2023, 12, 31), **kwargs):
+    def addParams_searchItems(
+        self, date_start=datetime(2023, 1, 1), date_end=datetime(2023, 12, 31), **kwargs
+    ):
         """
         Add optional parameters for ``StacAttack.searchItems()``
         called through ``Multiproc.fetch_func()``.
@@ -821,14 +915,14 @@ class Multiproc:
         Args:
             date_start (datetime.datetime, optional): start date. Defaults to '2023-01'.
             date_end (datetime.datetime, optional): end date. Defaults to '2023-12'.
-            **kwargs (optional): others stac compliant arguments, 
+            **kwargs (optional): others stac compliant arguments,
                 e.g. ``query`` parameters to filter according to cloud %.
 
         Example:
             >>> mproc = Multiproc('patch', 'nc', 'output')
             >>> mproc.addParams_searchItems(date_start=datetime(2016, 1, 1), query={"eo:cloud_cover": {"lt": 20}})
         """
-        self.si_kwargs.update({'date_start': date_start, 'date_end': date_end})
+        self.si_kwargs.update({"date_start": date_start, "date_end": date_end})
         self.si_kwargs.update({k: v for k, v in kwargs.items()})
 
     def addParams_loadCube(self, dimx=5, dimy=5, resolution=10, crs_out=3035):
@@ -846,18 +940,21 @@ class Multiproc:
             >>> mproc = Multiproc('patch', 'nc', 'output')
             >>> mproc.addParams_loadCube(dimx=20, dimy=20):
         """
-        self.lc_kwargs.update({'dimx': dimx, 'dimy': dimy,
-                               'resolution': resolution, 'crs_out': crs_out})
+        self.lc_kwargs.update(
+            {"dimx": dimx, "dimy": dimy, "resolution": resolution, "crs_out": crs_out}
+        )
 
-    def addParams_mask(self, mask_array=None, mask_band='SCL', mask_values=[3, 8, 9, 10]):
+    def addParams_mask(
+        self, mask_array=None, mask_band="SCL", mask_values=[3, 8, 9, 10]
+    ):
         """
         Add optional parameters for ``StacAttack.mask()``
         called through ``Multiproc.fetch_func()``.
 
         Args:
-            mask_array (xarray.Dataarray, optional): xarray.dataarray binanry mask 
+            mask_array (xarray.Dataarray, optional): xarray.dataarray binanry mask
                 (with same dimensions as ``StacAttack.cube``). Defaults to None.
-            mask_band (string, optional): band name used as a mask (i.e. 'SCL' for Sentinel-2). 
+            mask_band (string, optional): band name used as a mask (i.e. 'SCL' for Sentinel-2).
                 Defaults to 'SCL'.
             mask_values (list, optional): band values related to masked pixels.
                 Defaults to [3, 8, 9, 10].
@@ -866,17 +963,21 @@ class Multiproc:
             >>> mproc = Multiproc('patch', 'nc', 'output')
             >>> mproc.addParams_mask(mask_values=[0]):
         """
-        self.ma_kwargs.update({'mask_array': mask_array,
-                               'mask_band': mask_band,
-                               'mask_values': mask_values})
+        self.ma_kwargs.update(
+            {
+                "mask_array": mask_array,
+                "mask_band": mask_band,
+                "mask_values": mask_values,
+            }
+        )
 
-    def addParams_gapfill(self, method='linear', first_last=True, **kwargs):
+    def addParams_gapfill(self, method="linear", first_last=True, **kwargs):
         """
         Add optional parameters for ``StacAttack.gapfill()``
         called through ``Multiproc.fetch_func()``.
 
         Args:
-            method (string, optional): method to use for interpolation 
+            method (string, optional): method to use for interpolation
                 (see ``xarray.DataArray.interpolate_na``). Defaults to 'linear'.
             first_last (bool, optional): Interpolation of the first and
                 last image of the satellite time-series with
@@ -888,13 +989,14 @@ class Multiproc:
             >>> mproc = Multiproc('patch', 'nc', 'output')
             >>> mproc.addParams_gapfill(method='nearest', first_last=False):
         """
-        self.gf_kwargs.update({'method': method,
-                               'first_last': first_last,
-                               'mask_values': mask_values})
+        self.gf_kwargs.update(
+            {"method": method, "first_last": first_last, "mask_values": mask_values}
+        )
         self.gf_kwargs.update({k: v for k, v in kwargs.items()})
 
-    def addParams_spectral_index(self, indices_to_compute: str | list[str],
-                                 band_mapping: dict = None, **kwargs):
+    def addParams_spectral_index(
+        self, indices_to_compute: str | list[str], band_mapping: dict = None, **kwargs
+    ):
         """
         Add optional parameters for ``StacAttack.spectral_index()``
         called through ``Multiproc.fetch_func()``.
@@ -911,11 +1013,12 @@ class Multiproc:
             >>> mproc = Multiproc('patch', 'nc', 'output')
             >>> mproc.addParams_spectral_index('NDVI', {'R': 'B04', 'N': 'B08'})
         """
-        self.id_kwargs.update({'indices_to_compute': indices_to_compute,
-                               'band_mapping': band_mapping})
+        self.id_kwargs.update(
+            {"indices_to_compute": indices_to_compute, "band_mapping": band_mapping}
+        )
         self.id_kwargs.update({k: v for k, v in kwargs.items()})
 
-    def addParams_to_raster(self, ext='tif', driver="GTiff"):
+    def addParams_to_raster(self, ext="tif", driver="GTiff"):
         """
         Add optional parameters for ``Labels.to_raster()``
         called through ``Multiproc.fetch_func()``.
@@ -928,10 +1031,18 @@ class Multiproc:
             >>> mproc = Multiproc('patch', 'nc', 'output')
             >>> mproc.addParams_to_raster(driver="COG")
         """
-        self.si_kwargs.update({'ext': ext, 'driver': driver})
+        self.si_kwargs.update({"ext": ext, "driver": driver})
 
-    def __fdask(self, aoi_latlong, aoi_proj, gid, mask=False, gapfill=False,
-                indices=False, **kwargs):
+    def __fdask(
+        self,
+        aoi_latlong,
+        aoi_proj,
+        gid,
+        mask=False,
+        gapfill=False,
+        indices=False,
+        **kwargs,
+    ):
         """
         Request items in STAC catalog and convert it as an image or patch.
 
@@ -940,7 +1051,7 @@ class Multiproc:
             aoi_proj (list): coordinates of bounding box [xmin, ymin, xmax, ymax] in the output crs.
             gid (int): image/patch index.
             mask (bool, optional): calculate and apply binary masks. Defaults to False.
-            gapfill (bool, optional): fill in NaNs (masked pixels) by interpolating according 
+            gapfill (bool, optional): fill in NaNs (masked pixels) by interpolating according
                 to different methods. Defaults to False.
             indices (bool, optional): compute spectral index or indices. Defaults to False.
             **kwargs (dict): additional arguments (i.e. ``StacAttack.searchItems()``,
@@ -949,31 +1060,34 @@ class Multiproc:
         """
         # searchItems
         self.si_kwargs.update(
-            {k: v for k, v in kwargs.items() if k in ['date_start',
-                                                      'date_end',
-                                                      'query']}
+            {
+                k: v
+                for k, v in kwargs.items()
+                if k in ["date_start", "date_end", "query"]
+            }
         )
 
         # loadCube
         self.lc_kwargs.update(
-            {k: v for k, v in kwargs.items() if k in ['dimx',
-                                                      'dimy',
-                                                      'resolution',
-                                                      'crs_out']}
+            {
+                k: v
+                for k, v in kwargs.items()
+                if k in ["dimx", "dimy", "resolution", "crs_out"]
+            }
         )
 
         # to_raster
         self.tr_kwargs.update(
-            {k: v for k, v in kwargs.items() if k in ['ext',
-                                                      'driver']}
+            {k: v for k, v in kwargs.items() if k in ["ext", "driver"]}
         )
 
         # StacAttack init
         self.sa_kwargs.update(
-            {k: v for k, v in kwargs.items() if k in ['provider',
-                                                      'collection',
-                                                      'key_sat',
-                                                      'bands']}
+            {
+                k: v
+                for k, v in kwargs.items()
+                if k in ["provider", "collection", "key_sat", "bands"]
+            }
         )
 
         imgcoll = StacAttack(**self.sa_kwargs)
@@ -987,24 +1101,27 @@ class Multiproc:
             imgcoll.gapfill()
         if indices:
             imgcoll.spectral_index(**self.id_kwargs)
-        if self.fext == 'nc':
+        if self.fext == "nc":
             if indices:
-                imgcoll.to_nc(self.outdir, gid, cube='indices')
+                imgcoll.to_nc(self.outdir, gid, cube="indices")
             else:
                 imgcoll.to_nc(self.outdir, gid)
-        elif self.fext == 'csv':
-            imgcoll.to_csv(self.outdir, gid, id_point='station_id')
+        elif self.fext == "csv":
+            imgcoll.to_csv(self.outdir, gid, id_point="station_id")
 
         if self.label == 1:
             labr = Labels(self.geolayer)
             filename = f"label_{self.id_field}_{gid}"
-            labr.to_raster(self.id_field, imgcoll.geobox, filename,
-                           self.outdir, **self.tr_kwargs)
+            labr.to_raster(
+                self.id_field, imgcoll.geobox, filename, self.outdir, **self.tr_kwargs
+            )
 
-    def fetch_func(self, aoi_latlong, aoi_proj, gid, mask=False, gapfill=False, **kwargs):
+    def fetch_func(
+        self, aoi_latlong, aoi_proj, gid, mask=False, gapfill=False, **kwargs
+    ):
         """
-        Call of ``dask.delayed`` to convert the ``Multiproc.__fdask()`` function 
-        into a delayed object, allowing for lazy evaluation and parallel execution, 
+        Call of ``dask.delayed`` to convert the ``Multiproc.__fdask()`` function
+        into a delayed object, allowing for lazy evaluation and parallel execution,
         thus optimizing computational workflows.
 
         Args:
@@ -1021,30 +1138,32 @@ class Multiproc:
             >>> for bboxes, gid in enumerate(my_df['bboxes']):
                     mproc.fetch_func(bboxes[0], bboxes[1], gid)
         """
-        single = dask.delayed(self.__fdask)(aoi_latlong, aoi_proj, gid, mask, gapfill, **kwargs)
+        single = dask.delayed(self.__fdask)(
+            aoi_latlong, aoi_proj, gid, mask, gapfill, **kwargs
+        )
         self.fetch_dask.append(single)
 
     def del_func(self):
         """
-        Clear ``Multiproc.fetch_dask``, the list of ``dask.delayed`` function's 
+        Clear ``Multiproc.fetch_dask``, the list of ``dask.delayed`` function's
         instances.
         """
         self.fetch_dask.clear()
 
-    def dask_compute(self, scheduler_type='processes'):
+    def dask_compute(self, scheduler_type="processes"):
         """
         Call of ``dask.compute`` to trigger the actual execution of
-        delayed tasks (i.e. ``Multiproc.fetch_dask``), gathering their results 
+        delayed tasks (i.e. ``Multiproc.fetch_dask``), gathering their results
         into a final output.
 
         Args:
             scheduler_type (str): type of scheduler. Defaults to 'processes'.
-                    Can be one of the following: - Single-threaded Scheduler 'single-threaded' or 'sync': 
+                    Can be one of the following: - Single-threaded Scheduler 'single-threaded' or 'sync':
                                                         - Runs computations in a single thread without parallelism.
                                                         - Suitable for debugging or when parallelism isn't required.
                                                  - Threaded Scheduler 'threads':
                                                          - Utilizes a pool of threads to execute tasks concurrently.
-                                                         - Good for I/O-bound tasks and when tasks release the Global Interpreter Lock (GIL). 
+                                                         - Good for I/O-bound tasks and when tasks release the Global Interpreter Lock (GIL).
                                                  - Multiprocessing Scheduler 'processes':
                                                          - Uses a pool of separate processes to execute tasks in parallel.
                                                          - Suitable for CPU-bound tasks and when tasks are limited by the GIL.
