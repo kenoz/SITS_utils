@@ -1,11 +1,13 @@
 .gitignore
 .readthedocs.yaml
+Dockerfile
 LICENSE
 README.md
-old_setup.py
 pyproject.toml
 requirements-dev.txt
 requirements.txt
+supported_python_versions.json
+test_all_versions.sh
 docs/Makefile
 docs/make.bat
 docs/source/analysis.rst

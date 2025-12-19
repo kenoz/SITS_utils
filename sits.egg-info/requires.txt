@@ -1,7 +1,6 @@
 dask
 pandas
 numpy
-datetime
 pystac_client
 pystac==1.11.0
 planetary_computer
@@ -21,6 +20,7 @@ pillow
 imageio
 scikit-image
 scipy
+Bottleneck
 
 [docs]
 sphinx==7.4.7
@@ -29,6 +29,3 @@ pyarrow
 sphinx_rtd_theme==2.0.0
 matplotlib==3.9.1
 sphinx-gallery==0.17.0
-
-[tests]
-pytest

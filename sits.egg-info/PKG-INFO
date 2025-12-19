@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: sits
-Version: 0.7.0
+Version: 0.7.2
 Summary: Online processing of Satellite Image Time Series
 Author-email: Kenji Ose <kenji.ose@ec.europa.eu>
 License: GPL-3.0
@@ -11,13 +11,12 @@ Classifier: Programming Language :: Python :: 3.9
 Classifier: Programming Language :: Python :: 3.10
 Classifier: Programming Language :: Python :: 3.11
 Classifier: Programming Language :: Python :: 3.12
-Requires-Python: >=3.9
+Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 License-File: LICENSE
 Requires-Dist: dask
 Requires-Dist: pandas
 Requires-Dist: numpy
-Requires-Dist: datetime
 Requires-Dist: pystac_client
 Requires-Dist: pystac==1.11.0
 Requires-Dist: planetary_computer
@@ -37,8 +36,7 @@ Requires-Dist: pillow
 Requires-Dist: imageio
 Requires-Dist: scikit-image
 Requires-Dist: scipy
-Provides-Extra: tests
-Requires-Dist: pytest; extra == "tests"
+Requires-Dist: Bottleneck
 Provides-Extra: docs
 Requires-Dist: sphinx==7.4.7; extra == "docs"
 Requires-Dist: dask; extra == "docs"
@@ -145,6 +143,48 @@ Pull requests are welcome. For major changes, please open an issue first
 to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+### Testing
+
+To ensure the correct behaviour of the module, you can run:
+
+```bash
+# Or any of the supported python versions
+uv run --python 3.10 --group dev pytest tests/
+
+```
+
+If you want to test all the supported python versions, you can run `./test_all_versions.sh`.
+
+If you want an isolated environment, you can use the `Dockerfile` provided.
+
+To run the matrix test in the isolated environment you can do:
+
+```bash
+# Build the image
+docker build -t sits-gdal .
+
+# Then run the tests with persistent caching
+docker run --rm \
+  -v uv-cache:/root/.cache/uv \
+  sits-test
+
+
+```
+
+Or if you want to test live changes, you can Bind Mount your working directory as:
+ 
+```bash
+# Run this AFTER building the image
+docker run --rm \
+  -v uv-cache:/root/.cache/uv \
+  -v $(pwd):/app \
+  sits-test
+
+
+```
+Remember that if you make changes to the Dockerfile, you will need to build your image again.
+
 
 ## License
 
