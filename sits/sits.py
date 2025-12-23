@@ -430,7 +430,7 @@ class StacAttack:
                 continue  # Skip the mask variable
             for t in matched_times:
                 self.cube[var].loc[dict(time=t)] -= 1000
-                self.cube[var] = self.cube[var].clip(min=1).astype("int16")
+                self.cube[var] = self.cube[var].clip(min=1, max=9999).astype("int16")
 
     def __checkS2shift(self, shiftval, minval, proc_keyword, version, mask):
         # Filter items based on version threshold
@@ -466,7 +466,7 @@ class StacAttack:
             # Apply shift only to matching times
             shifted = cube_slice[var].copy()
             shifted[dict(time=time_mask)] -= 1000
-            shifted = shifted.clip(min=1).astype("int16")
+            shifted = shifted.clip(min=1, max=9999).astype("int16")
 
             # Replace original data
             self.cube[var].loc[dict(time=slice(t_min, t_max))] = shifted

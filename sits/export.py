@@ -268,8 +268,10 @@ class Sits_ds:
                 else:
                     rgb = arr[(0, 1, 2), :, :]
                     rgb = np.transpose(rgb, (1, 2, 0))  # (y, x, 3)
-                    if vmin is None: vmin = rgb.min()
-                    if vmax is None: vmax = rgb.max()
+                    if vmin is None:
+                        vmin = np.nanpercentile(rgb, 2.0)#, axis=(0, 1))
+                    if vmax is None:
+                        vmax = np.nanpercentile(rgb, 98.0)#, axis=(0, 1))
                     rgb = np.clip((rgb - vmin) / (vmax - vmin), 0, 1)
                     rgb = (rgb * 255).astype(np.uint8)
 
