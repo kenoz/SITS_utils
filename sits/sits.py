@@ -345,7 +345,7 @@ class StacAttack:
 
         return arr
 
-    def __getItemsProperties(self):
+    def __getItemsProperties_old(self):
         """
         Get item properties
 
@@ -362,6 +362,34 @@ class StacAttack:
                 datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * 1e9
             )
         )
+
+    def __getItemsProperties(self):
+        """
+        Get item properties
+
+        Returns:
+            DataFrame: dataframe of image properties ``StacAttack.items_prop``.
+        """
+        rows = []
+
+        for it in self.items:
+            try:
+                rows.append(it.properties)
+            except Exception as e:
+                print(f"Skipping item with invalid properties: {e}")
+
+        # Build DataFrame safely
+        self.items_prop = pd.DataFrame(rows)
+
+        # Parse datetime column if present
+        if "datetime" in self.items_prop.columns:
+            try:
+                self.items_prop["date"] = self.items_prop["datetime"].apply(
+                    lambda x: int(datetime.strptime(x, "%Y-%m-%dT%H:%M:%S.%fZ").timestamp() * 1e9)
+                )
+            except Exception as e:
+                print("Datetime parsing failed:", e)
+
 
     def _connect_to_catalog(self) -> None:
         """

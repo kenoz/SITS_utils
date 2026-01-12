@@ -83,7 +83,7 @@ for index, row in sits_df.bbox.iterrows():
 
 If you want to explore the different ways to use the sits package, we recommend running the following Jupyter notebooks, in [Google Colab](https://colab.research.google.com/) for instance:
 
-- [Example 01](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex01.ipynb): explain the basics fro retireving a satellite image time series according to a polygon feature.
+- [Example 01](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex01.ipynb): explain the basics for retrieving a satellite image time series according to a polygon feature.
 - [Example 02](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex02.ipynb): explain how to export a satellite time series into an animated GIF or video file.
 - [Example 03](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex03.ipynb): explain how to compute spectral indices with `sits` and `spyndex` packages.
 - [Example 04](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex04.ipynb): explain how to parallelize processing tasks in case of multiple vector features. 
