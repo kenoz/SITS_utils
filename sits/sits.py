@@ -565,7 +565,7 @@ class StacAttack:
         self.cube.rio.write_crs(f"epsg:{crs_out}", inplace=True)
         self.cube.rio.write_coordinate_system(inplace=True)
 
-    def mask(self, mask_array=None, mask_band="SCL", mask_values=[3, 8, 9, 10]):
+    def mask_conf(self, mask_array=None, mask_band="SCL", mask_values=[3, 8, 9, 10]):
         """
         Load binary mask.
 
@@ -584,7 +584,7 @@ class StacAttack:
             >>> stacObj.mask()
         """
 
-        if mask_array:
+        if mask_array is not None:
             self.mask = mask_array
         else:
             band_mask = getattr(self.cube, mask_band)
