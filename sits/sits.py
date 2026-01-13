@@ -570,7 +570,7 @@ class StacAttack:
         Load binary mask.
 
         Args:
-            mask_array (xarray.Dataarray, optional): xarray.dataarray binanry mask
+            mask_array (xarray.Dataarray, optional): xarray.dataarray binary mask
                 (with same dimensions as ``StacAttack.cube``). Defaults to None.
             mask_band (string, optional): band name used as a mask (i.e. 'SCL' for Sentinel-2).
                 Defaults to 'SCL'.
