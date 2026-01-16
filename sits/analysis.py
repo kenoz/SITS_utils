@@ -296,6 +296,8 @@ class ClearCut:
       - A **forward window** summarizes upcoming observations.
     A change is flagged when the forward window shows a significant drop
     relative to the backward window, according to a configurable threshold.
+    This method is an adaptation of the OTB ClearCutsMultitemporalDetection
+    application (R. Cresson, INRAE).
 
     Typical use case: detecting vegetation loss or disturbance events in
     spectral index time series (NDVI, EVI, etc.), where sudden drops may
