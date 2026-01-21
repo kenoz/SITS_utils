@@ -66,9 +66,12 @@ docs = [
 # These are NOT installable by users
 [dependency-groups]
 dev = [
-    "pytest",
-    "build",
-    "twine",
+    "vcrpy>=8.1.1",
+    "pytest-recording>=0.13.4",
+    "pytest-profiling>=1.8.1",
+    "pytest>=9.0.2",
+    "build>=1.4.0",
+    "twine>=6.2.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -82,3 +85,9 @@ exclude = ["data*", "test*", "docs*", "examples*", "**/__pycache__"]
 [tool.setuptools_scm]
 fallback_version = "9999"
 
+[tool.pyright]
+include = ["sits/**", "tests/**"]                                                                                                                                
+exclude = ["**/__pycache__", "**/.pytest_cache", "**/build", "**/dist"]                                                                                          
+reportMissingImports = "warning"                                                                                                                                 
+reportMissingModuleSource = "warning"                                                                                                                            
+executionEnvironments = [{root = ".", extraPaths = ["tests/utils", "tests"]}]
