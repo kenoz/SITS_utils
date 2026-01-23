@@ -34,7 +34,6 @@ docs/source/tutorials/img/clearcut.png
 docs/source/tutorials/img/eu_random_pts.png
 docs/source/tutorials/img/fig_image.png
 docs/source/tutorials/img/fig_patch.png
-docs/source/tutorials/test_data/clearcut_example.nc
 sits/__init__.py
 sits/analysis.py
 sits/display.py
