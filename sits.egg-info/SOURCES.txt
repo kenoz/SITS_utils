@@ -4,10 +4,9 @@ Dockerfile
 LICENSE
 README.md
 pyproject.toml
-requirements-dev.txt
-requirements.txt
 supported_python_versions.json
 test_all_versions.sh
+uv.lock
 docs/Makefile
 docs/make.bat
 docs/source/analysis.rst
@@ -55,5 +54,9 @@ sits/data/rand_pts.geojson
 sits/fonts/NotoSans-Regular.ttf
 sits/fonts/__init__.py
 tests/__init__.py
+tests/conftest.py
 tests/test_stac.py
+tests/test_synthetic_data.py
 tests/test_vector.py
+tests/utils/__init__.py
+tests/utils/test_data.py
