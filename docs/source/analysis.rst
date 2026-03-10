@@ -42,3 +42,11 @@ analysis.sieve_maj
 ------------------
 
 .. autofunction:: sits.analysis.sieve_maj
+
+analysis.sieve_maj
+------------------
+
+.. autoclass:: sits.analysis.SitsPlotter
+   :members:
+   :undoc-members:
+   :show-inheritance:
