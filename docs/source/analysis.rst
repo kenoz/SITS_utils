@@ -43,7 +43,7 @@ analysis.sieve_maj
 
 .. autofunction:: sits.analysis.sieve_maj
 
-analysis.sieve_maj
+analysis.SitsPlotter
 ------------------
 
 .. autoclass:: sits.analysis.SitsPlotter
