@@ -24,29 +24,30 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "dask",
-    "pandas",
-    "numpy",
-    "pystac_client",
-    "pystac==1.11.0",
-    "planetary_computer",
-    "xarray",
-    "odc-stac",
-    "odc-geo",
-    "geopandas",
-    "rasterio",
-    "shapely",
-    "geogif",
-    "netCDF4",
-    "spyndex",
-    "pyarrow",
-    "rioxarray",
-    "sktime",
-    "pillow",
-    "imageio",
-    "scikit-image",
-    "scipy",
-    "Bottleneck",
+    "bottleneck>=1.6.0",
+    "dask>=2026.1.1",
+    "geogif>=0.3",
+    "geopandas>=1.1.2",
+    "imageio>=2.37.2",
+    "netcdf4>=1.7.3",
+    "numpy>=1.26.4",
+    "odc-geo>=0.5.0",
+    "odc-stac>=0.5.2",
+    "pandas>=2.3.3",
+    "pillow>=10.4.0",
+    "planetary-computer>=1.0.0",
+    "pyarrow>=23.0.0",
+    "pystac>=1.14.3",
+    "pystac-client>=0.9.0",
+    "rasterio>=1.4.4",
+    "rioxarray>=0.19.0",
+    "scikit-image>=0.25.2",
+    "scipy>=1.15.3",
+    "shapely>=2.1.2",
+    "sktime>=0.40.1",
+    "spyndex>=0.9.0",
+    "xarray>=2025.6.1",
+    "matplotlib>=3.9.0",
 ]
 
 [project.urls]
@@ -66,9 +67,12 @@ docs = [
 # These are NOT installable by users
 [dependency-groups]
 dev = [
-    "pytest",
-    "build",
-    "twine",
+    "vcrpy>=8.1.1",
+    "pytest-recording>=0.13.4",
+    "pytest-profiling>=1.8.1",
+    "pytest>=9.0.2",
+    "build>=1.4.0",
+    "twine>=6.2.0",
 ]
 
 [tool.setuptools.packages.find]
@@ -81,3 +85,10 @@ exclude = ["data*", "test*", "docs*", "examples*", "**/__pycache__"]
 
 [tool.setuptools_scm]
 fallback_version = "9999"
+
+[tool.pyright]
+include = ["sits/**", "tests/**"]                                                                                                                                
+exclude = ["**/__pycache__", "**/.pytest_cache", "**/build", "**/dist"]                                                                                          
+reportMissingImports = "warning"                                                                                                                                 
+reportMissingModuleSource = "warning"                                                                                                                            
+executionEnvironments = [{root = ".", extraPaths = ["tests/utils", "tests"]}]

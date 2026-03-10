@@ -1,3 +1,5 @@
+import os
+from datetime import datetime
 import xarray as xr
 import pandas as pd
 import numpy as np
@@ -7,6 +9,9 @@ from skimage.morphology import square
 # sktime package
 from sktime.forecasting.base import ForecastingHorizon
 from sktime.registry import all_estimators
+# plotting
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 def initialize_dask_client(n_cores=False, threads_per_worker=1):
@@ -121,15 +126,16 @@ def reindexTS(df, freq='D',
         ValueError: if `regular_freq` is True while `freq` is not 'D'.
 
     Notes:
-        - The function uses internal helpers: `_ensure_datetime_index`, `_resample_df`, `_convert_to_period`, `_regularize_index`, and `_fill_nan`.
+        - The function uses internal helpers: `_ensure_datetime_index`,
+          `_resample_df`, `_convert_to_period`, `_regularize_index`, and `_fill_nan`.
         - The index is normalized to remove time components before processing.
 
     Examples:
         >>> ts_train = reindexTS(df,
-                                 freq='D',
-                                 regular_freq=True,
-                                 interpolate=True,
-                                 method='linear')
+        ...     freq='D',
+        ...     regular_freq=True,
+        ...     interpolate=True,
+        ...     method='linear')
     """
     df = df.copy()
 
@@ -248,10 +254,12 @@ def xr_forecast(dataarray,
             Default to 'D' for daily.
 
     Returns:
-        result (xr.DataArray): a DataArray with dimensions ('time', 'y', 'x') containing the forecasted values for each pixel.
+        result (xr.DataArray): a DataArray with dimensions ('time', 'y', 'x')
+        containing the forecasted values for each pixel.
 
     Notes:
-        - The function uses Dask for parallelized execution, making it suitable for large datasets.
+        - The function uses Dask for parallelized execution, making it suitable
+        for large datasets.
         - The output time coordinate is replaced with `predict_time`.
 
     Examples:
@@ -381,18 +389,20 @@ class ClearCut:
     def __classify_anomalies(self, mag_layer: xr.DataArray, thresholds: list):
         class_layer = xr.full_like(mag_layer, 0, dtype=int)
         for i, th in enumerate(thresholds, start=1):
-            class_layer = xr.where(mag_layer > th, i, class_layer)
+            class_layer = xr.where(abs(mag_layer) > abs(th), i, class_layer)
         class_layer.name = "anomaly_class"
         class_layer.attrs["thresholds"] = str(thresholds)
         return class_layer
 
     def detect_anomalies(self,
                          thresholds: list = [0.2, 0.3, 0.4],
+                         anomaly_type: str = "absolute",
                          window_backward: int = 720,
                          window_forward: int = 60,
                          min_obs_backward: int = 5,
                          min_obs_forward: int = 2,
-                         out_crs: str = "epsg:3035"):
+                         out_crs: str = "epsg:3035",
+                         store_magnitude: bool = False):
         """
         Detect anomalies in a univariate time series (e.g., spectral indices such as NDVI)
         by comparing values between backward and forward moving windows.
@@ -411,6 +421,10 @@ class ClearCut:
         Args:
             thresholds (list, optional): list of float. Thresholds used to
                 classify anomaly magnitudes. Defaults to [0.2, 0.3, 0.4].
+            anomaly_type (str): detection direction. Defaults to "absolute".
+                - "absolute": detects any change > threshold (default).
+                - "drop": detects only negative changes (e.g., vegetation loss).
+                - "increase": detects only positive changes (e.g., regrowth).
             window_backward (int, optional): size of the backward window in days.
                 Defaults to 720.
             window_forward (int, optional): size of the forward window in days.
@@ -421,6 +435,8 @@ class ClearCut:
                 required in the forward window. Defaults to 2.
             out_crs (str, optional): Coordinate Reference System (CRS) to assign
                 to the output dataset. Defaults to "epsg:3035".
+            store_magnitude (bool, optional): Export of the magnitude timeseries.
+                Defaults to False.
 
         Returns:
             ClearCut.detection (xr.Dataset):
@@ -434,6 +450,7 @@ class ClearCut:
                 - mask (binary): Boolean mask indicating anomaly presence.
                 - inrange (binary): Boolean mask indicating whether sufficient observations were available in both windows.
                 - classif (int): Classification layer based on thresholds.
+            ClearCut.magnitude_ts (xr.Dataarray, optional): datacube of magnitudes
 
         Notes:
             - Dates are stored as integer days since 1970-01-01.
@@ -459,6 +476,8 @@ class ClearCut:
         last_date = xr.full_like(self.da.isel(time=0), np.nan)
         in_range = xr.full_like(self.da.isel(time=0), False, dtype=bool)
 
+        mag_list = [] if store_magnitude else None
+
         for d in time:
             mean_before, inrange_b = self.__mean_with_fallback(pivot_date = d,
                                                                window = window_backward,
@@ -469,9 +488,19 @@ class ClearCut:
                                                               direction='forward',
                                                               min_obs = min_obs_forward)
 
-            mag = abs(mean_after - mean_before)
+            # Calculate signed magnitude
+            mag = mean_after - mean_before
 
-            mask = mag > thresholds[0]
+            if store_magnitude:
+                mag_list.append(mag.assign_coords(time=d))
+
+            # --- Anomaly filtering logic ---
+            if anomaly_type == "drop":
+                mask = mag < thresholds[0]
+            elif anomaly_type == "increase":
+                mask = mag > thresholds[0]
+            else: # absolute
+                mask = abs(mag) > thresholds[0]
 
             # First anomaly
             first_mask = mask & np.isnan(first_mag)
@@ -481,7 +510,7 @@ class ClearCut:
                                   )
 
             # Max anomaly
-            max_mask = mask & ((mag > max_mag) | np.isnan(max_mag))
+            max_mask = mask & ((abs(mag) > abs(max_mag)) | np.isnan(max_mag))
             max_mag = max_mag.where(~max_mask, mag)
             max_date = max_date.where(~max_mask,
                                   (pd.Timestamp(d) - pd.Timestamp("1970-01-01")) // pd.Timedelta(days=1),
@@ -495,6 +524,9 @@ class ClearCut:
                                   )
 
             in_range = in_range | inrange_b | inrange_f
+
+        self.magnitude_ts = xr.concat(mag_list, dim='time')
+        self.time = time
 
         # Classification based on max magnitude
         class_layer = self.__classify_anomalies(max_mag, thresholds)
@@ -575,3 +607,376 @@ def sieve_maj(dataarray,
 
     # Preserve coords and CRS
     return xr.DataArray(output, coords=dataarray.coords, dims=dataarray.dims, attrs=dataarray.attrs).rio.write_crs(out_crs)
+
+
+class SitsPlotter:
+    """
+    Visualization utility for Satellite Image Time Series (SITS) data.
+
+    This class handles extraction, outlier filtering, and plotting of temporal 
+    data for a specific spatial coordinate. It segments the time series into 
+    'fitting' and 'monitoring' windows relative to a break date and supports 
+    statistical outlier removal (Sigma or IQR).
+
+    Key features:
+    * **Time Series Segmentation:** Splits data into training (fit) and 
+      monitoring windows around a specified break date.
+    * **Statistical Filtering:** Supports Sigma (mean/std) or IQR-based 
+      outlier removal.
+    * **Detection Integration:** Interfaces with change detection algorithms 
+      (e.g., ClearCut) to visualize temporal anomalies and magnitudes.
+
+    Attributes:
+        data (xr.DataArray): The extracted time series for the specified coordinate.
+
+    Args:
+        sits_object (xr.Dataset): Time series dataset (e.g., `StacAttack.cube` or `StacAttack.indices`).
+        band_index (str): The specific band or index name to display (e.g., 'B04', 'NDVI').
+        daterange (list[datetime]): Period to display as [start_date, end_date].
+        break_date (datetime, optional): The transition point between fitting
+            and monitoring periods. Defaults to 2024-01-01.
+        i (int, optional): Image column index (x-axis in pixel space). Defaults to 0.
+        j (int, optional): Image row index (y-axis in pixel space). Defaults to 0.
+        coords (list[float], optional): Spatial coordinates [x, y] in the same CRS as 
+            sits_object. If provided, overrides i and j. Defaults to None.
+        ylim (list[float], optional): Y-axis limits for the plot. Defaults to [-1, 1].
+        filter_method (str, optional): Outlier detection method: 'sigma' or 'iqr'. 
+            Defaults to None.
+        filter_value (float, optional): Threshold for filtering (number of std devs 
+            for 'sigma' or multiplier for 'iqr'). Defaults to 1.5.
+
+    Example:
+        >>> from datetime import datetime
+        >>> daterange = [datetime(2023, 1, 1), datetime(2025, 1, 1)]
+        >>> plotter = SitsPlotter(
+        ...     sits_object=stacObj.indices,
+        ...     band_index='NDMI',
+        ...     daterange=daterange,
+        ...     break_date=datetime(2024, 1, 1),
+        ...     filter_method='sigma'
+        ... )
+        >>> plotter.plot_model(degree=3,
+        ...     include_trend=True,
+        ...     envelope_quantiles=(0.05, 0.95)
+        ... )
+        >>> plotter.run_detection(thresholds=[0.2, 0.3, 0.4])
+        >>> plotter.save_plot("sits_out/ts_plot.png")
+    """
+
+    def __init__(self, sits_object, band_index, daterange,
+                 break_date=datetime(2024, 1, 1), i=0, j=0,
+                 coords=None, ylim=[-1, 1],
+                 filter_method=None, filter_value=1.5):
+        """
+        Attributes:
+            band_index (str): The specific band or index name to display (e.g., 'B04', 'NDVI').
+            daterange (list[datetime]): Period to display as [start_date, end_date].
+            break_dt (datetime): The transition point between fitting.
+            ylim (list[float], optional): Y-axis limits for the plot. Defaults to [-1, 1].
+            fit_window (list[datetime]): Fitting period [start_date, end_date].
+            mon_window (list[datetime]): Monitoring period [start_date, end_date].
+            data (xr.DataArray): The extracted time series for the specified coordinate.
+            outliers (xr.DataArray): The outliers.
+            data_filtdata (xr.DataArray): time series without the outliers.
+        """
+        self.band_index = band_index
+        self.daterange = daterange
+        self.break_dt = break_date
+        self.ylim = ylim
+        self.fit_window = (daterange[0], self.break_dt)
+        self.mon_window = (self.break_dt, daterange[1])
+
+        # 1. Extraction
+        self.data = self._extract_subset(sits_object[band_index], i, j, coords)
+
+        # 2. Outlier Filtering
+        self.outliers = None
+        self.data_filtdata = None
+        if filter_method:
+            self._apply_outlier_filter(method=filter_method, value=filter_value)
+
+        # Model State
+        self.beta = None
+        self.omega = 2 * np.pi / 365.25
+
+        # Plot Setup
+        self.ax_mag = None
+        self.fig, self.ax = plt.subplots(figsize=(12, 4), dpi=100)
+        self._setup_canvas()
+
+    def _extract_subset(self, da, i, j, coords):
+        """
+        Extracts a 1D time series from the DataArray at a specific spatial point.
+
+        Handles both coordinate-based lookup (CRS-dependent) and index-based 
+        lookup (pixel-dependent). The result is triggered immediately via 
+        `.compute()` to bring the data into memory.
+
+        Args:
+            da (xr.DataArray): The input multidimensional satellite data.
+            i (int): The pixel index for the x-axis (column).
+            j (int): The pixel index for the y-axis (row).
+            coords (list[float], optional): A [x, y] pair. If provided, 
+                performs a 'nearest' neighbor lookup.
+
+        Returns:
+            xr.DataArray: A 1D DataArray containing the temporal values, 
+                with spatial dimensions removed.
+        """
+        if coords is not None:
+            return da.sel(x=[coords[0]], y=[coords[1]], method='nearest').squeeze().compute()
+        else:
+            return da.isel(x=[i], y=[j]).squeeze().compute()
+
+    def _apply_outlier_filter(self, method='iqr', value=1.5):
+        """
+        Detects and masks outliers based on the statistical distribution of the fitting window.
+
+        This method calculates threshold bounds using either the Sigma (Standard Deviation) 
+        or IQR (Interquartile Range) method. Note that the statistics (mean, std, or quartiles) 
+        are derived strictly from the `fit_window` data, but the resulting mask is 
+        applied to the entire dataset.
+
+        The method updates the instance by creating `self.outliers` (containing only 
+        the removed points) and `self.data_filt` (the cleaned time series).
+
+        Args:
+            method (str, optional): The statistical method for detection.
+                - 'sigma': Uses mean +/- (value * std_dev).
+                - 'iqr': Uses Q1 - (value * IQR) and Q3 + (value * IQR).
+                Defaults to 'iqr'.
+            value (float, optional): The multiplier factor for the range.
+                A higher value is less aggressive (removes fewer points).
+                Defaults to 1.5.
+        """
+        fit_start, fit_end = np.datetime64(self.fit_window[0]), np.datetime64(self.fit_window[1])
+        fit_data = self.data.sel(time=slice(fit_start, fit_end))
+
+        if fit_data.size == 0: return
+
+        if method == 'sigma':
+            # Mean/Std Method
+            mean, std = fit_data.mean(), fit_data.std()
+            lower, upper = mean - (value * std), mean + (value * std)
+        elif method == 'iqr':
+            # Interquartile Range Method
+            q1, q3 = fit_data.quantile(0.25), fit_data.quantile(0.75)
+            iqr = q3 - q1
+            lower, upper = q1 - (value * iqr), q3 + (value * iqr)
+        else:
+            raise ValueError("method must be 'sigma' or 'iqr'")
+
+        # Detect only within the fitting window
+        is_in_fit = (self.data.time >= fit_start) & (self.data.time <= fit_end)
+        is_outlier = (self.data < lower) | (self.data > upper)
+        mask = is_in_fit & is_outlier
+
+        self.outliers = self.data.where(mask)
+        self.data_filt = self.data.where(~mask)
+
+    def _setup_canvas(self):
+        self.ax.set_xlim(min(self.daterange), max(self.daterange))
+        self.ax.set_ylim(self.ylim)
+        self.ax.set_ylabel(f"Index: {self.band_index}")
+        self.ax.grid(True, alpha=0.3, linestyle=':')
+
+        # Period highlights
+        self.ax.axvspan(*self.fit_window, color='tab:blue', alpha=0.1, label='Calibration')
+        self.ax.axvspan(*self.mon_window, color='tab:orange', alpha=0.05, label='Monitoring')
+        self.ax.axvline(self.break_dt, color='red', linestyle='--', alpha=0.5)
+
+        # Plot split points
+        break_np = np.datetime64(self.break_dt)
+        if self.data_filt is not None:
+            fit_p = self.data_filt.where(self.data.time < break_np, drop=True)
+        else:
+            fit_p = self.data.where(self.data.time < break_np, drop=True)
+        mon_p = self.data.where(self.data.time >= break_np, drop=True)
+
+        self.ax.scatter(fit_p.time, fit_p.values, s=25, color='forestgreen', label='Fit Data')
+        self.ax.scatter(mon_p.time, mon_p.values, s=25, color='darkorange', label='Monitor Data')
+
+        if self.outliers is not None:
+            out_p = self.outliers.dropna(dim='time')
+            self.ax.scatter(out_p.time, out_p.values, marker='x', color='red', s=20, label='Outliers')
+
+    def plot_model(self, degree=1, include_trend=True, color='crimson', envelope_quantiles=(0.25, 0.75)):
+        """
+        Fits a regression model to the fitting window and plots the projection.
+
+        This method uses Ordinary Least Squares (OLS) to fit a model to the 'fit_window'
+        data. The model can include a linear trend and harmonic components (via the 
+        design matrix). It then extrapolates this model across the full 'daterange' 
+        to visualize the expected behavior versus actual observations.
+
+        The uncertainty envelope is calculated based on the distribution of residuals 
+        within the training (fitting) period.
+
+        Args:
+            degree (int, optional): The polynomial degree or number of harmonic 
+                components for the model. Defaults to 1.
+            include_trend (bool, optional): Whether to include a linear trend 
+                component in the model. Defaults to True.
+            color (str, optional): Color of the model line and uncertainty 
+                envelope. Defaults to 'crimson'.
+            envelope_quantiles (tuple[float, float], optional): The lower and upper 
+                quantiles of the residuals used to define the shaded uncertainty 
+                area. Defaults to (0.25, 0.75).
+
+        Returns:
+            SitsPlotter.beta (np.ndarray): The fitted model coefficients (beta weights).
+
+        Example:
+            >>> plotter.plot_model(degree=3,
+            ...     include_trend=True,
+            ...     envelope_quantiles=(0.05, 0.95)
+            ... )
+        """
+        source_data = self.data_filt if self.data_filt is not None else self.data
+        train_slice = source_data.sel(time=slice(*self.fit_window))
+        y_train = train_slice.values.flatten()
+        t_dt = pd.to_datetime(train_slice.time.values)
+        mask = ~np.isnan(y_train)
+
+        t_start = pd.to_datetime(self.daterange[0])
+        t_days = (t_dt[mask] - t_start).days.values
+
+        X_train = self._build_design_matrix(t_days, degree, include_trend)
+        self.beta, _, _, _ = np.linalg.lstsq(X_train, y_train[mask], rcond=None)
+        self.degree, self.include_trend = degree, include_trend
+
+        t_full_dt = pd.date_range(self.daterange[0], self.daterange[1], freq='D')
+        t_full_days = (t_full_dt - t_start).days.values
+        X_full = self._build_design_matrix(t_full_days, degree, include_trend)
+        y_pred = X_full @ self.beta
+
+        res = y_train[mask] - (X_train @ self.beta)
+        q_low, q_high = np.quantile(res, envelope_quantiles[0]), np.quantile(res, envelope_quantiles[1])
+        q_label = f'Uncertainty ({int(envelope_quantiles[0]*100)}%-{int(envelope_quantiles[1]*100)}%)'
+
+        # plotting
+        self.ax.plot(t_full_dt, y_pred, color=color, lw=2, label='Model Trend', zorder=5)
+        self.ax.fill_between(t_full_dt, y_pred + q_low, y_pred + q_high, color=color, alpha=0.15, zorder=4, label=q_label)
+
+        # legend outside
+        self.ax.legend(loc='upper left',
+                       bbox_to_anchor=(1.02, 1),
+                       fontsize='small',
+                       borderaxespad=0,
+                       frameon=False)
+
+        return self.beta
+
+    def _build_design_matrix(self, t_days, degree, include_trend):
+        cols = [np.ones(len(t_days))]
+        if include_trend: cols.append(t_days)
+        for d in range(1, degree + 1):
+            cols.append(np.cos(d * self.omega * t_days))
+            cols.append(np.sin(d * self.omega * t_days))
+        return np.column_stack(cols)
+
+    def run_detection(self, detector_class=ClearCut, thresholds=[0.2, 0.3, 0.4],
+                      anomaly_type="absolute", **kwargs):
+        """
+        Runs change detection on the time series and visualizes the results.
+
+        This method initializes a detector (e.g., ClearCut), processes the time series 
+        for anomalies, and dynamically appends a magnitude subplot to the main 
+        figure if one does not already exist. It identifies the maximum anomaly 
+        date and marks it across both the main index plot and the magnitude plot.
+
+        Args:
+            detector_class (class, optional): The class to use for anomaly detection. 
+                Must implement `.detect_anomalies()` and store magnitude results. 
+                Defaults to `ClearCut`.
+            thresholds (list[float], optional): Values used to identify significant 
+                changes. All values must have the same sign (either all positive 
+                or all negative). Defaults to [0.2, 0.3, 0.4].
+            anomaly_type (str, optional): The mode for anomaly detection. 
+                Defaults to 'absolute'.
+                - "absolute": detects any change > threshold (default).
+                - "drop": detects only negative changes.
+                - "increase": detects only positive changes.
+            **kwargs: Additional arguments passed directly to the detector's 
+                `detect_anomalies` method.
+
+        Example:
+            >>> plotter.run_detection(thresholds=[0.2, 0.3, 0.4])
+        """
+        # Block mixed signs
+        has_pos = any(t > 0 for t in thresholds)
+        has_neg = any(t < 0 for t in thresholds)
+        if has_pos and has_neg:
+            raise ValueError(f"Mixed signs detected in thresholds: {thresholds}. "
+                             "Must be all positive or all negative.")
+        # Sort thresholds
+        thresholds = sorted(thresholds, key=abs)
+
+        # Dynamic axis creation
+        if self.ax_mag is None:
+            # Adjust the figure size to accommodate the new plot
+            self.fig.set_size_inches(12, 7)
+
+            # Create a divider to append a new axis at the bottom
+            divider = make_axes_locatable(self.ax)
+            # pad=0.5 adds space between plots, size="50%" makes mag plot half size of main
+            self.ax_mag = divider.append_axes("bottom", size="50%", pad=0.5, sharex=self.ax)
+
+            # Formatting the new axis
+            self.ax_mag.grid(True, alpha=0.3, linestyle=':')
+            self.ax_mag.set_ylabel("Detection Mag.")
+            # Hide x-labels on the top plot for a cleaner look
+            plt.setp(self.ax.get_xticklabels(), visible=False)
+
+        # Run detection
+        pixel_da = self.data.expand_dims(['band', 'y', 'x'])
+        mini_detector = detector_class(pixel_da)
+        mini_detector.detect_anomalies(
+            thresholds=thresholds,
+            anomaly_type=anomaly_type,
+            store_magnitude=True,
+            **kwargs
+        )
+
+        # Plotting
+        mag_ts = mini_detector.magnitude_ts.squeeze()
+        self.ax_mag.plot(mag_ts.time, mag_ts.values, color='purple', lw=1.2, label='Magnitude')
+        self.ax_mag.fill_between(mag_ts.time, 0, mag_ts.values, color='purple', alpha=0.15)
+        self.ax_mag.axhline(0, color='black', lw=0.5)
+
+        # Extract dates and plot vertical lines
+        det = mini_detector.detection.squeeze()
+        d_max = (pd.Timestamp("1970-01-01") + pd.Timedelta(days=int(det.date_max.values))
+                 if not np.isnan(det.date_max.values) else None)
+
+        if d_max:
+            self.ax.axvline(d_max, color='magenta', ls='--', lw=1.5, label='Max Anomaly', zorder=10)
+            self.ax_mag.axvline(d_max, color='magenta', ls='--', lw=1.5)
+            # Re-render legend to include new label
+            self.ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1), fontsize='small', frameon=False)
+
+        plt.draw()
+
+    def save_plot(self, output_path="output", filename=None):
+        """
+        Saves the current figure to a specified file path.
+
+        Automatically creates the output directory if it does not exist. 
+        Uses a high-resolution DPI and includes the external legend in the 
+        final file.
+
+        Args:
+            output_path (str, optional): The directory where the plot will 
+                be saved. Defaults to "output".
+            filename (str, optional): The name of the file (e.g., "plot.png"). 
+                If None, defaults to "sits_{band_index}.png".
+
+        Returns:
+            str: The full absolute path to the saved image file.
+        """
+        if not os.path.exists(output_path): os.makedirs(output_path)
+        path = os.path.join(output_path, filename or f"sits_{self.band_index}.png")
+
+        # Use bbox_inches='tight' to ensure the legend outside is included in the image
+        self.fig.savefig(path, dpi=300, bbox_inches='tight')
+        return path

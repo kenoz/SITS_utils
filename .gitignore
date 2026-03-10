@@ -3,6 +3,11 @@
 /dist
 /build
 /tests/test01.ipynb
+/prof
+
+# for now we dont track vcr.py cassettes, but this could change if needed.
+/tests/cassettes/*
+
 .ipynb_checkpoints
 .swp
 __pycache__
