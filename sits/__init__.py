@@ -1,5 +1,5 @@
 
-__version__ = "0.7.3"
+__version__ = "0.7.4"
 __author__ = "Kenji Ose <kenji.ose@ec.europa.eu>"
 __all__ = []
 

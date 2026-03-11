@@ -493,6 +493,7 @@ class ClearCut:
 
             if store_magnitude:
                 mag_list.append(mag.assign_coords(time=d))
+                self.magnitude_ts = xr.concat(mag_list, dim='time')
 
             # --- Anomaly filtering logic ---
             if anomaly_type == "drop":
@@ -525,7 +526,6 @@ class ClearCut:
 
             in_range = in_range | inrange_b | inrange_f
 
-        self.magnitude_ts = xr.concat(mag_list, dim='time')
         self.time = time
 
         # Classification based on max magnitude
