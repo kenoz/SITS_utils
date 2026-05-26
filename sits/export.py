@@ -225,6 +225,7 @@ class Sits_ds:
                    square=False,
                    watermark_text=None,
                    watermark_loc='bottom right',
+                   watermark_date=True,
                    watermark_param=None,
                    square_param=None):
         """
@@ -248,6 +249,8 @@ class Sits_ds:
             watermark_loc (str, optional): position of watermark text.
                 Choices: 'top left', 'top right', 'bottom left', 'bottom right'.
                 Defaults to 'bottom right'.
+            watermark_date (bool, optional): add date to the watermark text.
+                Defaults to True.
             watermark_param (**kwargs, optional): see `Sits_ds.__add_watermark()`.
             square_param (**kwargs, optional): see `Sits_ds.__pad_to_square()`.
         """
@@ -257,6 +260,11 @@ class Sits_ds:
         with imageio.get_writer(output_path, fps=fps) as writer:
             for t in range(self.da.sizes['time']):
                 arr = self.da.isel(time=t).values  # shape: (bands, y, x)
+
+                if watermark_date:
+                    current_time = self.da.time[t].values
+                    time_str = str(current_time)[:10]
+                    display_text = f"{time_str}"
 
                 if mono_mode:
                     band = arr[0, :, :]
@@ -280,11 +288,11 @@ class Sits_ds:
                     rgb = self.__pad_to_square(rgb, fill_color=(0, 0, 0), **square_param)
 
                 if watermark_text:
+                    display_text = f"{watermark_text} {time_str}"
                     watermark_param = watermark_param or {}
                     rgb = self.__add_watermark(rgb,
-                                               text=watermark_text,
+                                               text=display_text,
                                                position=watermark_loc,
                                                **watermark_param)
 
                 writer.append_data(rgb)
-
