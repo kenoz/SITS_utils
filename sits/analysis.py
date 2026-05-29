@@ -3,9 +3,9 @@ from datetime import datetime
 import xarray as xr
 import pandas as pd
 import numpy as np
-from scipy.ndimage import label
 from skimage.filters.rank import modal
 from skimage.morphology import square
+from rasterio.features import sieve
 # sktime package
 from sktime.forecasting.base import ForecastingHorizon
 from sktime.registry import all_estimators
@@ -548,65 +548,75 @@ class ClearCut:
 def sieve_maj(dataarray,
               min_size=3,
               window_size=3,
-              ignore_nan=True,
-              connectivity=1,
+              background=True,
+              connectivity=4,
               out_crs='epsg:3035'):
     """
     Remove small connected objects and replace them with local majority value.
     Preserves original coordinates and CRS.
 
     Args:
-        dataarray (xr.DataArray): input array with integer classification values.
+        dataarray (xr.DataArray): input array with integer values.
         min_size (int, optional): minimum size (number of pixels) to keep.
             Defaults to 3.
         window_size (int, optional): size of the moving window for majority filter.
             Defaults to 3
-        ignore_nan (bool, optional): if True, NaNs are treated as background
-            (converted to 0). Defaults to True.
+        background (bool, optional): if True, NaNs or 0 are treated as background.
+            Defaults to True.
         connectivity (int, optional): connectivity for labeling
-            (1=4-connectivity, 2=8-connectivity). Defaults to 1
+            (4=4-connectivity, 8=8-connectivity). Defaults to 4
         out_crs (str, optional): output CRS. Defaults to 'epsg:3035'.
 
     Returns:
         xr.DataArray: filtered DataArray with original coords and CRS.
 
     Example:
-        >>> sieve_maj(ndvi_ts.detection.classif)
+        >>> classif_filtered = sieve_maj(ndvi_ts.detection.classif)
     """
-    # Force float for final output to allow NaNs
-    arr_float = dataarray.values.astype(float).copy()
+    if connectivity not in (4, 8):
+        raise ValueError("Connectivity must be 4 or 8.")
 
-    # Handle NaNs
-    nan_mask = np.isnan(arr_float) if ignore_nan else np.zeros_like(arr_float, dtype=bool)
-    arr_int = arr_float.copy()
-    if ignore_nan:
-        arr_int[nan_mask] = 0  # treat NaN as background
+    # 1. Define masks once
+    arr = dataarray.values
+    if background:
+        # nan_mask detects NaN or 0 depending on the presence of NaNs
+        is_nan = np.isnan(arr)
+        nan_mask = is_nan if is_nan.any() else (arr == 0)
+        valid_mask = ~nan_mask
+    else:
+        valid_mask = np.ones_like(arr, dtype=bool)
 
-    # Step 1: Identify small objects
-    output = arr_int.copy()
-    for cls in np.unique(arr_int):
-        if cls == 0:  # skip background
-            continue
-        mask = arr_int == cls
-        labeled, num_features = label(mask, structure=np.ones((3,3)) if connectivity == 2 else None)
-        sizes = np.bincount(labeled.ravel())
-        small_ids = np.where(sizes < min_size)[0]
-        remove_mask = np.isin(labeled, small_ids)
-        output[remove_mask] = 0  # mark small objects as background
+    # 2. Prepare array for processing (replace NaNs with 0)
+    arr_fill = np.nan_to_num(arr, nan=0).astype(np.int32)
 
-    # Step 2: Compute majority filter using skimage (fast)
-    arr_uint = output.astype(np.uint16)
-    majority_neighborhood = modal(arr_uint, square(window_size))
+    # 3. Sieve operation (# to see if the mask must be included here)
+    sieved_arr = sieve(arr_fill, size=min_size, connectivity=connectivity)
 
-    # Step 3: Replace zeros with local majority
-    output[output == 0] = majority_neighborhood[output == 0]
+    # 4. Majority filter
+    # Use the mask to ensure we only fill areas that were 'sieved' away
+    if np.any(sieved_arr == 0):
+        # We only need to calculate the mode for valid areas
+        majority_fill = modal(sieved_arr.astype(np.uint16), square(window_size),
+                              mask=valid_mask)
 
-    # Restore NaNs if needed
-    if ignore_nan:
-        output[nan_mask] = np.nan
+        # Apply only to holes (sieved_arr == 0) within valid regions
+        fill_indices = (sieved_arr == 0) & valid_mask
+        sieved_arr[fill_indices] = majority_fill[fill_indices]
 
-    # Preserve coords and CRS
-    return xr.DataArray(output, coords=dataarray.coords, dims=dataarray.dims, attrs=dataarray.attrs).rio.write_crs(out_crs)
+    # 5. Restore NaNs if necessary
+    if background and is_nan.any():
+        sieved_arr = sieved_arr.astype(float)
+        sieved_arr[nan_mask] = np.nan
+
+    # 6. Reconstruct with Xarray
+    out_da = xr.DataArray(
+        sieved_arr, 
+        coords=dataarray.coords, 
+        dims=dataarray.dims, 
+        attrs=dataarray.attrs
+    )
+
+    return out_da.rio.write_crs(out_crs)
 
 
 class SitsPlotter:
