@@ -4,7 +4,8 @@ import xarray as xr
 import pandas as pd
 import numpy as np
 from skimage.filters.rank import modal
-from skimage.morphology import square
+from skimage.morphology import square, isotropic_dilation
+from skimage.measure import label, regionprops
 from rasterio.features import sieve
 # sktime package
 from sktime.forecasting.base import ForecastingHorizon
@@ -618,6 +619,82 @@ def sieve_maj(dataarray,
 
     return out_da.rio.write_crs(out_crs)
 
+
+def sieve_largest_neighbor(dataarray,
+                           min_size=3,
+                           connectivity=4,
+                           out_crs='epsg:3035',
+                           max_iterations=3):
+    """
+    Iteratively sieves small objects by replacing them with the value of their
+    largest neighbor until no small objects remain.
+    """
+    current_da = dataarray.copy()
+    iteration = 0
+
+    while iteration < max_iterations:
+        arr = current_da.values.astype(np.int32)
+
+        # 1. Label connected regions
+        labeled_arr = label(arr, connectivity=1 if connectivity == 4 else 2)
+        props = regionprops(labeled_arr, intensity_image=arr)
+
+        # Create mapping of label_id -> size and label_id -> intensity
+        # Note: intensity_max is the value of the original object
+        max_label = labeled_arr.max()
+        label_sizes = np.zeros(max_label + 1, dtype=np.int32)
+        label_vals = np.zeros(max_label + 1, dtype=arr.dtype)
+        label_id = np.zeros(max_label + 1, dtype=np.int32)
+        for p in props:
+            label_sizes[p.label] = p.area
+            label_vals[p.label] = p.intensity_max
+            label_id[p.label] = p.label
+
+        # 3. Vectorized identification of small objects
+        # pixel_sizes: each pixel value is the size of the region it belongs to
+        pixel_sizes = label_sizes[labeled_arr]
+
+        #size_map = dict(zip(label_id, label_sizes))
+        #val_map = dict(zip(label_id, label_vals))
+
+        small_mask = (pixel_sizes < min_size) & (labeled_arr != 0)
+
+        if not np.any(small_mask):
+            print(f"Finished: No small objects remaining after {iteration} iterations.")
+            break
+
+        print(f"Iteration {iteration}: Found small objects, processing...")
+
+        # 3. Replace small objects
+        out_arr = arr.copy()
+        small_labels = np.unique(labeled_arr[small_mask])
+
+        for lid in small_labels:
+            mask_obj = (labeled_arr == lid)
+            dilated_mask = dilated_mask = isotropic_dilation(mask_obj, radius=1)
+            #ndimage.binary_dilation(mask_obj, iterations=1)
+
+            # Find neighbors
+            neighbors = np.unique(labeled_arr[dilated_mask])
+            valid_neighbors = neighbors[(neighbors != lid) & (neighbors != 0)]
+
+            if (valid_neighbors.size > 0 and
+                    any(x >= min_size for x in [label_sizes[k] for k in valid_neighbors if k in label_sizes])):
+
+                # Get the neighbor with the largest area
+                largest_n_id = max(
+                    valid_neighbors, key=lambda x: label_sizes[x]
+                    )
+
+                out_arr[mask_obj] = label_vals[largest_n_id]
+
+            else:
+                out_arr[mask_obj] = 0
+
+        current_da = xr.DataArray(out_arr, coords=dataarray.coords, dims=dataarray.dims, attrs=dataarray.attrs)
+        iteration += 1
+
+    return current_da.rio.write_crs(out_crs)
 
 class SitsPlotter:
     """
