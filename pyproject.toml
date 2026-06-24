@@ -60,7 +60,8 @@ docs = [
     "pyarrow",
     "sphinx_rtd_theme==2.0.0",
     "matplotlib==3.9.1",
-    "sphinx-gallery==0.17.0"
+    "sphinx-gallery==0.17.0",
+    "omnicloudmask",
 ]
 
 # UV SPECIFIC: Development dependencies

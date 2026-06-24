@@ -101,7 +101,9 @@ class Sits_ds:
         numerical modeling where consistent temporal intervals are required.
 
         Args:
-            method (str, optional): interpolation method to use. Defaults to 'slinear'.
+            method (str, optional): interpolation method to use. For more
+                information on the methods, see the ``xarray.Dataset.interp``
+                documentation. Defaults to 'slinear'.
             nb_period (int, optional): number of output dates. Defaults to 100
 
         Returns:

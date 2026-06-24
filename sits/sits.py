@@ -16,6 +16,7 @@ from odc.stac import load
 
 # Geospatial librairies
 import geopandas as gpd
+import xarray as xr
 import rioxarray  # noqa: F401
 import rasterio
 from rasterio.crs import CRS
@@ -79,6 +80,83 @@ def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
 def compare_crs(crs_a, crs_b):
     if crs_a != crs_b:
         raise ValueError(f"CRS mismatch: {crs_a} != {crs_b}")
+
+
+def omnicloudmask(dataset, bands=['B04', 'B03', 'B08'], binary_mask=False):
+    """
+    Applies the OmniCloudMask algorithm to a multi-temporal xarray.DataArray to
+    detect clouds and clouds shadows, including 4 classes: 0: clear,
+    1: thick cloud, 2: thin cloud, 3: cloud shadow.
+    This function iterates through the temporal dimension of the input data,
+    performs cloud masking on each spatial frame, and reconstructs the
+    results into a single labeled xarray.DataArray. It requires the
+    optional 'omnicloudmask' library to be installed.
+
+    Args:
+        dataset (xarray.Dataset): The input multi-dimensional array
+            containing at least 'time', 'y', 'x', and band dimensions.
+        bands (list of str, optional): The specific bands to extract from
+            the dataarray for the masking process. Defaults to ['B04', 'B03', 'B08'].
+        binary_mask (bool, optional): If True, merges all cloud and shadow classes
+            into a single class. Defaults to False.
+
+    Returns:
+        xarray.DataArray or bool: A DataArray representing the cloud mask
+            (same 'time', 'y', 'x' coordinates as input). Returns False if the
+            'omnicloudmask' library is missing.
+
+    Raises:
+        ImportError: If the optional 'omnicloudmask' package is not installed.
+
+    Example:
+            >>> ocm_bands = ['B04', 'B03', 'B8A']
+            >>> ocm = sits.omnicloudmask(ts_S2.cube, bands=ocm_bands, binary_mask=True)
+            >>> ts_S2.mask_conf(mask_array=ocm)
+            >>> ts_S2.mask_apply()
+    """
+    # check the installation of omnicloudmask
+    try:
+        import omnicloudmask
+    except ImportError:
+        print("Error: The 'omnicloudmask' library is not installed.")
+        print("Please run 'pip install omnicloudmask' to use this feature.")
+        return False
+
+    input_array = dataset[bands].to_array(dim='band')
+
+    # initialize a list to hold the results
+    predictions_list = []
+    # iterate through the time dimension
+    for time_idx in input_array.time:
+        time_scalar = time_idx.values
+        arr = input_array.sel(time=time_idx)
+        frame = input_array.sel(time=time_idx).values
+
+        # run the prediction
+        frame_pred = omnicloudmask.predict_from_array(
+            input_array=frame
+        )
+
+        # convert back to a DataArray with correct coordinates for this time step
+        pred_xr = xr.DataArray(
+            frame_pred,
+            coords={
+                'band': ['cloudmask'],
+                'y': arr.y,
+                'x': arr.x,
+            },
+            dims=('band', 'y', 'x')
+        )
+        pred_xr = pred_xr.expand_dims(time=[time_scalar])
+        predictions_list.append(pred_xr)
+    # concatenate all results back into a single DataArray
+    final_mask = xr.concat(predictions_list, dim='time')
+    final_mask = final_mask.squeeze().drop_vars("band", errors="ignore")
+
+    if binary_mask is True:
+        final_mask = final_mask.isin([1, 2, 3])
+
+    return final_mask
 
 
 class Gdfgeom:
