@@ -1201,7 +1201,7 @@ class Multiproc:
         imgcoll.loadCube(aoi_proj, arrtype=self.arrtype, **self.lc_kwargs)
 
         if mask:
-            imgcoll.mask(**self.ma_kwargs)
+            imgcoll.mask_conf(**self.ma_kwargs)
             imgcoll.mask_apply(**self.gf_kwargs)
         if gapfill:
             imgcoll.gapfill()
