@@ -15,6 +15,7 @@ In addition to its core functionalities, the package includes an experimental an
 
 ---
 ![animated gif 01](./docs/source/tutorials/img/banc_arguin.gif) 
+:arrow_right:
 ![animated gif 02](./docs/source/tutorials/img/banc_arguin_v2.gif)
 
 ## Installation
