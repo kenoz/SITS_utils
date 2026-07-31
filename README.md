@@ -14,8 +14,8 @@ In addition to its core functionalities, the package includes an experimental an
 **Tutorials**: [https://sits.readthedocs.io/en/latest/tutorials.html](https://sits.readthedocs.io/en/latest/tutorials.html)
 
 ---
-
-![animated gif 01](./docs/source/tutorials/img/banc_arguin_v2.gif)
+![animated gif 01](./docs/source/tutorials/img/banc_arguin.gif) 
+![animated gif 02](./docs/source/tutorials/img/banc_arguin_v2.gif)
 
 ## Installation
 
