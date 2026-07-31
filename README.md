@@ -15,12 +15,14 @@ In addition to its core functionalities, the package includes an experimental an
 
 ---
 
+![animated gif 01](./docs/source/tutorials/img/banc_arguin_v2.gif)
+
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [sits](https://pypi.org/project/sits/).
 
 ```bash
-pip install sits
+pip install sits 
 ```
 
 ## Usage
