@@ -5,6 +5,23 @@ In addition to its core functionalities, the package includes an experimental an
 
 ---
 
+**Automatic calculation of over 200 spectral indices offered by Spyndex**
+
+![ts index](./docs/source/tutorials/img/spectralindex_timeseries.png)
+
+**Anomaly detection on time series: the example of clear-cutting in forests**
+
+![clearcut detection](./docs/source/tutorials/img/clearcut_detection.png)
+
+![clearcut detection map](./docs/source/tutorials/img/cc_map2.png)
+
+**Quick and easy timelapse creation**
+
+![animated gif 01](./docs/source/tutorials/img/banc_arguin.gif) 
+![animated gif 02](./docs/source/tutorials/img/banc_arguin_v2.gif)
+
+---
+
 **GitHub**: [https://github.com/kenoz/SITS_utils](https://github.com/kenoz/SITS_utils)
 
 **Documentation**: [https://sits.readthedocs.io/](https://sits.readthedocs.io/)
@@ -13,10 +30,6 @@ In addition to its core functionalities, the package includes an experimental an
 
 **Tutorials**: [https://sits.readthedocs.io/en/latest/tutorials.html](https://sits.readthedocs.io/en/latest/tutorials.html)
 
----
-![animated gif 01](./docs/source/tutorials/img/banc_arguin.gif) 
-:arrow_right:
-![animated gif 02](./docs/source/tutorials/img/banc_arguin_v2.gif)
 
 ## Installation
 
