@@ -517,28 +517,15 @@ class StacAttack:
         self.items = list(query.items())
         self.__getItemsProperties()
 
-    def __checkS2shift_old(self, shiftval, minval, proc_keyword, version, mask):
-        item_tofix = list()
-
-        for item in self.items:
-            if (float(item.properties[proc_keyword])) >= version:
-                item_tofix.append(item.datetime.replace(tzinfo=None))
-
-        item_times = pd.to_datetime(item_tofix)
-        # Convert dataset times
-        ds_times = pd.to_datetime(self.cube.time.values)
-        matched_times = [t for t in item_times if t in ds_times]
-
-        self.cube = self.cube.astype("int32")
-        for var in self.cube.data_vars:
-            if var == "SCL":
-                self.cube[var] = self.cube[var].astype("int16")
-                continue  # Skip the mask variable
-            for t in matched_times:
-                self.cube[var].loc[dict(time=t)] -= 1000
-                self.cube[var] = self.cube[var].clip(min=1, max=9999).astype("int16")
-
-    def __checkS2shift(self, shiftval, minval, proc_keyword, version, mask):
+    def __checkS2shift(
+        self,
+        shiftval,
+        minval,
+        maxval,
+        proc_keyword,
+        version,
+        mask
+    ):
         # Filter items based on version threshold
         item_times = pd.to_datetime(
             [
@@ -547,9 +534,6 @@ class StacAttack:
                 if float(item.properties[proc_keyword]) >= version
             ]
         )
-
-        # Convert cube times once
-        ds_times = pd.to_datetime(self.cube.time.values)
 
         # Find min/max time to slice cube
         if item_times.empty:
@@ -565,14 +549,14 @@ class StacAttack:
 
         # Apply shift to all variables except "SCL"
         for var in self.cube.data_vars:
-            if var == "SCL":
+            if var == mask:
                 self.cube[var] = self.cube[var].astype("int16")
                 continue
 
             # Apply shift only to matching times
-            shifted = cube_slice[var].copy()
-            shifted[dict(time=time_mask)] -= 1000
-            shifted = shifted.clip(min=1, max=9999).astype("int16")
+            shifted = cube_slice[var].astype("int16").copy()
+            shifted[dict(time=time_mask)] += shiftval
+            shifted = shifted.clip(min=minval, max=maxval).astype("int16")
 
             # Replace original data
             self.cube[var].loc[dict(time=slice(t_min, t_max))] = shifted
@@ -580,7 +564,8 @@ class StacAttack:
     def fixS2shift(
         self,
         shiftval=-1000,
-        minval=1,
+        minval=0,
+        maxval=10000,
         proc_keyword="s2:processing_baseline",
         version=4.0,
         mask="SCL",
@@ -591,7 +576,8 @@ class StacAttack:
 
         Args:
             shiftval (int): radiometric offset value. Defaults to -1000.
-            minval (int): minimum radiometric value. Defaults to 1.
+            minval (int): minimum radiometric value. Defaults to 0.
+            maxval (int): maximum radiometric value. Defaults to 10000.
             proc_keyword (str): item metadata related to the version of
                 Sentinel-2 processing baseline. Defaults to 's2:processing_baseline'.
             version (float): version of the processing baseline. Defaults to 4.0.
@@ -602,7 +588,7 @@ class StacAttack:
         if self.data_corrected:
             print("Warning: Data correction has already been applied.")
         else:
-            self.__checkS2shift(shiftval, minval, proc_keyword, version, mask)
+            self.__checkS2shift(shiftval, minval, maxval, proc_keyword, version, mask)
             self.data_corrected = True
 
     def loadCube(
