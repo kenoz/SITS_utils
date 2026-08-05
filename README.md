@@ -17,8 +17,9 @@ In addition to its core functionalities, the package includes an experimental an
 
 **Quick and easy timelapse creation**
 
-![animated gif 01](./docs/source/tutorials/img/banc_arguin.gif) 
-![animated gif 02](./docs/source/tutorials/img/banc_arguin_v2.gif)
+![animated gif 01](./docs/source/tutorials/img/egypt_blend_colnat.gif) 
+![animated gif 02](./docs/source/tutorials/img/egypt_blend_colnir.gif)
+![animated gif 03](./docs/source/tutorials/img/egypt_blend_ndvi.gif)
 
 ---
 
