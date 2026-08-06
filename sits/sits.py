@@ -16,6 +16,7 @@ from odc.stac import load
 
 # Geospatial librairies
 import geopandas as gpd
+import xarray as xr
 import rioxarray  # noqa: F401
 import rasterio
 from rasterio.crs import CRS
@@ -79,6 +80,83 @@ def def_geobox(bbox, crs_out=3035, resolution=10, shape=None):
 def compare_crs(crs_a, crs_b):
     if crs_a != crs_b:
         raise ValueError(f"CRS mismatch: {crs_a} != {crs_b}")
+
+
+def omnicloudmask(dataset, bands=['B04', 'B03', 'B08'], binary_mask=False):
+    """
+    Applies the OmniCloudMask algorithm to a multi-temporal xarray.DataArray to
+    detect clouds and clouds shadows, including 4 classes: 0: clear,
+    1: thick cloud, 2: thin cloud, 3: cloud shadow.
+    This function iterates through the temporal dimension of the input data,
+    performs cloud masking on each spatial frame, and reconstructs the
+    results into a single labeled xarray.DataArray. It requires the
+    optional 'omnicloudmask' library to be installed.
+
+    Args:
+        dataset (xarray.Dataset): The input multi-dimensional array
+            containing at least 'time', 'y', 'x', and band dimensions.
+        bands (list of str, optional): The specific bands to extract from
+            the dataarray for the masking process. Defaults to ['B04', 'B03', 'B08'].
+        binary_mask (bool, optional): If True, merges all cloud and shadow classes
+            into a single class. Defaults to False.
+
+    Returns:
+        xarray.DataArray or bool: A DataArray representing the cloud mask
+            (same 'time', 'y', 'x' coordinates as input). Returns False if the
+            'omnicloudmask' library is missing.
+
+    Raises:
+        ImportError: If the optional 'omnicloudmask' package is not installed.
+
+    Example:
+            >>> ocm_bands = ['B04', 'B03', 'B8A']
+            >>> ocm = sits.omnicloudmask(ts_S2.cube, bands=ocm_bands, binary_mask=True)
+            >>> ts_S2.mask_conf(mask_array=ocm)
+            >>> ts_S2.mask_apply()
+    """
+    # check the installation of omnicloudmask
+    try:
+        import omnicloudmask
+    except ImportError:
+        print("Error: The 'omnicloudmask' library is not installed.")
+        print("Please run 'pip install omnicloudmask' to use this feature.")
+        return False
+
+    input_array = dataset[bands].to_array(dim='band')
+
+    # initialize a list to hold the results
+    predictions_list = []
+    # iterate through the time dimension
+    for time_idx in input_array.time:
+        time_scalar = time_idx.values
+        arr = input_array.sel(time=time_idx)
+        frame = input_array.sel(time=time_idx).values
+
+        # run the prediction
+        frame_pred = omnicloudmask.predict_from_array(
+            input_array=frame
+        )
+
+        # convert back to a DataArray with correct coordinates for this time step
+        pred_xr = xr.DataArray(
+            frame_pred,
+            coords={
+                'band': ['cloudmask'],
+                'y': arr.y,
+                'x': arr.x,
+            },
+            dims=('band', 'y', 'x')
+        )
+        pred_xr = pred_xr.expand_dims(time=[time_scalar])
+        predictions_list.append(pred_xr)
+    # concatenate all results back into a single DataArray
+    final_mask = xr.concat(predictions_list, dim='time')
+    final_mask = final_mask.squeeze().drop_vars("band", errors="ignore")
+
+    if binary_mask is True:
+        final_mask = final_mask.isin([1, 2, 3])
+
+    return final_mask
 
 
 class Gdfgeom:
@@ -439,28 +517,15 @@ class StacAttack:
         self.items = list(query.items())
         self.__getItemsProperties()
 
-    def __checkS2shift_old(self, shiftval, minval, proc_keyword, version, mask):
-        item_tofix = list()
-
-        for item in self.items:
-            if (float(item.properties[proc_keyword])) >= version:
-                item_tofix.append(item.datetime.replace(tzinfo=None))
-
-        item_times = pd.to_datetime(item_tofix)
-        # Convert dataset times
-        ds_times = pd.to_datetime(self.cube.time.values)
-        matched_times = [t for t in item_times if t in ds_times]
-
-        self.cube = self.cube.astype("int32")
-        for var in self.cube.data_vars:
-            if var == "SCL":
-                self.cube[var] = self.cube[var].astype("int16")
-                continue  # Skip the mask variable
-            for t in matched_times:
-                self.cube[var].loc[dict(time=t)] -= 1000
-                self.cube[var] = self.cube[var].clip(min=1, max=9999).astype("int16")
-
-    def __checkS2shift(self, shiftval, minval, proc_keyword, version, mask):
+    def __checkS2shift(
+        self,
+        shiftval,
+        minval,
+        maxval,
+        proc_keyword,
+        version,
+        mask
+    ):
         # Filter items based on version threshold
         item_times = pd.to_datetime(
             [
@@ -469,9 +534,6 @@ class StacAttack:
                 if float(item.properties[proc_keyword]) >= version
             ]
         )
-
-        # Convert cube times once
-        ds_times = pd.to_datetime(self.cube.time.values)
 
         # Find min/max time to slice cube
         if item_times.empty:
@@ -487,14 +549,14 @@ class StacAttack:
 
         # Apply shift to all variables except "SCL"
         for var in self.cube.data_vars:
-            if var == "SCL":
+            if var == mask:
                 self.cube[var] = self.cube[var].astype("int16")
                 continue
 
             # Apply shift only to matching times
-            shifted = cube_slice[var].copy()
-            shifted[dict(time=time_mask)] -= 1000
-            shifted = shifted.clip(min=1, max=9999).astype("int16")
+            shifted = cube_slice[var].astype("int16").copy()
+            shifted[dict(time=time_mask)] += shiftval
+            shifted = shifted.clip(min=minval, max=maxval).astype("int16")
 
             # Replace original data
             self.cube[var].loc[dict(time=slice(t_min, t_max))] = shifted
@@ -502,7 +564,8 @@ class StacAttack:
     def fixS2shift(
         self,
         shiftval=-1000,
-        minval=1,
+        minval=0,
+        maxval=10000,
         proc_keyword="s2:processing_baseline",
         version=4.0,
         mask="SCL",
@@ -513,7 +576,8 @@ class StacAttack:
 
         Args:
             shiftval (int): radiometric offset value. Defaults to -1000.
-            minval (int): minimum radiometric value. Defaults to 1.
+            minval (int): minimum radiometric value. Defaults to 0.
+            maxval (int): maximum radiometric value. Defaults to 10000.
             proc_keyword (str): item metadata related to the version of
                 Sentinel-2 processing baseline. Defaults to 's2:processing_baseline'.
             version (float): version of the processing baseline. Defaults to 4.0.
@@ -524,7 +588,7 @@ class StacAttack:
         if self.data_corrected:
             print("Warning: Data correction has already been applied.")
         else:
-            self.__checkS2shift(shiftval, minval, proc_keyword, version, mask)
+            self.__checkS2shift(shiftval, minval, maxval, proc_keyword, version, mask)
             self.data_corrected = True
 
     def loadCube(
@@ -1123,7 +1187,7 @@ class Multiproc:
         imgcoll.loadCube(aoi_proj, arrtype=self.arrtype, **self.lc_kwargs)
 
         if mask:
-            imgcoll.mask(**self.ma_kwargs)
+            imgcoll.mask_conf(**self.ma_kwargs)
             imgcoll.mask_apply(**self.gf_kwargs)
         if gapfill:
             imgcoll.gapfill()

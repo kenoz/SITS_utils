@@ -5,6 +5,24 @@ In addition to its core functionalities, the package includes an experimental an
 
 ---
 
+**Automatic calculation of over 200 spectral indices offered by Spyndex**
+
+![ts index](./docs/source/tutorials/img/spectralindex_timeseries.png)
+
+**Anomaly detection on time series: the example of clear-cutting in forests**
+
+![clearcut detection](./docs/source/tutorials/img/clearcut_detection.png)
+
+![clearcut detection map](./docs/source/tutorials/img/cc_map2.png)
+
+**Quick and easy timelapse creation**
+
+![animated gif 01](./docs/source/tutorials/img/egypt_blend_colnat.gif) 
+![animated gif 02](./docs/source/tutorials/img/egypt_blend_colnir.gif)
+![animated gif 03](./docs/source/tutorials/img/egypt_blend_ndvi.gif)
+
+---
+
 **GitHub**: [https://github.com/kenoz/SITS_utils](https://github.com/kenoz/SITS_utils)
 
 **Documentation**: [https://sits.readthedocs.io/](https://sits.readthedocs.io/)
@@ -13,71 +31,18 @@ In addition to its core functionalities, the package includes an experimental an
 
 **Tutorials**: [https://sits.readthedocs.io/en/latest/tutorials.html](https://sits.readthedocs.io/en/latest/tutorials.html)
 
----
 
 ## Installation
 
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install [sits](https://pypi.org/project/sits/).
 
 ```bash
-pip install sits
+pip install sits 
 ```
 
 ## Usage
 
-Here is a basic Python script example. For more details, read the documentation [here](https://sits.readthedocs.io/en/latest/index.html).
-
-```python
-from sits import sits
-
-# loads csv table with geographic coordinates into GeoDataFrame object
-csv_file = 'my_file.csv'
-
-# instantiates a SITS.Csv2gdf object
-sits_df = sits.Csv2gdf(csv_file, 'lon', 'lat', 4326)
-
-# converts coordinates of sits_df into EPSG:3035 
-sits_df.set_gdf(3035)
-
-# calculates buffer with a radius of 100 m for each feature.
-sits_df.set_buffer('gdf', 100)
-
-# calculates the boundiug box for each buffered feature.
-sits_df.set_bbox('buffer')
-
-# exports geometries as a GIS vector file
-sits_df.to_vector('bbox', 'output/my_file_bbox.geojson', driver='GeoJSON')
-
-# gets Sentinel-2 time-series from STAC catalog
-
-# requests STAC catalog for each geometries of sits_df.bbox
-for index, row in sits_df.bbox.iterrows():
-    gid = sits_df.bbox.loc[index, 'gid']
-    
-    row_geom = sits_df.bbox.loc[index, 'geometry']
-    row_geom_4326 = sits_df.bbox.to_crs(4326).loc[index, 'geometry']
-    
-    aoi_bounds = list(row_geom.bounds)
-    aoi_bounds_4326 = list(row_geom_4326.bounds)
-
-    # opens access to a STAC provider (by default Microsoft Planetary)
-    imgs = sits.StacAttack()
-    # searches items based on bbox coordinates and time interval criteria
-    imgs.searchItems(aoi_bounds_4326, 
-                     date_start=datetime(2016, 1, 1), 
-                     date_end=datetime(2019, 12, 31))
-    
-    # extracts Sentinel-2 metadata and writes in csv file.
-    imgs.items_prop["station_id"] = gid
-    imgs.items_prop.to_csv(f'output/id_{gid}_s2_metadata.csv')
-    
-    # loads time-series images in EPSG:3035
-    imgs.loadCube(aoi_bounds, arrtype='image', crs_out=3035)
-    
-    # exports time-series into csv file and netCDF file
-    imgs.to_csv(out_dir, gid)
-    imgs.to_nc(out_dir, gid)
-```
+Explore the [full documentation](https://sits.readthedocs.io/en/latest/index.html) for a complete description of features. To get started quickly, you can also run through the interactive [tutorials](https://sits.readthedocs.io/en/latest/tutorials.html) via your favorite notebook platform or Google Colab.
 
 ## Notebooks
 
@@ -88,7 +53,6 @@ If you want to explore the different ways to use the sits package, we recommend 
 - [Example 03](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex03.ipynb): explain how to compute spectral indices with `sits` and `spyndex` packages.
 - [Example 04](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex04.ipynb): explain how to parallelize processing tasks in case of multiple vector features.
 - [Example 05](https://github.com/kenoz/SITS_utils/blob/main/docs/source/tutorials/colab_sits_ex05.ipynb): explain how to automatically detect forest clear-cuts by using the ``analysis`` module.
-
 
 ## Contributing
 
