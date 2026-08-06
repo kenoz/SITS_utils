@@ -90,7 +90,8 @@ def omnicloudmask(dataset, bands=['B04', 'B03', 'B08'], binary_mask=False):
     This function iterates through the temporal dimension of the input data,
     performs cloud masking on each spatial frame, and reconstructs the
     results into a single labeled xarray.DataArray. It requires the
-    optional 'omnicloudmask' library to be installed.
+    optional ``omnicloudmask`` library to be installed.
+    For more information: https://omnicloudmask.readthedocs.io/en/latest/index.html
 
     Args:
         dataset (xarray.Dataset): The input multi-dimensional array
