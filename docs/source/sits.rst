@@ -10,7 +10,12 @@ sits.def_geobox
 
 .. autofunction:: def_geobox
 
-sits.stacAttack
+sits.omnicloudmask
+------------------
+
+.. autofunction:: omnicloudmask
+
+sits.StacAttack
 ---------------
    
 .. autoclass:: StacAttack
